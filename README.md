@@ -2,7 +2,9 @@
 
 ## Execution examples
 
-`python main.py namespace="default" url_heapster="svc-heapster/api/v1/model" autoscaler_count="5" time_query="10"`
+```
+python main.py namespace="default" url_heapster="svc-heapster/api/v1/model" autoscaler_count="5" time_query="10"
+```
 
 ## Arguments
 
