@@ -1,4 +1,4 @@
-# StatefulSet Autoscaler
+# Slug Containers - StatefulSet Autoscaler and tools
 
 ## Execution examples
 
