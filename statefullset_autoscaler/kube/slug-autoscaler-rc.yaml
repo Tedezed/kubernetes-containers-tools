@@ -1,0 +1,28 @@
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  name: slug-autoscaler
+  namespace: default
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: slug-autoscaler
+    spec:
+      containers:
+      - name: slug-autoscaler
+        image: tedezed/slug-containers:statefulset-autoscaler
+        env:
+          - name: KMASTER
+            value: 10.40.12.34
+          - name: HEAPSTER
+            value: heapster
+          - name: AUTOSCALER_COUNT
+            value: 5
+          - name: TIME_QUERY
+            value: 18
+          - name: WP_KUBERNETES_MASTER
+            value: 104.197.246.44
+          - name: CONF_KUBE
+            value: ""
