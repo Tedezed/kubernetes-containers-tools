@@ -2,6 +2,8 @@
 
 ## [Slug StatefulSet Autoscaler](https://github.com/Tedezed/slug-containers/tree/master/statefulset_autoscaler)
 
+Image `tedezed/slug-statefulset-autoscaler:latest`
+
 - [x] Docker build
 - [x] Docker image in Docker Hub
 - [x] Autoscaler StatefulSet
