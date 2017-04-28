@@ -1,6 +1,6 @@
 # Slug Kubernetes autoscaler
 
-image::docs/img/slug.png?raw=true[]
+![Slug logo](https://github.com/Tedezed/slug-containers/blob/master/docs/img/slug.png)
 
 ## [Slug StatefulSet Autoscaler](https://github.com/Tedezed/slug-containers/tree/master/statefulset_autoscaler)
 
