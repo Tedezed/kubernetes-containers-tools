@@ -60,19 +60,19 @@ while True:
 	set_scaling = 0
 	for sfs in pre_set:
 		for setfull in list_set:
-			print "[StatefulSet] %s %s CPU - Autoscale in %s CPU" % (sfs.name, setfull["percent_cpu"], setfull["autoscaler_percent_cpu"])
+			os.system('echo "[StatefulSet] %s %s CPU - Autoscale in %s CPU"' % (sfs.name, setfull["percent_cpu"], setfull["autoscaler_percent_cpu"]))
 			if sfs.obj["metadata"]["name"] == setfull["name"] and int(setfull["autoscaler_percent_cpu"]) <= int(setfull["percent_cpu"]):
 				if sfs.obj["metadata"]["labels"]["autoscaler_count"] == "0":
 					sfs.obj["spec"]["replicas"] = int(sfs.obj["spec"]["replicas"]) + 1
 					sfs.obj["metadata"]["labels"]["autoscaler_count"] = autoscaler_count
 					pykube.StatefulSet(api, sfs.obj).update()
 					set_scaling += 1
-					print "[AUTOSCALING] Scaling StatefulSet %s to %s replicas" % (sfs.obj["metadata"]["name"], sfs.obj["spec"]["replicas"])
+					os.system('echo "[AUTOSCALING] Scaling StatefulSet %s to %s replicas"' % (sfs.obj["metadata"]["name"], sfs.obj["spec"]["replicas"]))
 				else:
 					sfs.obj["metadata"]["labels"]["autoscaler_count"] = str(int(sfs.obj["metadata"]["labels"]["autoscaler_count"]) - 1)
 					pykube.StatefulSet(api, sfs.obj).update()
-					print "[INFO] Seelp StatefulSet %s replicas %s, attempts %s" % (sfs.obj["metadata"]["name"], sfs.obj["spec"]["replicas"], sfs.obj["metadata"]["labels"]["autoscaler_count"])
+					os.system('echo "[INFO] Seelp StatefulSet %s replicas %s, attempts %s"' % (sfs.obj["metadata"]["name"], sfs.obj["spec"]["replicas"], sfs.obj["metadata"]["labels"]["autoscaler_count"]))
 
-	print "[INFO] StatefulSet autoscaler %s" % (set_scaling)
-	print "Seelp %ss for next query" % (time_query)
+	os.system('echo "[INFO] StatefulSet autoscaler %s' % (set_scaling))
+	os.system('echo "Seelp %ss for next query"' % (time_query))
 	time.sleep(time_query)
