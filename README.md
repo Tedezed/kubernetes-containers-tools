@@ -1,5 +1,7 @@
 # Slug Kubernetes autoscaler
 
+image::docs/img/slug.png?raw=true[]
+
 ## [Slug StatefulSet Autoscaler](https://github.com/Tedezed/slug-containers/tree/master/statefulset_autoscaler)
 
 - [x] Docker build
