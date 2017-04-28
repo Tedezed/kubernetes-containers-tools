@@ -2,7 +2,7 @@
 
 ## Build
 
-`docker build -f Dockerfile -t tedezed/slug-containers:statefulset-autoscaler .`
+`docker build -f Dockerfile -t tedezed/slug-statefulset-autoscaler .`
 
-`docker push tedezed/slug-containers:statefulset-autoscaler`
+`docker push tedezed/slug-statefulset-autoscaler`
 

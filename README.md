@@ -3,7 +3,7 @@
 ## [Slug StatefulSet Autoscaler](https://github.com/Tedezed/slug-containers/tree/master/statefulset_autoscaler)
 
 - [x] Docker build
-- [ ] Docker image in Docker Hub
+- [x] Docker image in Docker Hub
 - [x] Autoscaler StatefulSet
 - [x] Autoscaler max/min replicas
 - [x] Autoreduce StatefulSet Normal (Simple containers)
