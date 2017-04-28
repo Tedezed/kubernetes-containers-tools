@@ -12,7 +12,7 @@ spec:
     spec:
       containers:
       - name: slug-autoscaler
-        image: tedezed/slug-statefulset-autoscaler
+        image: tedezed/slug-statefulset-autoscaler:latest
         env:
           - name: KMASTER
             value: 10.40.12.34

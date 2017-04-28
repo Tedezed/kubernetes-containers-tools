@@ -10,7 +10,7 @@
 - [ ] Autoscaler StatefulSet crunchy-containers
 - [ ] Autoreduce StatefulSet crunchy-containers
 
-## Slug HAProxy for StatefulSet Autoscaler
+## [Slug HAProxy for StatefulSet Autoscaler](https://github.com/Tedezed/slug-containers/tree/master/hap_statefulset_autoselector)
 
 - [ ] Docker build
 - [ ] Docker image in Docker Hub
