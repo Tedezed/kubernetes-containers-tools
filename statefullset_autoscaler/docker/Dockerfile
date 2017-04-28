@@ -18,11 +18,11 @@ RUN apt-get update \
     && rm -rf /var/lib/apt/lists/*
 
 RUN pip install pykube
-RUN git clone https://github.com/Tedezed/slug-containers.git
+ADD slug_statefullset_autoscaler/ /slug_statefullset_autoscaler
+RUN ls
 
 ADD files/docker-entrypoint.sh /usr/local/bin/
 RUN chmod +rx /usr/local/bin/docker-entrypoint.sh
-#RUN chmod 777 /usr/local/bin/docker-entrypoint.sh
 
 USER root
 ENTRYPOINT ["docker-entrypoint.sh"]
