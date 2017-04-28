@@ -1,0 +1,44 @@
+apiVersion: apps/v1beta1
+kind: StatefulSet
+metadata:
+  name: nginx
+  labels:
+    autoscaler: "true"
+    autoscaler_percent_cpu: "50"
+    autoscaler_count: "0"
+    autoreduce_normal: "true"
+    autoreduce_percent_cpu: "10"
+    min_replicas: "3"
+    max_replicas: "8"
+spec:
+  serviceName: "nginx"
+  replicas: 5
+  template:
+    metadata:
+      labels:
+        app: nginx
+      annotations:
+        pod.alpha.kubernetes.io/initialized: "true"
+    spec:
+      containers:
+        - name: nginx
+          image: nginx
+          env:
+            - name: POD_NS
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+            - name: NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+          ports:
+            - name: client
+              containerPort: 80
+          resources:
+            limits:
+              cpu: 150m
+              memory: 300Mi
+            requests:
+              cpu: 75m
+              memory: 150Mi
