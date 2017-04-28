@@ -1,15 +1,15 @@
 # Slug Kubernetes autoscaler
 
-## [Slug StatefullSet Autoscaler](https://github.com/Tedezed/slug-containers/tree/master/statefullset_autoscaler)
+## [Slug StatefulSet Autoscaler](https://github.com/Tedezed/slug-containers/tree/master/statefulset_autoscaler)
 
 - [x] Docker build
 - [ ] Docker image in Docker Hub
-- [x] Autoscaler StatefullSet
-- [ ] Autoreduce StatefullSet Normal (Simple containers)
-- [ ] Autoscaler StatefullSet crunchy-containers
-- [ ] Autoreduce StatefullSet crunchy-containers
+- [x] Autoscaler StatefulSet
+- [ ] Autoreduce StatefulSet Normal (Simple containers)
+- [ ] Autoscaler StatefulSet crunchy-containers
+- [ ] Autoreduce StatefulSet crunchy-containers
 
-## Slug HAProxy for StatefullSet Autoscaler
+## Slug HAProxy for StatefulSet Autoscaler
 
 - [ ] Docker build
 - [ ] Docker image in Docker Hub

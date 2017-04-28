@@ -18,7 +18,7 @@ RUN apt-get update \
     && rm -rf /var/lib/apt/lists/*
 
 RUN pip install pykube
-ADD slug_statefullset_autoscaler/ /slug_statefullset_autoscaler
+ADD slug_statefulset_autoscaler/ /slug_statefulset_autoscaler
 RUN ls
 
 ADD files/docker-entrypoint.sh /usr/local/bin/

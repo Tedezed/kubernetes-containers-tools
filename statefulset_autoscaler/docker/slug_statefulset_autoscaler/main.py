@@ -26,7 +26,7 @@ import sys
 from tools import *
 
 # RUN!
-os.system('echo "Start Slug StatefullSet Autoscaler"')
+os.system('echo "Start Slug StatefulSet Autoscaler"')
 # python main.py namespace="default" url_heapster="http://heapster/api/v1/model" autoscaler_count="5" time_query="10"
 patch_exec = os.path.dirname(os.path.realpath(__file__)) + "/"
 api = pykube.HTTPClient(pykube.KubeConfig.from_file(patch_exec + "credentials/config"))
