@@ -73,6 +73,6 @@ while True:
 					pykube.StatefulSet(api, sfs.obj).update()
 					os.system('echo "[INFO] Seelp StatefulSet %s replicas %s, attempts %s"' % (sfs.obj["metadata"]["name"], sfs.obj["spec"]["replicas"], sfs.obj["metadata"]["labels"]["autoscaler_count"]))
 
-	os.system('echo "[INFO] StatefulSet autoscaler %s' % (set_scaling))
+	os.system('echo "[INFO] StatefulSet autoscaler %s"' % (set_scaling))
 	os.system('echo "Seelp %ss for next query"' % (time_query))
 	time.sleep(time_query)
