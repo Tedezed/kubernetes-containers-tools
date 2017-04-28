@@ -1,0 +1,1 @@
+# HAProxy Statefulset autoselector
