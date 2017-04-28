@@ -41,7 +41,11 @@ def select_statefulset(api, namespace):
 			dic_set["name"] = s["metadata"]["name"]
 			dic_set["autoscaler"] = s["metadata"]["labels"]["autoscaler"].lower()
 			dic_set["autoscaler_percent_cpu"] = s["metadata"]["labels"]["autoscaler_percent_cpu"]
+			dic_set["autoreduce_normal"] = s["metadata"]["labels"]["autoreduce_normal"].lower()
+			dic_set["autoreduce_percent_cpu"] = s["metadata"]["labels"]["autoreduce_percent_cpu"]
 			dic_set["autoscaler_count"] = s["metadata"]["labels"]["autoscaler_count"]
+			dic_set["min_replicas"] = s["metadata"]["labels"]["min_replicas"]
+			dic_set["max_replicas"] = s["metadata"]["labels"]["max_replicas"]
 			dic_set["limit_cpu"] = s["spec"]["template"]["spec"]["containers"][0]["resources"]["limits"]["cpu"][0:-1]
 			if dic_set["autoscaler"] == "true":
 				list_set.append(dic_set)

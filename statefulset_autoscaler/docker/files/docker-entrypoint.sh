@@ -1,6 +1,6 @@
 #!/bin/bash
 
-echo "ver 0.0.0.3"
+echo "ver 0.0.0.4"
 
 echo "$KMASTER kubernetes" >> /etc/hosts
 echo $ADD_HOST >> /etc/hosts

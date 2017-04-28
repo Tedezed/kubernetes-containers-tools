@@ -5,7 +5,8 @@
 - [x] Docker build
 - [ ] Docker image in Docker Hub
 - [x] Autoscaler StatefulSet
-- [ ] Autoreduce StatefulSet Normal (Simple containers)
+- [x] Autoscaler max/min replicas
+- [x] Autoreduce StatefulSet Normal (Simple containers)
 - [ ] Autoscaler StatefulSet crunchy-containers
 - [ ] Autoreduce StatefulSet crunchy-containers
 
