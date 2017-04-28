@@ -18,5 +18,8 @@ python main.py namespace="default" url_heapster="svc-heapster/api/v1/model" auto
 ```
 autoscaler: "true"
 autoscaler_percent_cpu: "50"
+# Need autoscaler in true
+autoreduce_normal: "true"
+autoreduce_percent_cpu: "10"
 autoscaler_count: "0"
 ```
