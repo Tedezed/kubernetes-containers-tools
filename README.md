@@ -1,6 +1,6 @@
 # Slug autoscaler
 
-## [Slug StatefulSet Autoscaler](https://github.com/Tedezed/slug-containers/tree/master/statefulset_autoscaler)
+## [Slug StatefulSet autoscaler](https://github.com/Tedezed/slug-containers/tree/master/statefulset_autoscaler)
 
 Image `tedezed/slug-statefulset-autoscaler:latest`
 
@@ -13,7 +13,7 @@ Image `tedezed/slug-statefulset-autoscaler:latest`
 - [ ] Autoscaler StatefulSet crunchy-containers
 - [ ] Autoreduce StatefulSet crunchy-containers
 
-## [Slug dynamic load balancer for StatefulSet Autoscaler](https://github.com/Tedezed/slug-containers/tree/master/statefulset_dynamic_loadbalancer)
+## [Slug dynamic load balancer for StatefulSet autoscaler](https://github.com/Tedezed/slug-containers/tree/master/statefulset_dynamic_loadbalancer)
 
 - [ ] Docker build
 - [ ] Docker image in Docker Hub
