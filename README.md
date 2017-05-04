@@ -1,4 +1,4 @@
-# Slug autoscaler
+# Slug StatefulSet autoscaler
 
 ## [Slug StatefulSet autoscaler](https://github.com/Tedezed/slug-containers/tree/master/statefulset_autoscaler)
 
@@ -15,7 +15,9 @@ Image `tedezed/slug-statefulset-autoscaler:latest`
 
 ## [Slug dynamic load balancer for StatefulSet autoscaler](https://github.com/Tedezed/slug-containers/tree/master/statefulset_dynamic_loadbalancer)
 
-- [ ] Docker build
-- [ ] Docker image in Docker Hub
-- [ ] Dynamic load balancer, using number of replicas of StatefulSet
+Image `tedezed/slug-statefulset-dynamic-loadbalancer`
+
+- [x] Docker build
+- [x] Docker image in Docker Hub
+- [x] Dynamic load balancer, using number of replicas of StatefulSet
 - [ ] Load balancing for all StatefulSet with labels: `slug_loadbalancing: "true"`

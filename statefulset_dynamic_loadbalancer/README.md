@@ -1,1 +1,1 @@
-# Dynamic load balancer for Statefulset
+# Dynamic load balancer for StatefulSet

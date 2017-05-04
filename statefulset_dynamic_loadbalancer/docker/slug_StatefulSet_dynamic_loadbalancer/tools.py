@@ -55,10 +55,10 @@ def select_statefulset(name_set, api, namespace, type_balance, cookie):
 					#list_set.append(dic_set)
 					pass
 		except:
-			print "[ERROR] Error to add %s" % (s["metadata"]["name"])
+			os.system("[ERROR] Error to add %s" % (s["metadata"]["name"]))
 	return list_set
 
-def select_pod_form_set(api, list_set, namespace, url_heapster):
+def select_pod_form_set(api, list_set, namespace):
 	pre_pod = pykube.Pod.objects(api).filter(namespace=namespace)
 	#pod_obj = pykube.Pod(api, pre_pod.response['items'][0])
 	list_pods = []
@@ -66,25 +66,16 @@ def select_pod_form_set(api, list_set, namespace, url_heapster):
 		pod_obj = pykube.Pod(api, p)
 		pod_name = pod_obj.name
 		set_name = 	json.loads(p["metadata"]["annotations"]["kubernetes.io/created-by"])["reference"]["name"]
-		
-		re = requests.request('GET', "%s/namespaces/%s/pods/%s/metrics/cpu/usage_rate" % (url_heapster, namespace, pod_name))
-		
-		#lit_usage_cpu = []
-		#for i in re.json()["metrics"]:
-		#	lit_usage_cpu.append(i["value"])
-		#avg_cpu = avg_list(lit_usage_cpu)
-
-		# Latest cpu usage
-		for i in re.json()["metrics"]:
-			if i["timestamp"] == re.json()["latestTimestamp"]:
-				avg_cpu = i["value"]
-
 		num = 0
 		dic_pod = {}
 		for e in list_set:
 			if e["name"] == set_name:
 				dic_pod["name"] = pod_name
 				dic_pod["set_name"] = set_name
+				try:
+					dic_pod["podIP"] = p["status"]["podIP"]
+				except:
+					dic_pod["podIP"] = "0.0.0.0"
 				#dic_pod["avg_cpu"] = avg_cpu
 				list_pods.append(dic_pod)
 				list_set[num]["list_pods"] = list_pods
