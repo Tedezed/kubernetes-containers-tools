@@ -59,19 +59,28 @@ time_query = int(dic_argv["time_query"])
 name_set = dic_argv["name_set"]
 type_balance = dic_argv["type_balance"]
 cookie = dic_argv["cookie"].lower()
+type_set = dic_argv["type_set"]
+try:
+    debug = dic_argv["debug"]
+except:
+    debug = False
 
 if time_query < 5:
     time_query = "5"
 
 
 # First start
-list_set = select_statefulset(name_set, api, namespace, type_balance, cookie)
+list_set = select_set(name_set, api, namespace, type_balance, cookie, type_set)
 list_set = select_pod_form_set(api, list_set, namespace)
+
+if debug:
+    print list_set
+
 reload_write_conf()
 old_list_set = list_set
 
 while True:
-    list_set = select_statefulset(name_set, api, namespace, type_balance, cookie)
+    list_set = select_set(name_set, api, namespace, type_balance, cookie, type_set)
     list_set = select_pod_form_set(api, list_set, namespace)
     # list_set = percent_cpu_set(list_set)
 

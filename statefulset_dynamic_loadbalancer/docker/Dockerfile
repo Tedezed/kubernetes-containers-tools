@@ -9,6 +9,7 @@ ENV CONF_KUBE_BASE64 add
 ENV NAME_SET "nginx"
 ENV TYPE_BALANCE "roundrobin"
 ENV COOKIE "false"
+ENV TYPE_SET "statefulset"
 
 ##### PYTHON
 

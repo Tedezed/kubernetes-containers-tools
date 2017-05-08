@@ -34,8 +34,11 @@ def argument_to_dic(list):
 		dic[z[0]]=z[1]
 	return dic
 
-def select_statefulset(name_set, api, namespace, type_balance, cookie):
-	pre_set = pykube.StatefulSet.objects(api).filter(namespace=namespace)
+def select_set(name_set, api, namespace, type_balance, cookie, type_set):
+	if type_set == "statefulset":
+		pre_set = pykube.StatefulSet.objects(api).filter(namespace=namespace)
+	elif type_set == "rc":
+		pre_set = pykube.ReplicationController.objects(api).filter(namespace=namespace)
 	list_set = []
 	for s in pre_set.response['items']:
 		try:
