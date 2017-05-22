@@ -1,5 +1,7 @@
 # Slug StatefulSet autoscaler
 
+Example of usage: http://www.aventurabinaria.es/kubernetes-stateful-set-autoscale/
+
 ## [Slug StatefulSet autoscaler](https://github.com/Tedezed/slug-containers/tree/master/statefulset_autoscaler)
 
 Image `tedezed/slug-statefulset-autoscaler:latest`
