@@ -35,6 +35,8 @@ RUN echo deb http://httpredir.debian.org/debian jessie-backports main | \
       tee /etc/apt/sources.list.d/backports.list
 
 RUN apt-get update \
+    && apt-get upgrade -y \
+    && apt-get autoremove -y \
     && apt-get install -y \
     	haproxy -t jessie-backports \
     && rm -rf /var/lib/apt/lists/*

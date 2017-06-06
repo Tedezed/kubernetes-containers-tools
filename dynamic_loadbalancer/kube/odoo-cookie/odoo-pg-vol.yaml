@@ -1,0 +1,133 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-pg-test
+spec:
+  accessModes:
+  - ReadWriteMany
+  capacity:
+    storage: 15Gi
+  gcePersistentDisk:
+    # This disk must already exist.
+    pdName: disk-test-pg
+    fsType: ext4
+  persistentVolumeReclaimPolicy: Recycle
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: pvc-pg-test
+spec:
+  accessModes:
+  - ReadWriteMany
+  resources:
+    requests:
+      storage: 15Gi
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-odoo-test
+spec:
+  accessModes:
+  - ReadWriteMany
+  capacity:
+    storage: 15Gi
+  gcePersistentDisk:
+    # This disk must already exist.
+    pdName: disk-test-odoo
+    fsType: ext4
+  persistentVolumeReclaimPolicy: Recycle
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: pvc-odoo-test
+spec:
+  accessModes:
+  - ReadWriteMany
+  resources:
+    requests:
+      storage: 15Gi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    provider: postgresql-test
+  name: postgresql-test
+spec:
+  ports:
+  - port: 5432
+  selector:
+    provider: postgresql-test
+---
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  labels:
+    provider: postgresql-test
+  name: postgresql-test
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        provider: postgresql-test
+    spec:
+      containers:
+      - env:
+        - name: POSTGRES_USER
+          value: odoo
+        - name: POSTGRES_PASSWORD
+          value: odoo
+        image: postgres:9.4
+        name: postgresql-test
+        ports:
+        - containerPort: 5432
+        volumeMounts:
+        - mountPath: /var/lib/postgresql
+          name: v-postgres-odoo
+          subPath: odoo-test/postgresql
+      volumes:
+      - name: v-postgres-odoo
+        persistentVolumeClaim:
+          claimName: pvc-pg-test
+---
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  labels:
+    provider: odoo-test
+    octopus_hap: hap_odoo_1
+  name: odoo-test
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        provider: odoo-test
+    spec:
+      containers:
+      - env:
+        - name: HOST
+          value: postgresql-test
+        - name: USER
+          value: odoo
+        - name: PASSWORD
+          value: odoo
+        image: odoo:latest
+        name: odoo-test
+        ports:
+        - containerPort: 8069
+        volumeMounts:
+        #- mountPath: /var/lib/odoo
+        #  name: v-odoo
+        #  subPath: odoo-test/odoo/odoo-lib
+        - mountPath: /mnt/extra-addons
+          name: v-odoo
+          subPath: odoo-test/odoo/odoo-extra
+      volumes:
+      - name: v-odoo
+        persistentVolumeClaim:
+          claimName: pvc-odoo-test

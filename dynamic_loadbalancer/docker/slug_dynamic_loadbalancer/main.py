@@ -40,7 +40,8 @@ def reload_write_conf():
 system('echo "Start Slug Load Balancer v.0.0.1"')
 # python main.py namespace="default" url_heapster="http://heapster/api/v1/model" autoscaler_count="5" time_query="10"
 patch_exec = path.dirname(path.realpath(__file__)) + "/"
-api = HTTPClient(KubeConfig.from_file(patch_exec + "credentials/config"))
+#api = HTTPClient(KubeConfig.from_file(patch_exec + "credentials/config"))
+api = HTTPClient(KubeConfig.from_service_account())
 
 # Arguments
 list_argv = []
@@ -71,6 +72,7 @@ if time_query < 5:
 # First start
 list_set = select_set(name_set, api, namespace, type_balance, cookie, type_set)
 list_set = select_pod_form_set(api, list_set, namespace)
+system('echo %s' % (list_set))
 
 if debug:
     print list_set
@@ -87,7 +89,7 @@ while True:
     if ddiff:
         reload_write_conf()
     else:
-        system('echo [INFO] No changes in replicas of %s or first start' % (name_set))
+        system('echo [INFO] No changes in replicas of %s' % (name_set))
 
     old_list_set = list_set
     system('echo "Seelp %ss for next query"' % (time_query))
