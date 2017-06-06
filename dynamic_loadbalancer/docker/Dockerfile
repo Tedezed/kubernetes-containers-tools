@@ -26,7 +26,7 @@ RUN apt-get update \
     && rm -rf /var/lib/apt/lists/*
 
 RUN pip install pykube deepdiff
-ADD slug_StatefulSet_dynamic_loadbalancer/ /slug_StatefulSet_dynamic_loadbalancer
+ADD slug_dynamic_loadbalancer/ /slug_dynamic_loadbalancer
 
 ##### HAPROXY
 

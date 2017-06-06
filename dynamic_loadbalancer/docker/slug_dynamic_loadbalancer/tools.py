@@ -17,12 +17,9 @@
 # By: https://github.com/Tedezed
 # juanmanuel.torres@aventurabinaria.es
 
-import time
-import requests
-import pykube
-import json
-import os
-import sys
+from pykube import StatefulSet, ReplicationController, Pod
+from json import loads
+from os import system
 from jinja2 import Environment, FileSystemLoader
 
 def avg_list(list):
@@ -36,9 +33,9 @@ def argument_to_dic(list):
 
 def select_set(name_set, api, namespace, type_balance, cookie, type_set):
 	if type_set == "statefulset":
-		pre_set = pykube.StatefulSet.objects(api).filter(namespace=namespace)
+		pre_set = StatefulSet.objects(api).filter(namespace=namespace)
 	elif type_set == "rc":
-		pre_set = pykube.ReplicationController.objects(api).filter(namespace=namespace)
+		pre_set = ReplicationController.objects(api).filter(namespace=namespace)
 	list_set = []
 	for s in pre_set.response['items']:
 		try:
@@ -48,27 +45,23 @@ def select_set(name_set, api, namespace, type_balance, cookie, type_set):
 			dic_set["cookie"] = cookie
 			dic_set["type_balance"] = type_balance
 			dic_set["ports"] = s["spec"]["template"]["spec"]["containers"][0]["ports"]
-			#dic_set["slug_loadbalancing"] = s["metadata"]["labels"]["slug_loadbalancing"].lower()
 			if True:
-			#if dic_set["slug_loadbalancing"] == "true":
 				if name_set != "allsets":
 					if name_set == dic_set["name"]:
 						list_set.append(dic_set)
 				elif name_set == "allsets":
-					#list_set.append(dic_set)
 					pass
 		except:
-			os.system("[ERROR] Error to add %s" % (s["metadata"]["name"]))
+			system("echo [ERROR] Error to add %s" % (s["metadata"]["name"]))
 	return list_set
 
 def select_pod_form_set(api, list_set, namespace):
-	pre_pod = pykube.Pod.objects(api).filter(namespace=namespace)
-	#pod_obj = pykube.Pod(api, pre_pod.response['items'][0])
+	pre_pod = Pod.objects(api).filter(namespace=namespace)
 	list_pods = []
 	for p in pre_pod.response['items']:
-		pod_obj = pykube.Pod(api, p)
+		pod_obj = Pod(api, p)
 		pod_name = pod_obj.name
-		set_name = 	json.loads(p["metadata"]["annotations"]["kubernetes.io/created-by"])["reference"]["name"]
+		set_name = 	loads(p["metadata"]["annotations"]["kubernetes.io/created-by"])["reference"]["name"]
 		num = 0
 		dic_pod = {}
 		for e in list_set:
@@ -79,7 +72,6 @@ def select_pod_form_set(api, list_set, namespace):
 					dic_pod["podIP"] = p["status"]["podIP"]
 				except:
 					dic_pod["podIP"] = "0.0.0.0"
-				#dic_pod["avg_cpu"] = avg_cpu
 				list_pods.append(dic_pod)
 				list_set[num]["list_pods"] = list_pods
 			num +=1
@@ -96,9 +88,3 @@ def load_singleset_template(patch_exec, list_set):
 	)
 
 	return template_render
-
-	#file_conf = open('/etc/haproxy/haproxy.cfg','w')
-	#file_conf.write(template_render)
-	#file_conf.close()
-
-	#reload_hap()

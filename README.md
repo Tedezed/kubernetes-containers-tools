@@ -15,7 +15,7 @@ Image `tedezed/slug-statefulset-autoscaler:latest`
 - [ ] Autoscaler StatefulSet crunchy-containers
 - [ ] Autoreduce StatefulSet crunchy-containers
 
-## [Slug dynamic load balancer for StatefulSet autoscaler](https://github.com/Tedezed/slug-containers/tree/master/statefulset_dynamic_loadbalancer)
+## [Slug dynamic load balancer for StatefulSet autoscaler](https://github.com/Tedezed/slug-containers/tree/master/dynamic_loadbalancer)
 
 Image `tedezed/slug-statefulset-dynamic-loadbalancer`
 
