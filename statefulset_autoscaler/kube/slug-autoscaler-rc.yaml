@@ -1,4 +1,10 @@
 apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: slug-autoscaler
+  namespace: kube-system
+---
+apiVersion: v1
 kind: ReplicationController
 metadata:
   name: slug-autoscaler
@@ -10,17 +16,14 @@ spec:
       labels:
         app: slug-autoscaler
     spec:
+      serviceAccountName: slug-autoscaler
       containers:
       - name: slug-autoscaler
         image: tedezed/slug-statefulset-autoscaler:latest
         env:
-          - name: KMASTER
-            value: 10.40.12.34
           - name: HEAPSTER
             value: http://heapster/api/v1/model
           - name: AUTOSCALER_COUNT
-            value: 7
+            value: "7"
           - name: TIME_QUERY
-            value: 18
-          - name: CONF_KUBE_BASE64
-            value: ""
+            value: "18"

@@ -1,4 +1,5 @@
 #!/usr/bin/python
+# -*- coding: utf-8 -*-
 
 # Copyright 2017 Tedezed
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -29,7 +30,8 @@ from tools import *
 os.system('echo "Start Slug StatefulSet Autoscaler v.0.0.1"')
 # python main.py namespace="default" url_heapster="http://heapster/api/v1/model" autoscaler_count="5" time_query="10"
 patch_exec = os.path.dirname(os.path.realpath(__file__)) + "/"
-api = pykube.HTTPClient(pykube.KubeConfig.from_file(patch_exec + "credentials/config"))
+#api = pykube.HTTPClient(pykube.KubeConfig.from_file(patch_exec + "credentials/config"))
+api = pykube.HTTPClient(pykube.KubeConfig.from_service_account())
 
 #Arguments
 list_argv=[]
@@ -63,28 +65,32 @@ while True:
 		for setfull in list_set:
 			os.system('echo "[StatefulSet] %s %s CPU - Autoscale in %s CPU reduce in %s CPU"' % (sfs.name, setfull["percent_cpu"], setfull["autoscaler_percent_cpu"],setfull["autoreduce_percent_cpu"]))
 			replicas = int(sfs.obj["spec"]["replicas"])
-			if sfs.obj["metadata"]["labels"]["autoscaler_count"] == "0":
-				# Autoscale
-				if sfs.obj["metadata"]["name"] == setfull["name"] and int(setfull["autoscaler_percent_cpu"]) <= int(setfull["percent_cpu"]):
-					sfs.obj["spec"]["replicas"] = replicas + 1
-					sfs.obj["metadata"]["labels"]["autoscaler_count"] = autoscaler_count
-					set_scaling += 1
-				# Autoreduce Normal
-				elif sfs.obj["metadata"]["name"] == setfull["name"] and int(setfull["autoreduce_percent_cpu"]) >= int(setfull["percent_cpu"]) and setfull["autoreduce_normal"].lower() == "true":
-					sfs.obj["spec"]["replicas"] = replicas - 1
-					sfs.obj["metadata"]["labels"]["autoscaler_count"] = autoscaler_count
-					set_scaling += 1
-				if set_scaling != 0:
-					if int(setfull["min_replicas"]) <= sfs.obj["spec"]["replicas"] and int(setfull["max_replicas"]) >= sfs.obj["spec"]["replicas"]:
-						pykube.StatefulSet(api, sfs.obj).update()
-						os.system('echo "[AUTOSCALING] %s replicas: min %s max %s "' % (sfs.obj["metadata"]["name"], setfull["min_replicas"], setfull["max_replicas"]))
-						os.system('echo "[AUTOSCALING] %s replicas: %s to %s "' % (sfs.obj["metadata"]["name"], replicas, sfs.obj["spec"]["replicas"]))
-						change += 1
-			else:
-				# Reduce only autoscaler_count
-				sfs.obj["metadata"]["labels"]["autoscaler_count"] = str(int(sfs.obj["metadata"]["labels"]["autoscaler_count"]) - 1)
-				os.system('echo "[INFO] Seelp StatefulSet %s replicas %s, attempts %s"' % (sfs.obj["metadata"]["name"], sfs.obj["spec"]["replicas"], sfs.obj["metadata"]["labels"]["autoscaler_count"]))
-				pykube.StatefulSet(api, sfs.obj).update()
+
+			try:
+				if sfs.obj["metadata"]["labels"]["autoscaler_count"] == "0":
+					# Autoscale
+					if sfs.obj["metadata"]["name"] == setfull["name"] and int(setfull["autoscaler_percent_cpu"]) <= int(setfull["percent_cpu"]):
+						sfs.obj["spec"]["replicas"] = replicas + 1
+						sfs.obj["metadata"]["labels"]["autoscaler_count"] = autoscaler_count
+						set_scaling += 1
+					# Autoreduce Normal
+					elif sfs.obj["metadata"]["name"] == setfull["name"] and int(setfull["autoreduce_percent_cpu"]) >= int(setfull["percent_cpu"]) and setfull["autoreduce_normal"].lower() == "true":
+						sfs.obj["spec"]["replicas"] = replicas - 1
+						sfs.obj["metadata"]["labels"]["autoscaler_count"] = autoscaler_count
+						set_scaling += 1
+					if set_scaling != 0:
+						if int(setfull["min_replicas"]) <= sfs.obj["spec"]["replicas"] and int(setfull["max_replicas"]) >= sfs.obj["spec"]["replicas"]:
+							pykube.StatefulSet(api, sfs.obj).update()
+							os.system('echo "[AUTOSCALING] %s replicas: min %s max %s "' % (sfs.obj["metadata"]["name"], setfull["min_replicas"], setfull["max_replicas"]))
+							os.system('echo "[AUTOSCALING] %s replicas: %s to %s "' % (sfs.obj["metadata"]["name"], replicas, sfs.obj["spec"]["replicas"]))
+							change += 1
+				else:
+					# Reduce only autoscaler_count
+					sfs.obj["metadata"]["labels"]["autoscaler_count"] = str(int(sfs.obj["metadata"]["labels"]["autoscaler_count"]) - 1)
+					os.system('echo "[INFO] Seelp StatefulSet %s replicas %s, attempts %s"' % (sfs.obj["metadata"]["name"], sfs.obj["spec"]["replicas"], sfs.obj["metadata"]["labels"]["autoscaler_count"]))
+					pykube.StatefulSet(api, sfs.obj).update()
+			except:
+				pass
 
 	os.system('echo "[INFO] StatefulSet autoscaler %s"' % (change))
 	os.system('echo "Seelp %ss for next query"' % (time_query))

@@ -1,4 +1,5 @@
 #!/usr/bin/python
+# -*- coding: utf-8 -*-
 
 # Copyright 2017 Tedezed
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -60,8 +61,12 @@ def select_pod_form_set(api, list_set, namespace, url_heapster):
 	for p in pre_pod.response['items']:
 		pod_obj = pykube.Pod(api, p)
 		pod_name = pod_obj.name
-		set_name = 	json.loads(p["metadata"]["annotations"]["kubernetes.io/created-by"])["reference"]["name"]
 		
+		try:
+			set_name = 	json.loads(p["metadata"]["annotations"]["kubernetes.io/created-by"])["reference"]["name"]
+		except:
+			pass
+
 		re = requests.request('GET', "%s/namespaces/%s/pods/%s/metrics/cpu/usage_rate" % (url_heapster, namespace, pod_name))
 		
 		#lit_usage_cpu = []
