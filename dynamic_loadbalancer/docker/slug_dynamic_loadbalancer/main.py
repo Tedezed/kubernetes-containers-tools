@@ -71,6 +71,7 @@ if time_query < 5:
 
 # First start
 list_set = select_set(name_set, api, namespace, type_balance, cookie, type_set)
+system('echo %s' % (list_set))
 list_set = select_pod_form_set(api, list_set, namespace)
 system('echo %s' % (list_set))
 

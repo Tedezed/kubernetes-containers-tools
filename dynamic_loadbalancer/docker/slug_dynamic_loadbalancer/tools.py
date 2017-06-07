@@ -61,7 +61,12 @@ def select_pod_form_set(api, list_set, namespace):
 	for p in pre_pod.response['items']:
 		pod_obj = Pod(api, p)
 		pod_name = pod_obj.name
-		set_name = 	loads(p["metadata"]["annotations"]["kubernetes.io/created-by"])["reference"]["name"]
+		
+		try:
+			set_name = 	loads(p["metadata"]["annotations"]["kubernetes.io/created-by"])["reference"]["name"]
+		except:
+			pass
+		
 		num = 0
 		dic_pod = {}
 		for e in list_set:
