@@ -1,5 +1,7 @@
 # Slug Containers Tools
 
+<img src="https://raw.githubusercontent.com/tedezed/slug-containers/master/docs/img/slug.png" width="100">
+
 ## [Slug StatefulSet autoscaler](https://github.com/Tedezed/slug-containers/tree/master/statefulset_autoscaler)
 
 Image `tedezed/slug-statefulset-autoscaler:latest`
