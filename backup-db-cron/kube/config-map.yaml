@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: kube-backup-cron-configmap
+  namespace: kube-system
+data:
+  # Split database_list &
+  service-name1: |
+    POSTGRES_USER=root
+    POSTGRES_PASSWORD=rootpass
+    namespace=default
+    type=postgres
+    port=5432
+  service-name2: |
+    POSTGRES_USER=pguser
+    POSTGRES_PASSWORD=pgpass
+    namespace=production
+    type=postgres
+    port=2345

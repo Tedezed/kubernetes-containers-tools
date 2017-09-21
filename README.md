@@ -1,6 +1,4 @@
-# Slug StatefulSet autoscaler
-
-Example of usage: http://www.aventurabinaria.es/kubernetes-stateful-set-autoscale/
+# Slug Containers Tools
 
 ## [Slug StatefulSet autoscaler](https://github.com/Tedezed/slug-containers/tree/master/statefulset_autoscaler)
 
@@ -15,7 +13,22 @@ Image `tedezed/slug-statefulset-autoscaler:latest`
 - [ ] Autoscaler StatefulSet crunchy-containers
 - [ ] Autoreduce StatefulSet crunchy-containers
 
-## [Slug dynamic load balancer for StatefulSet autoscaler](https://github.com/Tedezed/slug-containers/tree/master/dynamic_loadbalancer)
+Example of usage: http://www.aventurabinaria.es/kubernetes-stateful-set-autoscale/
+
+## [Slug backup for all databases using cron of Kubernetes](https://github.com/Tedezed/slug-containers/tree/master/backup-db-cron)
+
+Image `tedezed/slug-backup-db-cron`
+
+- [x] Docker build
+- [x] Docker image in Docker Hub
+- [x] Support PostgreSQL
+- [ ] Support MySQL
+- [ ] Support MongoDB
+- [ ] Support Oracle
+- [x] Date for drop
+- [ ] Auto backup rotation
+
+## [Slug dynamic load balancer for StatefulSet autoscaler "Test"](https://github.com/Tedezed/slug-containers/tree/master/dynamic_loadbalancer)
 
 Image `tedezed/slug-statefulset-dynamic-loadbalancer`
 
