@@ -1,21 +1,41 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: slug-backup
+  namespace: kube-system
 ---
 apiVersion: v1
-kind: Pod
+kind: ReplicationController
 metadata:
-  name: slug-backup-database
+  name: slug-backup
   namespace: kube-system
+  labels:
+    app: slug-backup
 spec:
-  containers:
-  - name: slug-backup-database
-    image: tedezed/slug-backup-db-cron
-    env:
-    - name: DAYS_TO_DROP
-      value: "30"
-  #   volumeMounts:
-  #   - mountPath: /slug-backup-db-cron/backups
-  #     name: vol-slug-backup-db-cron
-  #     subPath: slug-backup-db-cron
-  # volumes:
-  # - name: vol-slug-backup-db-cron
-  #   persistentVolumeClaim:
-  #     claimName: pvc-slug-backup-db-cron
+  replicas: 1
+  selector:
+    name: slug-backup
+  template:
+    metadata:
+      labels:
+        name: slug-backup
+    spec:
+      serviceAccountName: slug-backup
+      containers:
+      - name: slug-backup
+        image: tedezed/slug-backup-db-cron
+        env:
+        - name: DAYS_TO_DROP
+          value: "15"
+        - name: TIME
+          value: "20 1 * * *"
+        - name: DEV_MODE
+          value: "0"
+        volumeMounts:
+        - mountPath: /slug-backup-db-cron/backups
+          name: vol-slug-backup
+          subPath: slug-backup
+      volumes:
+      - name: vol-slug-backup
+        persistentVolumeClaim:
+          claimName: pvc-slug-backup

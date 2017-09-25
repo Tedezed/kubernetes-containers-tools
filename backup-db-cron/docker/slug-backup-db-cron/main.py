@@ -1,10 +1,11 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-# Ingress Controller Liberty
-
 # Source: https://github.com/Tedezed
 # Mail: juanmanuel.torres@aventurabinaria.es
+
+#client.configuration.host
+
 
 from kubernetes import client, config
 from os import path, getlogin, system, listdir
@@ -19,7 +20,6 @@ import logging
 import string
 import random
 from datetime import datetime, timedelta
-
 
 class kube_init:
 	ruta_exec = path.dirname(path.realpath(__file__))
@@ -104,16 +104,19 @@ class kube_init:
 	def bakup_postgres(self, db, now_datetime):
 		try:
 			if not path.exists('/.dockerenv'):
-				conn = psycopg2.connect(dbname='postgres', user=db["POSTGRES_USER"],\
-				 host=db["name_svc"], password=db["POSTGRES_PASSWORD"], port=db["port"])
+				host = db["name_svc"]
 			else:
-				conn = psycopg2.connect(dbname='postgres', user=db["POSTGRES_USER"],\
-				 host=self.get_svc_ip(db["name_svc"], db["namespace"]), password=db["POSTGRES_PASSWORD"], port=db["port"])
+				host = self.get_svc_ip(db["name_svc"], db["namespace"])
+
+			conn = psycopg2.connect(dbname='postgres', user=db["POSTGRES_USER"],\
+				 host=host, password=db["POSTGRES_PASSWORD"], port=db["port"])
 			key=True
-		except:
+		except Exception as e:
 			key=False
-			error = '[%s] [ERROR] host %s not found ' % (now_datetime, db["name_svc"]) 
-			logging.warning(error)
+			error = '[%s] [ERROR] host %s not found ' % (now_datetime, db["name_svc"])
+			print error
+			logging.error(error)
+			logging.error(e)
 
 		if key:
 			logging.info('[%s] [INFO] Connect to %s ' % (now_datetime, db["name_svc"]))
@@ -131,16 +134,17 @@ class kube_init:
 					if not path.isdir(ruta_backup):
 						system("mkdir %s" % (ruta_backup))
 					
-					dump_command = 'pg_dump -Fc --dbname=postgresql://%s:%s@%s:%s/%s > %s/%s___%s___%s.sql' %\
-					 (db["POSTGRES_USER"], db["POSTGRES_PASSWORD"], db["name_svc"], db["port"], str(r[0]),\
-					  ruta_backup, str(r[0]), now_datetime.strftime("%Y-%m-%d"), self.id_generator())
+					dump_command = 'pg_dump -Fc --dbname=postgresql://%s:%s@%s:%s/%s > %s/%s___%s___%s.dump' %\
+					 (db["POSTGRES_USER"], db["POSTGRES_PASSWORD"], host, db["port"], str(r[0]),\
+					 ruta_backup, str(r[0]), now_datetime.strftime("%Y-%m-%d"), self.id_generator())
 
 					#try:
 					var = direct_output = subprocess.call(dump_command, shell=True)
 					if var == 0:
+						print "[%s] [INFO] Backup %s" % (now_datetime, r[0])
 						logging.warning("[%s] [INFO] Backup %s" % (now_datetime, r[0]))
 					else:
-						logging.warning("[%s] [ERROR] in backup %s" % (now_datetime, r[0]))
+						logging.error("[%s] [ERROR] in backup %s" % (now_datetime, r[0]))
 
 					self.drop_dir_datetime(now_datetime, ruta_backup)
 
@@ -154,6 +158,7 @@ class kube_init:
 			except Exception as e:
 				key=False
 				print e
+				logging.error(e)
 
 			if datetime.strptime(file_date, "%Y-%m-%d").strftime("%Y-%m-%d") <= drop_datetime.strftime("%Y-%m-%d") and key:
 				logging.warning("[%s] [INFO] Drop file %s" % (now_datetime, file))
