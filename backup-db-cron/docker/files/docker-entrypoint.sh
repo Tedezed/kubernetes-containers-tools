@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-echo "ver 0.0.0.2"
+echo "ver 0.0.0.7"
 
 # Drop /etc/crontab
 echo > /etc/crontab
