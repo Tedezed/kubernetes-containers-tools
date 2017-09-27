@@ -26,11 +26,17 @@ spec:
         image: tedezed/slug-backup-db-cron
         env:
         - name: DAYS_TO_DROP
-          value: "15"
+          value: "30"
+        - name: DAYS_TO_DROP_SNAPSHOT
+          value: "10"
         - name: TIME
-          value: "20 1 * * *"
-        - name: DEV_MODE
-          value: "0"
+          value: "10 12 * * *"
+        - name: MODE
+          value: "3"
+        - name: PROJECT
+          value: "pepperoni-xxxx"
+        - name: ZONE
+          value: "europe-xxxx"
         volumeMounts:
         - mountPath: /slug-backup-db-cron/backups
           name: vol-slug-backup

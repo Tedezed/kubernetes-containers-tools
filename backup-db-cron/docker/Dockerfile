@@ -10,7 +10,7 @@ ENV TIME "10 12 * * *"
 # Mode 2 > Snapshot
 # Mode 3 > Backup + Snapshot
 
-ENV MODE "0"
+ENV MODE "1"
 ENV PROJECT test
 ENV ZONE test
 
