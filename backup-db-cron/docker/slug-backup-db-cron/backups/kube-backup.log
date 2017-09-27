@@ -1,0 +1,169 @@
+ERROR:root:[2017-09-27 10:33:56.616180] [ERROR] host postgres-bambule-production not found 
+ERROR:root:could not translate host name "postgres-bambule-production" to address: Name or service not known
+
+ERROR:root:[2017-09-27 10:33:56.616180] [ERROR] host postgres-batemed-production not found 
+ERROR:root:could not translate host name "postgres-batemed-production" to address: Name or service not known
+
+ERROR:root:[2017-09-27 10:34:50.353813] [ERROR] host postgres-bambule-production not found 
+ERROR:root:could not translate host name "postgres-bambule-production" to address: Name or service not known
+
+ERROR:root:[2017-09-27 10:34:50.353813] [ERROR] host postgres-batemed-production not found 
+ERROR:root:could not translate host name "postgres-batemed-production" to address: Name or service not known
+
+ERROR:root:[2017-09-27 10:35:08.195608] [ERROR] host postgres-bambule-production not found 
+ERROR:root:could not translate host name "postgres-bambule-production" to address: Name or service not known
+
+ERROR:root:[2017-09-27 10:35:08.195608] [ERROR] host postgres-batemed-production not found 
+ERROR:root:could not translate host name "postgres-batemed-production" to address: Name or service not known
+
+ERROR:root:[2017-09-27 10:36:57.941679] [ERROR] host postgres-bambule-production not found 
+ERROR:root:could not translate host name "postgres-bambule-production" to address: Name or service not known
+
+ERROR:root:[2017-09-27 10:36:57.941679] [ERROR] host postgres-batemed-production not found 
+ERROR:root:could not translate host name "postgres-batemed-production" to address: Name or service not known
+
+ERROR:root:[2017-09-27 10:42:17.377631] [ERROR] host postgres-bambule-production not found 
+ERROR:root:could not translate host name "postgres-bambule-production" to address: Name or service not known
+
+ERROR:root:[2017-09-27 10:42:17.377631] [ERROR] host postgres-batemed-production not found 
+ERROR:root:could not translate host name "postgres-batemed-production" to address: Name or service not known
+
+ERROR:root:[2017-09-27 10:43:57.219868] [ERROR] host postgres-bambule-production not found 
+ERROR:root:could not translate host name "postgres-bambule-production" to address: Name or service not known
+
+ERROR:root:[2017-09-27 10:43:57.219868] [ERROR] host postgres-batemed-production not found 
+ERROR:root:could not translate host name "postgres-batemed-production" to address: Name or service not known
+
+WARNING:google.auth._default:No project ID could be determined from the Cloud SDK configuration. Consider running `gcloud config set project` or setting the GOOGLE_CLOUD_PROJECT environment variable
+WARNING:google.auth._default:No project ID could be determined from the Cloud SDK configuration. Consider running `gcloud config set project` or setting the GOOGLE_CLOUD_PROJECT environment variable
+WARNING:google.auth._default:No project ID could be determined from the Cloud SDK configuration. Consider running `gcloud config set project` or setting the GOOGLE_CLOUD_PROJECT environment variable
+WARNING:google.auth._default:No project ID could be determined from the Cloud SDK configuration. Consider running `gcloud config set project` or setting the GOOGLE_CLOUD_PROJECT environment variable
+WARNING:google.auth._default:No project ID could be determined from the Cloud SDK configuration. Consider running `gcloud config set project` or setting the GOOGLE_CLOUD_PROJECT environment variable
+INFO:googleapiclient.discovery:URL being requested: GET https://www.googleapis.com/compute/v1/projects/plasma-weft-162417/zones/europe-west1-b/instances?alt=json
+WARNING:google.auth._default:No project ID could be determined from the Cloud SDK configuration. Consider running `gcloud config set project` or setting the GOOGLE_CLOUD_PROJECT environment variable
+INFO:googleapiclient.discovery:URL being requested: GET https://www.googleapis.com/compute/v1/projects/plasma-weft-162417/zones/europe-west1-b/instances?alt=json
+WARNING:google.auth._default:No project ID could be determined from the Cloud SDK configuration. Consider running `gcloud config set project` or setting the GOOGLE_CLOUD_PROJECT environment variable
+INFO:googleapiclient.discovery:URL being requested: GET https://www.googleapis.com/compute/v1/projects/plasma-weft-162417/zones/europe-west1-b/instances?alt=json
+WARNING:google.auth._default:No project ID could be determined from the Cloud SDK configuration. Consider running `gcloud config set project` or setting the GOOGLE_CLOUD_PROJECT environment variable
+INFO:googleapiclient.discovery:URL being requested: GET https://www.googleapis.com/compute/v1/projects/plasma-weft-162417/zones/europe-west1-b/instances?alt=json
+WARNING:google.auth._default:No project ID could be determined from the Cloud SDK configuration. Consider running `gcloud config set project` or setting the GOOGLE_CLOUD_PROJECT environment variable
+WARNING:google.auth._default:No project ID could be determined from the Cloud SDK configuration. Consider running `gcloud config set project` or setting the GOOGLE_CLOUD_PROJECT environment variable
+WARNING:google.auth._default:No project ID could be determined from the Cloud SDK configuration. Consider running `gcloud config set project` or setting the GOOGLE_CLOUD_PROJECT environment variable
+INFO:googleapiclient.discovery:URL being requested: POST https://www.googleapis.com/compute/v1/projects/plasma-weft-162417/zones/europe-west1-b/disks/disk-pg-bambule/createSnapshot?alt=json
+WARNING:google.auth._default:No project ID could be determined from the Cloud SDK configuration. Consider running `gcloud config set project` or setting the GOOGLE_CLOUD_PROJECT environment variable
+INFO:googleapiclient.discovery:URL being requested: POST https://www.googleapis.com/compute/v1/projects/plasma-weft-162417/zones/europe-west1-b/disks/disk-pg-bambule/createSnapshot?alt=json
+WARNING:google.auth._default:No project ID could be determined from the Cloud SDK configuration. Consider running `gcloud config set project` or setting the GOOGLE_CLOUD_PROJECT environment variable
+INFO:googleapiclient.discovery:URL being requested: POST https://www.googleapis.com/compute/v1/projects/plasma-weft-162417/zones/europe-west1-b/disks/disk-pg-bambule/createSnapshot?alt=json
+INFO:googleapiclient.discovery:URL being requested: POST https://www.googleapis.com/compute/v1/projects/plasma-weft-162417/zones/europe-west1-b/disks/disk-pg-alberto/createSnapshot?alt=json
+WARNING:google.auth._default:No project ID could be determined from the Cloud SDK configuration. Consider running `gcloud config set project` or setting the GOOGLE_CLOUD_PROJECT environment variable
+INFO:googleapiclient.discovery:URL being requested: POST https://www.googleapis.com/compute/v1/projects/plasma-weft-162417/zones/europe-west1-b/disks/disk-pg-bambule/createSnapshot?alt=json
+INFO:googleapiclient.discovery:URL being requested: POST https://www.googleapis.com/compute/v1/projects/plasma-weft-162417/zones/europe-west1-b/disks/disk-pg-alberto/createSnapshot?alt=json
+WARNING:google.auth._default:No project ID could be determined from the Cloud SDK configuration. Consider running `gcloud config set project` or setting the GOOGLE_CLOUD_PROJECT environment variable
+INFO:googleapiclient.discovery:URL being requested: POST https://www.googleapis.com/compute/v1/projects/plasma-weft-162417/zones/europe-west1-b/disks/disk-pg-bambule/createSnapshot?alt=json
+INFO:googleapiclient.discovery:URL being requested: POST https://www.googleapis.com/compute/v1/projects/plasma-weft-162417/zones/europe-west1-b/disks/disk-pg-alberto/createSnapshot?alt=json
+WARNING:google.auth._default:No project ID could be determined from the Cloud SDK configuration. Consider running `gcloud config set project` or setting the GOOGLE_CLOUD_PROJECT environment variable
+INFO:googleapiclient.discovery:URL being requested: POST https://www.googleapis.com/compute/v1/projects/plasma-weft-162417/zones/europe-west1-b/disks/disk-pg-bambule/createSnapshot?alt=json
+INFO:googleapiclient.discovery:URL being requested: POST https://www.googleapis.com/compute/v1/projects/plasma-weft-162417/zones/europe-west1-b/disks/disk-pg-alberto/createSnapshot?alt=json
+WARNING:google.auth._default:No project ID could be determined from the Cloud SDK configuration. Consider running `gcloud config set project` or setting the GOOGLE_CLOUD_PROJECT environment variable
+INFO:googleapiclient.discovery:URL being requested: POST https://www.googleapis.com/compute/v1/projects/plasma-weft-162417/zones/europe-west1-b/disks/disk-pg-bambule/createSnapshot?alt=json
+INFO:googleapiclient.discovery:URL being requested: POST https://www.googleapis.com/compute/v1/projects/plasma-weft-162417/zones/europe-west1-b/disks/disk-pg-alberto/createSnapshot?alt=json
+WARNING:google.auth._default:No project ID could be determined from the Cloud SDK configuration. Consider running `gcloud config set project` or setting the GOOGLE_CLOUD_PROJECT environment variable
+INFO:googleapiclient.discovery:URL being requested: POST https://www.googleapis.com/compute/v1/projects/plasma-weft-162417/zones/europe-west1-b/disks/disk-pg-bambule/createSnapshot?alt=json
+INFO:googleapiclient.discovery:URL being requested: POST https://www.googleapis.com/compute/v1/projects/plasma-weft-162417/zones/europe-west1-b/disks/disk-pg-alberto/createSnapshot?alt=json
+WARNING:google.auth._default:No project ID could be determined from the Cloud SDK configuration. Consider running `gcloud config set project` or setting the GOOGLE_CLOUD_PROJECT environment variable
+INFO:googleapiclient.discovery:URL being requested: POST https://www.googleapis.com/compute/v1/projects/plasma-weft-162417/zones/europe-west1-b/disks/disk-pg-bambule/createSnapshot?alt=json
+INFO:googleapiclient.discovery:URL being requested: POST https://www.googleapis.com/compute/v1/projects/plasma-weft-162417/zones/europe-west1-b/disks/disk-pg-alberto/createSnapshot?alt=json
+WARNING:google.auth._default:No project ID could be determined from the Cloud SDK configuration. Consider running `gcloud config set project` or setting the GOOGLE_CLOUD_PROJECT environment variable
+INFO:googleapiclient.discovery:URL being requested: GET https://www.googleapis.com/compute/v1/projects/plasma-weft-162417/zones/europe-west1-b/instances?alt=json
+WARNING:google.auth._default:No project ID could be determined from the Cloud SDK configuration. Consider running `gcloud config set project` or setting the GOOGLE_CLOUD_PROJECT environment variable
+INFO:googleapiclient.discovery:URL being requested: GET https://www.googleapis.com/compute/v1/projects/plasma-weft-162417/zones/europe-west1-b/instances?alt=json
+WARNING:google.auth._default:No project ID could be determined from the Cloud SDK configuration. Consider running `gcloud config set project` or setting the GOOGLE_CLOUD_PROJECT environment variable
+INFO:googleapiclient.discovery:URL being requested: GET https://www.googleapis.com/compute/v1/projects/plasma-weft-162417/zones/europe-west1-b/instances?alt=json
+WARNING:google.auth._default:No project ID could be determined from the Cloud SDK configuration. Consider running `gcloud config set project` or setting the GOOGLE_CLOUD_PROJECT environment variable
+WARNING:google.auth._default:No project ID could be determined from the Cloud SDK configuration. Consider running `gcloud config set project` or setting the GOOGLE_CLOUD_PROJECT environment variable
+WARNING:google.auth._default:No project ID could be determined from the Cloud SDK configuration. Consider running `gcloud config set project` or setting the GOOGLE_CLOUD_PROJECT environment variable
+WARNING:google.auth._default:No project ID could be determined from the Cloud SDK configuration. Consider running `gcloud config set project` or setting the GOOGLE_CLOUD_PROJECT environment variable
+WARNING:google.auth._default:No project ID could be determined from the Cloud SDK configuration. Consider running `gcloud config set project` or setting the GOOGLE_CLOUD_PROJECT environment variable
+INFO:googleapiclient.discovery:URL being requested: GET https://www.googleapis.com/compute/v1/projects/plasma-weft-162417/global/snapshots?alt=json
+WARNING:google.auth._default:No project ID could be determined from the Cloud SDK configuration. Consider running `gcloud config set project` or setting the GOOGLE_CLOUD_PROJECT environment variable
+INFO:googleapiclient.discovery:URL being requested: GET https://www.googleapis.com/compute/v1/projects/plasma-weft-162417/global/snapshots?alt=json
+WARNING:google.auth._default:No project ID could be determined from the Cloud SDK configuration. Consider running `gcloud config set project` or setting the GOOGLE_CLOUD_PROJECT environment variable
+INFO:googleapiclient.discovery:URL being requested: GET https://www.googleapis.com/compute/v1/projects/plasma-weft-162417/global/snapshots?alt=json
+INFO:googleapiclient.discovery:URL being requested: POST https://www.googleapis.com/compute/v1/projects/plasma-weft-162417/zones/europe-west1-b/disks/disk-pg-bambule/createSnapshot?alt=json
+INFO:googleapiclient.discovery:URL being requested: POST https://www.googleapis.com/compute/v1/projects/plasma-weft-162417/zones/europe-west1-b/disks/disk-pg-alberto/createSnapshot?alt=json
+WARNING:google.auth._default:No project ID could be determined from the Cloud SDK configuration. Consider running `gcloud config set project` or setting the GOOGLE_CLOUD_PROJECT environment variable
+INFO:googleapiclient.discovery:URL being requested: GET https://www.googleapis.com/compute/v1/projects/plasma-weft-162417/global/snapshots?alt=json
+WARNING:google.auth._default:No project ID could be determined from the Cloud SDK configuration. Consider running `gcloud config set project` or setting the GOOGLE_CLOUD_PROJECT environment variable
+INFO:googleapiclient.discovery:URL being requested: GET https://www.googleapis.com/compute/v1/projects/plasma-weft-162417/global/snapshots?alt=json
+WARNING:google.auth._default:No project ID could be determined from the Cloud SDK configuration. Consider running `gcloud config set project` or setting the GOOGLE_CLOUD_PROJECT environment variable
+INFO:googleapiclient.discovery:URL being requested: GET https://www.googleapis.com/compute/v1/projects/plasma-weft-162417/global/snapshots?alt=json
+WARNING:google.auth._default:No project ID could be determined from the Cloud SDK configuration. Consider running `gcloud config set project` or setting the GOOGLE_CLOUD_PROJECT environment variable
+INFO:googleapiclient.discovery:URL being requested: GET https://www.googleapis.com/compute/v1/projects/plasma-weft-162417/global/snapshots?alt=json
+WARNING:google.auth._default:No project ID could be determined from the Cloud SDK configuration. Consider running `gcloud config set project` or setting the GOOGLE_CLOUD_PROJECT environment variable
+WARNING:google.auth._default:No project ID could be determined from the Cloud SDK configuration. Consider running `gcloud config set project` or setting the GOOGLE_CLOUD_PROJECT environment variable
+INFO:googleapiclient.discovery:URL being requested: GET https://www.googleapis.com/compute/v1/projects/plasma-weft-162417/global/snapshots?alt=json
+ERROR:root:list index out of range
+ERROR:root:list index out of range
+ERROR:root:list index out of range
+WARNING:google.auth._default:No project ID could be determined from the Cloud SDK configuration. Consider running `gcloud config set project` or setting the GOOGLE_CLOUD_PROJECT environment variable
+INFO:googleapiclient.discovery:URL being requested: GET https://www.googleapis.com/compute/v1/projects/plasma-weft-162417/global/snapshots?alt=json
+WARNING:root:[2017-09-27 15:20:43.767201] [INFO] Drop snapshot <type 'file'>
+WARNING:google.auth._default:No project ID could be determined from the Cloud SDK configuration. Consider running `gcloud config set project` or setting the GOOGLE_CLOUD_PROJECT environment variable
+INFO:googleapiclient.discovery:URL being requested: GET https://www.googleapis.com/compute/v1/projects/plasma-weft-162417/global/snapshots?alt=json
+WARNING:root:[2017-09-27 15:22:21.636095] [INFO] Drop snapshot <type 'file'>
+INFO:googleapiclient.discovery:URL being requested: DELETE https://www.googleapis.com/compute/v1/projects/plasma-weft-162417/global/snapshots/disk-pg-alberto---2017-09-27?alt=json
+WARNING:root:[2017-09-27 15:22:21.636095] [INFO] Drop snapshot <type 'file'>
+INFO:googleapiclient.discovery:URL being requested: DELETE https://www.googleapis.com/compute/v1/projects/plasma-weft-162417/global/snapshots/disk-pg-bambule---2017-09-27?alt=json
+ERROR:root:list index out of range
+WARNING:root:[2017-09-27 15:22:21.636095] [INFO] Drop snapshot <type 'file'>
+INFO:googleapiclient.discovery:URL being requested: DELETE https://www.googleapis.com/compute/v1/projects/plasma-weft-162417/global/snapshots/e153jbk9kxaq?alt=json
+ERROR:root:list index out of range
+WARNING:root:[2017-09-27 15:22:21.636095] [INFO] Drop snapshot <type 'file'>
+INFO:googleapiclient.discovery:URL being requested: DELETE https://www.googleapis.com/compute/v1/projects/plasma-weft-162417/global/snapshots/mj3hw9yl57dw?alt=json
+ERROR:root:list index out of range
+WARNING:root:[2017-09-27 15:22:21.636095] [INFO] Drop snapshot <type 'file'>
+INFO:googleapiclient.discovery:URL being requested: DELETE https://www.googleapis.com/compute/v1/projects/plasma-weft-162417/global/snapshots/snapshot-pg-alberto?alt=json
+WARNING:google.auth._default:No project ID could be determined from the Cloud SDK configuration. Consider running `gcloud config set project` or setting the GOOGLE_CLOUD_PROJECT environment variable
+INFO:googleapiclient.discovery:URL being requested: GET https://www.googleapis.com/compute/v1/projects/plasma-weft-162417/global/snapshots?alt=json
+WARNING:google.auth._default:No project ID could be determined from the Cloud SDK configuration. Consider running `gcloud config set project` or setting the GOOGLE_CLOUD_PROJECT environment variable
+INFO:googleapiclient.discovery:URL being requested: POST https://www.googleapis.com/compute/v1/projects/plasma-weft-162417/zones/europe-west1-b/disks/disk-pg-bambule/createSnapshot?alt=json
+INFO:googleapiclient.discovery:URL being requested: POST https://www.googleapis.com/compute/v1/projects/plasma-weft-162417/zones/europe-west1-b/disks/disk-pg-alberto/createSnapshot?alt=json
+INFO:googleapiclient.discovery:URL being requested: GET https://www.googleapis.com/compute/v1/projects/plasma-weft-162417/global/snapshots?alt=json
+WARNING:root:[2017-09-27 15:28:01.174248] [INFO] Drop snapshot disk-pg-bambule---2017-09-27
+INFO:googleapiclient.discovery:URL being requested: DELETE https://www.googleapis.com/compute/v1/projects/plasma-weft-162417/global/snapshots/disk-pg-bambule---2017-09-27?alt=json
+WARNING:google.auth._default:No project ID could be determined from the Cloud SDK configuration. Consider running `gcloud config set project` or setting the GOOGLE_CLOUD_PROJECT environment variable
+WARNING:root:[2017-09-27 15:29:17.696005] [INFO] Create snapshot disk-pg-bambule---2017-09-27
+INFO:googleapiclient.discovery:URL being requested: POST https://www.googleapis.com/compute/v1/projects/plasma-weft-162417/zones/europe-west1-b/disks/disk-pg-bambule/createSnapshot?alt=json
+WARNING:root:[2017-09-27 15:29:17.696005] [INFO] Create snapshot disk-pg-alberto---2017-09-27
+INFO:googleapiclient.discovery:URL being requested: POST https://www.googleapis.com/compute/v1/projects/plasma-weft-162417/zones/europe-west1-b/disks/disk-pg-alberto/createSnapshot?alt=json
+WARNING:google.auth._default:No project ID could be determined from the Cloud SDK configuration. Consider running `gcloud config set project` or setting the GOOGLE_CLOUD_PROJECT environment variable
+WARNING:root:[2017-09-27 15:29:21.404204] [INFO] Create snapshot disk-pg-bambule---2017-09-27
+INFO:googleapiclient.discovery:URL being requested: POST https://www.googleapis.com/compute/v1/projects/plasma-weft-162417/zones/europe-west1-b/disks/disk-pg-bambule/createSnapshot?alt=json
+WARNING:root:[2017-09-27 15:29:21.404204] [INFO] Create snapshot disk-pg-alberto---2017-09-27
+INFO:googleapiclient.discovery:URL being requested: POST https://www.googleapis.com/compute/v1/projects/plasma-weft-162417/zones/europe-west1-b/disks/disk-pg-alberto/createSnapshot?alt=json
+WARNING:google.auth._default:No project ID could be determined from the Cloud SDK configuration. Consider running `gcloud config set project` or setting the GOOGLE_CLOUD_PROJECT environment variable
+WARNING:root:[2017-09-27 15:29:31.333057] [INFO] Create snapshot disk-pg-bambule---2017-09-27
+INFO:googleapiclient.discovery:URL being requested: POST https://www.googleapis.com/compute/v1/projects/plasma-weft-162417/zones/europe-west1-b/disks/disk-pg-bambule/createSnapshot?alt=json
+WARNING:root:[2017-09-27 15:29:31.333057] [INFO] Create snapshot disk-pg-alberto---2017-09-27
+INFO:googleapiclient.discovery:URL being requested: POST https://www.googleapis.com/compute/v1/projects/plasma-weft-162417/zones/europe-west1-b/disks/disk-pg-alberto/createSnapshot?alt=json
+INFO:googleapiclient.discovery:URL being requested: GET https://www.googleapis.com/compute/v1/projects/plasma-weft-162417/global/snapshots?alt=json
+WARNING:root:[2017-09-27 15:29:31.333057] [INFO] Drop snapshot disk-pg-alberto---2017-09-27
+INFO:googleapiclient.discovery:URL being requested: DELETE https://www.googleapis.com/compute/v1/projects/plasma-weft-162417/global/snapshots/disk-pg-alberto---2017-09-27?alt=json
+WARNING:root:[2017-09-27 15:29:31.333057] [INFO] Drop snapshot disk-pg-bambule---2017-09-27
+INFO:googleapiclient.discovery:URL being requested: DELETE https://www.googleapis.com/compute/v1/projects/plasma-weft-162417/global/snapshots/disk-pg-bambule---2017-09-27?alt=json
+WARNING:google.auth._default:No project ID could be determined from the Cloud SDK configuration. Consider running `gcloud config set project` or setting the GOOGLE_CLOUD_PROJECT environment variable
+WARNING:root:[2017-09-27 15:29:56.032535] [INFO] Create snapshot disk-pg-bambule---2017-09-27
+INFO:googleapiclient.discovery:URL being requested: POST https://www.googleapis.com/compute/v1/projects/plasma-weft-162417/zones/europe-west1-b/disks/disk-pg-bambule/createSnapshot?alt=json
+WARNING:root:[2017-09-27 15:29:56.032535] [INFO] Create snapshot disk-pg-alberto---2017-09-27
+INFO:googleapiclient.discovery:URL being requested: POST https://www.googleapis.com/compute/v1/projects/plasma-weft-162417/zones/europe-west1-b/disks/disk-pg-alberto/createSnapshot?alt=json
+INFO:googleapiclient.discovery:URL being requested: GET https://www.googleapis.com/compute/v1/projects/plasma-weft-162417/global/snapshots?alt=json
+WARNING:google.auth._default:No project ID could be determined from the Cloud SDK configuration. Consider running `gcloud config set project` or setting the GOOGLE_CLOUD_PROJECT environment variable
+WARNING:root:[2017-09-27 15:30:08.645905] [INFO] Create snapshot disk-pg-bambule---2017-09-27
+INFO:googleapiclient.discovery:URL being requested: POST https://www.googleapis.com/compute/v1/projects/plasma-weft-162417/zones/europe-west1-b/disks/disk-pg-bambule/createSnapshot?alt=json
+WARNING:root:[2017-09-27 15:30:08.645905] [INFO] Create snapshot disk-pg-alberto---2017-09-27
+INFO:googleapiclient.discovery:URL being requested: POST https://www.googleapis.com/compute/v1/projects/plasma-weft-162417/zones/europe-west1-b/disks/disk-pg-alberto/createSnapshot?alt=json
+INFO:googleapiclient.discovery:URL being requested: GET https://www.googleapis.com/compute/v1/projects/plasma-weft-162417/global/snapshots?alt=json
+WARNING:root:[2017-09-27 15:30:08.645905] [INFO] Drop snapshot disk-pg-alberto---2017-09-27
+INFO:googleapiclient.discovery:URL being requested: DELETE https://www.googleapis.com/compute/v1/projects/plasma-weft-162417/global/snapshots/disk-pg-alberto---2017-09-27?alt=json
+WARNING:root:[2017-09-27 15:30:08.645905] [INFO] Drop snapshot disk-pg-bambule---2017-09-27
+INFO:googleapiclient.discovery:URL being requested: DELETE https://www.googleapis.com/compute/v1/projects/plasma-weft-162417/global/snapshots/disk-pg-bambule---2017-09-27?alt=json

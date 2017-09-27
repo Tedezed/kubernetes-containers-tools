@@ -4,4 +4,11 @@ source /root/project_env
 
 printenv > /slug-backup-db-cron/backups/cronenv
 
-/usr/bin/python /slug-backup-db-cron/main.py subtract_days=30
+if [ $MODE = "1" ]; then
+    /usr/bin/python /slug-backup-db-cron/main.py mode=backup subtract_days=$DAYS_TO_DROP
+elif [ $MODE = "2" ]; then
+    /usr/bin/python /slug-backup-db-cron/main.py mode=snapshot project=$PROJECT zone=$ZONE subtract_days=$DAYS_TO_DROP_SNAPSHOT
+elif [ $MODE = "3" ]; then
+    /usr/bin/python /slug-backup-db-cron/main.py mode=backup subtract_days=$DAYS_TO_DROP
+    /usr/bin/python /slug-backup-db-cron/main.py mode=snapshot project=$PROJECT zone=$ZONE subtract_days=$DAYS_TO_DROP_SNAPSHOT
+fi

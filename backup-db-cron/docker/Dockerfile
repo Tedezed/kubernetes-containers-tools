@@ -2,8 +2,17 @@ FROM debian:stable
 MAINTAINER Juan Manuel Torres <juanmanuel.torres@aventurabinaria.es>
 
 ENV DAYS_TO_DROP 15
+ENV DAYS_TO_DROP_SNAPSHOT 3
 ENV TIME "10 12 * * *"
-ENV DEV_MODE "0"
+
+# Mode 0 > DEBUG
+# Mode 1 > Backup
+# Mode 2 > Snapshot
+# Mode 3 > Backup + Snapshot
+
+ENV MODE "0"
+ENV PROJECT test
+ENV ZONE test
 
 ##### PYTHON
 
@@ -29,6 +38,7 @@ RUN apt-get install -y --no-install-recommends \
     && rm -rf /var/lib/apt/lists/*
 
 RUN pip install kubernetes deepdiff psycopg2
+RUN pip install google-api-python-client
 
 ##### PYTHON
 
