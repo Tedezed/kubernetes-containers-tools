@@ -17,7 +17,7 @@ Example of usage: http://www.aventurabinaria.es/kubernetes-stateful-set-autoscal
 
 ## [Slug backup/snapshot ](https://github.com/Tedezed/slug-containers/tree/master/backup-db-cron)
 
-Slug backup for all databases using cron of Kubernetes
+Slug backup for all databases and snapshot for all disks using cron of Kubernetes
 
 Image `tedezed/slug-backup-db-cron`
 
@@ -32,7 +32,9 @@ Image `tedezed/slug-backup-db-cron`
 - [x] Support snapshot GCP
 - [ ] Support snapshot AWS
 
-## [Slug dynamic load balancer for StatefulSet autoscaler "Test"](https://github.com/Tedezed/slug-containers/tree/master/dynamic_loadbalancer)
+## [Slug StatefulSet load balancer](https://github.com/Tedezed/slug-containers/tree/master/dynamic_loadbalancer)
+
+Dynamic load balancer for StatefulSet autoscaler "Test"
 
 Image `tedezed/slug-statefulset-dynamic-loadbalancer`
 
