@@ -15,7 +15,9 @@ Image `tedezed/slug-statefulset-autoscaler:latest`
 
 Example of usage: http://www.aventurabinaria.es/kubernetes-stateful-set-autoscale/
 
-## [Slug backup for all databases using cron of Kubernetes](https://github.com/Tedezed/slug-containers/tree/master/backup-db-cron)
+## [Slug backup/snapshot ](https://github.com/Tedezed/slug-containers/tree/master/backup-db-cron)
+
+Slug backup for all databases using cron of Kubernetes
 
 Image `tedezed/slug-backup-db-cron`
 
@@ -27,6 +29,8 @@ Image `tedezed/slug-backup-db-cron`
 - [ ] Support Oracle
 - [x] Date for drop
 - [ ] Auto backup rotation
+- [x] Support snapshot GCP
+- [ ] Support snapshot AWS
 
 ## [Slug dynamic load balancer for StatefulSet autoscaler "Test"](https://github.com/Tedezed/slug-containers/tree/master/dynamic_loadbalancer)
 

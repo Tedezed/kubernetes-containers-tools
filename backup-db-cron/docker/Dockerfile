@@ -35,10 +35,12 @@ RUN apt-get install -y --no-install-recommends \
     python-yaml \ 
     python-websocket \
     python-jsonpickle \
+    python-httplib2 \
     && rm -rf /var/lib/apt/lists/*
 
 RUN pip install kubernetes deepdiff psycopg2
 RUN pip install google-api-python-client
+RUN pip install google-auth google-auth-httplib2
 
 ##### PYTHON
 
