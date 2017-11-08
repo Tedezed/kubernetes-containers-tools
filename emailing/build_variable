@@ -1,0 +1,9 @@
+export NAME_REGISTRY="tedezed"
+export NAME_IMAGE="emailing"
+export VERSION_IMAGE="latest"
+
+export RELAYHOST="in.mailjet.com"
+export RELAYHOST_PORT="2525"
+export SMTP_KEY="XXXX"
+export SMTP_SECRET="XXXXX"
+export HOSTNAME="mailjet"
