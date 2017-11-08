@@ -32,6 +32,18 @@ Image `tedezed/slug-backup-db-cron`
 - [x] Support snapshot GCP
 - [ ] Support snapshot AWS
 
+## [Slug emailing ](https://github.com/Tedezed/slug-containers/tree/master/emailing)
+
+Solution to send emails in the cloud
+
+Image `tedezed/emailing`
+
+- [x] Docker build
+- [x] Docker image in Docker Hub
+- [ ] Test with Mailjet
+- [ ] Test in GCP
+- [ ] Test in AWS
+
 ## [Slug StatefulSet load balancer](https://github.com/Tedezed/slug-containers/tree/master/dynamic_loadbalancer)
 
 Dynamic load balancer for StatefulSet autoscaler "Test"
