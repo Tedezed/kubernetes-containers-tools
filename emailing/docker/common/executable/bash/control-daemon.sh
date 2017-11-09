@@ -14,7 +14,9 @@ command=$@
 
 $command
 sleep 2
-tail -F /var/log/mail.log &
+touch /var/log/mail.log
+tailf /var/log/mail.log &
+tailf /var/log/syslog &
 sleep 2
 # If file pid exist and process id pid exists
 while [ -f $pidfile_syslog_ng ] && [ -f $pidfile_postfix ] && kill -0 $(cat $pidfile_syslog_ng) && kill -0 $(cat $pidfile_postfix); do
