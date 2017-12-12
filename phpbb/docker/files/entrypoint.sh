@@ -3,11 +3,19 @@
 addgroup phpbb --gid $GID
 adduser --disabled-password --ingroup phpbb --gecos "" --uid $UID phpbb
 
+if [ ! -f /var/www/html/key_no_drop  ]; then
+	echo "First start..."
+	cp -R /phpbb-base/* /var/www/html/
+	chown www-data:www-data -R /var/cache/nginx
+	chown www-data:www-data -R /var/www/html
+	touch /var/www/html/key_no_drop
+fi
+
 echo "Starting php-fpm..."
 php-fpm --allow-to-run-as-root >/dev/null 2>&1 &
 sleep 1
 
-echo "Run PHP"
+echo "Run PHP..."
 service php7.0-fpm start
 service php7.0-fpm restart
 service php7.0-fpm status

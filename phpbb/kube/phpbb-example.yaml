@@ -1,0 +1,121 @@
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: mysql
+    provider: mysql
+  name: mysql
+  namespace: productivo-test
+spec:
+  ports:
+  - port: 3306
+  selector:
+    provider: mysql
+---
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  labels:
+    provider: mysql
+  name: mysql
+  namespace: productivo-test
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        name: mysql
+        provider: mysql
+    spec:
+      containers:
+        - image: mysql:5.6
+          name: mysql
+          args:
+            - "--ignore-db-dir"
+            - "lost+found"
+          ports:
+            - containerPort: 3306
+              name: mysql
+          env:
+            - name: MYSQL_ROOT_PASSWORD
+              value: _root_pass_
+            - name: MYSQL_USER
+              value: _user_mysql_phpbb_
+            - name: MYSQL_PASSWORD
+              value: _pass_user_
+            - name: MYSQL_DATABASE
+              value: _name_database_
+          resources:
+            limits:
+              cpu: 250m
+              memory: 1024Mi
+            requests:
+              cpu: 250m
+              memory: 1024Mi
+          securityContext:
+            capabilities: {}
+            privileged: true #privileged required for mount
+          volumeMounts:
+          - name: mysql-persistent-storage
+            mountPath: /var/lib/mysql
+            subPath: test/mysql
+      volumes:
+      - name: mysql-persistent-storage
+        persistentVolumeClaim:
+          claimName: mysql
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: phpbb
+    provider: phpbb
+  name: phpbb
+  namespace: productivo-test
+spec:
+  ports:
+  - port: 80
+  selector:
+    app: phpbb
+---
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  labels:
+    app: phpbb
+    heritage: helm
+  name: phpbb
+  namespace: productivo-test
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: phpbb
+    spec:
+      containers:
+      - image: tedezed/slug-phpbb:latest
+        name: phpbb
+        ports:
+        - containerPort: 80
+        resources:
+          limits:
+            cpu: 300m
+            memory: 512Mi
+          requests:
+            cpu: 300m
+            memory: 512Mi
+        securityContext:
+          capabilities: {}
+          privileged: true
+        volumeMounts:
+        - mountPath: /var/cache/nginx
+          name: vol-phpbb
+          subPath: test/nginx-cache
+        - mountPath: /var/www/html
+          name: vol-phpbb
+          subPath: test/html
+      volumes:
+      - name: vol-phpbb
+        persistentVolumeClaim:
+          claimName: phpbb

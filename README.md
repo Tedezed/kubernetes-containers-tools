@@ -44,6 +44,17 @@ Image `tedezed/emailing`
 - [ ] Test in GCP
 - [ ] Test in AWS
 
+## [Slug phpBB](https://github.com/Tedezed/slug-containers/tree/master/phpbb)
+
+Personal image for mount phpBB
+
+Image `tedezed/slug-phpbb`
+
+- [x] Docker build
+- [x] Docker image in Docker Hub
+- [x] Language EN
+- [x] Language ES
+
 ## [Slug StatefulSet load balancer](https://github.com/Tedezed/slug-containers/tree/master/dynamic_loadbalancer)
 
 Dynamic load balancer for StatefulSet autoscaler "Test"
