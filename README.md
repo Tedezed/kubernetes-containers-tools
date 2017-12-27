@@ -24,7 +24,8 @@ Image `tedezed/slug-backup-db-cron`
 - [x] Docker build
 - [x] Docker image in Docker Hub
 - [x] Support PostgreSQL
-- [ ] Support MySQL
+- [x] Support MySQL
+- [ ] Support MariaDB
 - [ ] Support MongoDB
 - [ ] Support Oracle
 - [x] Date for drop

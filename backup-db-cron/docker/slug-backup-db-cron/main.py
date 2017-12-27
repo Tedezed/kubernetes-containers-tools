@@ -6,21 +6,17 @@
 
 # client.configuration.host
 
-import googleapiclient.discovery
+import googleapiclient.discovery, subprocess, logging, string, random
+import psycopg2, mysql.connector
 from kubernetes import client, config
 from os import path, getlogin, system, listdir, getuid
 from pwd import getpwuid
 from sys import argv
 from copy import deepcopy
-import subprocess
 from base64 import b64decode
 from deepdiff import DeepDiff
 from jinja2 import Environment, FileSystemLoader
 from time import sleep
-import psycopg2
-import logging
-import string
-import random
 from datetime import datetime, timedelta
 
 class gcloud_tools:
@@ -52,6 +48,7 @@ class gcloud_tools:
 
 class kube_init:
     ruta_exec = path.dirname(path.realpath(__file__))
+    directory_backups = "backups"
     v1 = None
     extv1beta1 = None
     bash_bold = '\033[1m'
@@ -92,7 +89,7 @@ class kube_init:
         self.extv1beta1 = client.ExtensionsV1beta1Api()
 
         # Log
-        logging.basicConfig(filename='%s/backups/kube-backup.log' % (self.ruta_exec), level=logging.INFO)
+        logging.basicConfig(filename='%s/%s/kube-backup.log' % (self.ruta_exec, self.directory_backups), level=logging.INFO)
 
     def id_generator(self, size=6, chars=string.ascii_uppercase + string.digits):
         return ''.join(random.choice(chars) for _ in range(size))
@@ -150,7 +147,7 @@ class kube_init:
             if i.metadata.name == name_svc and i.metadata.namespace == namespace_svc:
                 return i.spec.cluster_ip
 
-    def bakup_postgres(self, db, now_datetime):
+    def bakup_sql(self, db, now_datetime):
         try:
             if not path.exists('/.dockerenv'):
                 host = db["name_svc"]
@@ -159,25 +156,41 @@ class kube_init:
 
             print 'Host: %s' % (host)
 
-            conn = psycopg2.connect(dbname='postgres', user=db["POSTGRES_USER"], \
+            if db["type"] == "postgres":
+                conn = psycopg2.connect(dbname='postgres', user=db["POSTGRES_USER"], \
                                     host=host, password=db["POSTGRES_PASSWORD"], port=db["port"])
-            key = True
+                key = True
+            elif db["type"] == "mysql":
+                conn = mysql.connector.connect(database='mysql', user=db["MYSQL_USER"], \
+                                    host=host, password=db["MYSQL_PASSWORD"], port=db["port"])
+                key = True
+            else:
+                error = '[Error] Not valid database type found'
+                print error
+                logging.error(error)
+                raise ValueError(error)
+
         except Exception as e:
             key = False
             error = '[%s] [ERROR] host %s not found ' % (now_datetime, db["name_svc"])
             print error
+            print e
             logging.error(error)
             logging.error(e)
 
         if key:
             logging.info('[%s] [INFO] Connect to %s ' % (now_datetime, db["name_svc"]))
             cur = conn.cursor()
-            cur.execute("""SELECT datname FROM pg_database""")
+            if db["type"] == "postgres":
+                cur.execute("""SELECT datname FROM pg_database""")
+            elif db["type"] == "mysql":
+                cur.execute("""SHOW DATABASES""")
+
             rows = cur.fetchall()
             for r in rows:
                 if "template" not in r[0]:
 
-                    ruta_database = "%s/backups/%s" % (self.ruta_exec, db["name_svc"])
+                    ruta_database = "%s/%s/%s" % (self.ruta_exec, self.directory_backups, db["name_svc"])
                     if not path.isdir(ruta_database):
                         system("mkdir %s" % (ruta_database))
 
@@ -185,9 +198,15 @@ class kube_init:
                     if not path.isdir(ruta_backup):
                         system("mkdir %s" % (ruta_backup))
 
-                    dump_command = 'pg_dump -Fc --dbname=postgresql://%s:%s@%s:%s/%s > %s/%s___%s___%s.dump' % \
-                                   (db["POSTGRES_USER"], db["POSTGRES_PASSWORD"], host, db["port"], str(r[0]), \
-                                    ruta_backup, str(r[0]), now_datetime.strftime("%Y-%m-%d"), self.id_generator())
+                    print "Dump %s" % r
+                    if db["type"] == "postgres":
+                        dump_command = 'pg_dump -Fc --dbname=postgresql://%s:%s@%s:%s/%s > %s/%s___%s___%s.dump' % \
+                                       (db["POSTGRES_USER"], db["POSTGRES_PASSWORD"], host, db["port"], str(r[0]), \
+                                        ruta_backup, str(r[0]), now_datetime.strftime("%Y-%m-%d"), self.id_generator())
+                    elif db["type"] == "mysql":
+                        dump_command = 'mysqldump  -u %s -p%s -h %s -P %s --databases %s > %s/%s___%s___%s.dump' % \
+                                       (db["MYSQL_USER"], db["MYSQL_PASSWORD"], host, db["port"], str(r[0]), \
+                                        ruta_backup, str(r[0]), now_datetime.strftime("%Y-%m-%d"), self.id_generator())
 
                     # try:
                     var = direct_output = subprocess.call(dump_command, shell=True)
@@ -240,8 +259,7 @@ class kube_init:
         now_datetime = datetime.now()
         list_db = self.get_configmap("kube-backup-cron-configmap")
         for db in list_db:
-            if db["type"] == "postgres":
-                self.bakup_postgres(db, now_datetime)
+            self.bakup_sql(db, now_datetime)
 
     def snapshot(self):
         self.gtools = gcloud_tools()

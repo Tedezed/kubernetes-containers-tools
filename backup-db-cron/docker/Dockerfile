@@ -15,6 +15,9 @@ ENV PROJECT test
 ENV ZONE test
 
 ##### PYTHON
+ENV MYSQLXPB_PROTOC=/usr/bin/protoc \
+ MYSQLXPB_PROTOBUF_INCLUDE_DIR=/usr/include/google/protobuf \
+ MYSQLXPB_PROTOBUF_LIB_DIR=/usr/lib/x86_64-linux-gnu
 
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
@@ -26,7 +29,7 @@ RUN apt-get update \
         procps \
     	rsyslog \
     	apt-transport-https \
-        postgresql-client-common postgresql-client 
+        postgresql-client-common postgresql-client
 
 RUN apt-get install -y --no-install-recommends \
     python2.7 \
@@ -36,11 +39,65 @@ RUN apt-get install -y --no-install-recommends \
     python-websocket \
     python-jsonpickle \
     python-httplib2 \
-    && rm -rf /var/lib/apt/lists/*
+    python-mysqldb \
+    libmariadbclient-dev \
+    libprotobuf-dev \
+    protobuf-compiler \
+    mysql-client
 
-RUN pip install kubernetes deepdiff psycopg2
+RUN apt-get install -y \
+    build-essential \
+    autoconf \
+    libtool \
+    pkg-config \
+    python-opengl \
+    python-imaging \
+    python-pyrex \
+    python-pyside.qtopengl \
+    idle-python2.7 \
+    qt4-dev-tools \
+    qt4-designer \
+    libqtgui4 \
+    libqtcore4 \
+    libqt4-xml \
+    libqt4-test \
+    libqt4-script \
+    libqt4-network \
+    libqt4-dbus \
+    python-qt4 \
+    python-qt4-gl \
+    libgle3 \
+    python-dev \
+    python-setuptools
+
+RUN pip install kubernetes deepdiff psycopg2 mysql-connector
 RUN pip install google-api-python-client
 RUN pip install google-auth google-auth-httplib2
+
+RUN apt-get remove --purge -y \
+    build-essential \
+    autoconf \
+    libtool \
+    pkg-config \
+    python-opengl \
+    python-imaging \
+    python-pyrex \
+    python-pyside.qtopengl \
+    idle-python2.7 \
+    qt4-dev-tools \
+    qt4-designer \
+    libqtgui4 \
+    libqtcore4 \
+    libqt4-xml \
+    libqt4-test \
+    libqt4-script \
+    libqt4-network \
+    libqt4-dbus \
+    python-qt4 \
+    python-qt4-gl \
+    libgle3 \
+    python-dev \
+    && rm -rf /var/lib/apt/lists/*
 
 ##### PYTHON
 

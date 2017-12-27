@@ -167,3 +167,24 @@ WARNING:root:[2017-09-27 15:30:08.645905] [INFO] Drop snapshot disk-pg-alberto--
 INFO:googleapiclient.discovery:URL being requested: DELETE https://www.googleapis.com/compute/v1/projects/plasma-weft-162417/global/snapshots/disk-pg-alberto---2017-09-27?alt=json
 WARNING:root:[2017-09-27 15:30:08.645905] [INFO] Drop snapshot disk-pg-bambule---2017-09-27
 INFO:googleapiclient.discovery:URL being requested: DELETE https://www.googleapis.com/compute/v1/projects/plasma-weft-162417/global/snapshots/disk-pg-bambule---2017-09-27?alt=json
+WARNING:urllib3.connectionpool:Retrying (Retry(total=2, connect=None, read=None, redirect=None, status=None)) after connection broken by 'SSLError(SSLError("bad handshake: Error([('SSL routines', 'tls_process_server_certificate', 'certificate verify failed')],)",),)': /api/v1/configmaps?watch=False
+WARNING:urllib3.connectionpool:Retrying (Retry(total=1, connect=None, read=None, redirect=None, status=None)) after connection broken by 'SSLError(SSLError("bad handshake: Error([('SSL routines', 'tls_process_server_certificate', 'certificate verify failed')],)",),)': /api/v1/configmaps?watch=False
+WARNING:urllib3.connectionpool:Retrying (Retry(total=0, connect=None, read=None, redirect=None, status=None)) after connection broken by 'SSLError(SSLError("bad handshake: Error([('SSL routines', 'tls_process_server_certificate', 'certificate verify failed')],)",),)': /api/v1/configmaps?watch=False
+ERROR:root:[2017-12-27 10:08:52.965361] [ERROR] host postgres-alterna-production not found 
+ERROR:root:could not translate host name "postgres-alterna-production" to address: Name or service not known
+
+ERROR:root:[2017-12-27 10:08:52.965361] [ERROR] host postgres-production-rtm not found 
+ERROR:root:could not translate host name "postgres-production-rtm" to address: Name or service not known
+
+ERROR:root:[2017-12-27 10:08:52.965361] [ERROR] host postgres-batemed-production not found 
+ERROR:root:could not translate host name "postgres-batemed-production" to address: Name or service not known
+
+ERROR:root:[2017-12-27 10:08:52.965361] [ERROR] host postgres-bambule-production not found 
+ERROR:root:could not translate host name "postgres-bambule-production" to address: Name or service not known
+
+ERROR:root:[2017-12-27 10:08:52.965361] [ERROR] host postgres-soltec-production not found 
+ERROR:root:could not translate host name "postgres-soltec-production" to address: Name or service not known
+
+ERROR:root:[2017-12-27 10:08:52.965361] [ERROR] host postgres-sinceo2-production not found 
+ERROR:root:could not translate host name "postgres-sinceo2-production" to address: Name or service not known
+
