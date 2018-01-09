@@ -1,0 +1,32 @@
+{% for ing in list_ing recursive %}
+  {% for host in ing['list_hosts'] recursive %}
+
+  {% if 'tcp'==ing['mode'] %}
+
+  ################# {{ host['name_upstream'] }} #################
+
+  stream {
+
+  upstream {{ host['name_upstream'] }} {
+  {% for backend in host['backends'] recursive %}
+    {% if '80'==backend['service_port'] %}
+      server {{ backend['service_ip'] }};
+    {% else %}
+      server {{ backend['service_ip'] }}:{{ backend['service_port'] }};
+    {% endif %}
+  {% endfor %}
+  }
+
+      server {
+        listen {{ ing['port'] }};
+        proxy_pass {{ host['name_upstream'] }};
+      }
+    }
+
+  ################# {{ host['name_upstream'] }} #################
+
+  {% endif %}
+
+
+  {% endfor %}
+{% endfor %}
