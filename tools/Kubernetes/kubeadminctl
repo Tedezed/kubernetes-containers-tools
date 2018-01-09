@@ -1,0 +1,49 @@
+#!/bin/bash
+
+# By Tedezed
+
+function kubeadminctl-help {
+	echo "Kubeadminctl
+------------
+
+Comands:
+	* cluster
+		- resourses
+	* clean
+		- pod-errors
+		- pod-creating"
+}
+
+if [ "clean" = "$1" ]
+then
+	if [ "pod-errors" = "$2" ]
+	then
+		list_namespaces=($(kubectl get pods --all-namespaces | grep "Evicted\|Error\|Failed" | awk '{print $1}'))
+		list_pods=($(kubectl get pods --all-namespaces | grep "Evicted\|Error\|Failed" | awk '{print $2}'))
+		for index in ${!list_namespaces[*]}
+		do
+			kubectl delete pod ${list_pods[$index]} -n ${list_namespaces[$index]}
+		done
+	elif [ "pod-creating" = "$2" ]
+	then
+		list_namespaces=($(kubectl get pods --all-namespaces | grep "ContainerCreating" | awk '{print $1}'))
+		list_pods=($(kubectl get pods --all-namespaces | grep "ContainerCreating" | awk '{print $2}'))
+		for index in ${!list_namespaces[*]}
+		do
+			kubectl delete pod ${list_pods[$index]} -n ${list_namespaces[$index]}
+		done
+	else
+		kubeadminctl-help
+	fi
+elif [ "cluster" = "$1" ]
+then
+	if [ "resourses" = "$2" ]
+	then
+		kubectl describe nodes | grep -A4 "Allocated"
+	else
+		kubeadminctl-help
+	fi
+else
+	kubeadminctl-help
+fi
+
