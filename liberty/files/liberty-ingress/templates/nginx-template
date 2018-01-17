@@ -26,6 +26,10 @@ server {
   proxy_cache_path /tmp/{{ host['name_upstream'] }} levels=1 keys_zone={{ host['name_upstream'] }}:100m max_size=4g;
 
   upstream {{ host['name_upstream'] }} {
+  {% if 'deployment'==host['type_backend'] %}
+    #sticky name=session_id expires=1h;
+    sticky;
+  {% endif %}
   {% for backend in host['backends'] recursive %}
     {% if '80'==backend['service_port'] %}
       server {{ backend['service_ip'] }};
@@ -37,6 +41,9 @@ server {
 
 
   upstream {{ host['name_upstream'] }}_longpolling {
+  {% if 'deployment'==host['type_backend'] %}
+    sticky;
+  {% endif %}
   {% for backend in host['backends'] recursive %}
       server {{ backend['service_ip'] }}:8072;
   {% endfor %}

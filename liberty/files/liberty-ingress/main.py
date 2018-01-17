@@ -9,7 +9,7 @@
 from kubernetes import client, config
 import pwd
 import traceback
-from os import path, getlogin, system, getuid
+from os import path, getlogin, system, getuid, environ
 from sys import argv
 from base64 import b64decode
 from deepdiff import DeepDiff
@@ -23,6 +23,8 @@ class kube_init:
     extv1beta1 = None
     bash_bold = '\033[1m'
     bash_none = '\033[00m'
+
+    system('nginx -v')
 
     def __init__(self):
 
@@ -44,9 +46,11 @@ class kube_init:
         # Load Config
         if not path.exists('/.dockerenv'):
             try:
-                config.load_kube_config(config_file='/home/%s/.kube/slug-config-2' % (getlogin()))
+                config.load_kube_config(config_file='/home/%s/.kube/config-slug' % (getlogin()))
+                config.load_kube_config(config_file='/home/%s/.kube/config-slug' % (getlogin()))
             except OSError:
-                config.load_kube_config(config_file='/home/%s/.kube/slug-config-2' % (pwd.getpwuid(getuid()).pw_name))
+                config.load_kube_config(config_file='/home/%s/.kube/config-slug' % (pwd.getpwuid(getuid()).pw_name))
+            config.load_kube_config(config_file='/home/%s/.kube/config-slug' % (pwd.getpwuid(getuid()).pw_name))
         # config.load_kube_config()
         # config.load_kube_config(config_file='%s/credentials/config' % (self.ruta_exec))
         else:
@@ -103,6 +107,31 @@ class kube_init:
                 except:
                     return ip_error
 
+    def get_ip_from_deployment(self, name, namespace, ip_error):
+        replica_set = self.extv1beta1.list_replica_set_for_all_namespaces(watch=False)
+        for rs in replica_set.items:
+            if rs.metadata.owner_references[0].kind == "Deployment"\
+                    and rs.metadata.owner_references[0].name == name\
+                    and rs.metadata.namespace == namespace:
+                owner_replicaset = rs.metadata.name
+
+        list_ip = []
+        pod = self.v1.list_pod_for_all_namespaces(watch=False)
+        for p in pod.items:
+            exec("annotation_pod = " + str(p.metadata.annotations.get("kubernetes.io/created-by", {})))
+            annotation_pod = annotation_pod.get("reference", {})
+            if annotation_pod != {}:
+                if annotation_pod.get("kind", {}) == "ReplicaSet"\
+                        and annotation_pod.get("name", {}) == owner_replicaset\
+                        and annotation_pod.get("namespace", {}) == namespace:
+                    try:
+                        list_ip.append(p.status.pod_ip)
+                    except:
+                        list_ip.append(ip_error)
+        return list_ip
+
+
+
     def get_secret(self, ing_name_secret, ing_namespace_secret):
         secrets = self.v1.list_secret_for_all_namespaces(watch=False)
         dic_cert = {}
@@ -136,19 +165,31 @@ class kube_init:
         list_hosts = []
         ip_error = "169.254.10.90"
         for host in i.spec.rules:
+            #print host
             list_backend = []
-            for b in host.http.paths:
-                if i.metadata.annotations.get('ingress-liberty/backend-entity', False) == 'pod':
-                    svc_ip = self.get_ip_from_pod(b.backend.service_name, i.metadata.namespace, ip_error)
-                else:
-                    svc_ip = self.get_ip_from_service(b.backend.service_name, i.metadata.namespace, ip_error)
-                svc_port = b.backend.service_port
-                #system('echo "IP ' + b.backend.service_name + ': ' + str(svc_ip) + '"')
-                if svc_ip == None:
-                    svc_ip = ip_error
-                list_backend.append({'service_ip': svc_ip, 'service_port': svc_port})
+            if i.metadata.annotations.get('ingress-liberty/backend-entity', False) == 'deployment':
+                type_backend = "deployment"
+                for b in host.http.paths:
+                    svc_ip_list = self.get_ip_from_deployment(b.backend.service_name, i.metadata.namespace, ip_error)
+                    svc_port = b.backend.service_port
+                    for svc_ip in svc_ip_list:
+                        print svc_ip
+                        list_backend.append({'service_ip': svc_ip, 'service_port': svc_port})
+            else:
+                type_backend = "all"
+                for b in host.http.paths:
+                    if i.metadata.annotations.get('ingress-liberty/backend-entity', False) == 'pod':
+                        svc_ip = self.get_ip_from_pod(b.backend.service_name, i.metadata.namespace, ip_error)
+                    else:
+                        svc_ip = self.get_ip_from_service(b.backend.service_name, i.metadata.namespace, ip_error)
+                    svc_port = b.backend.service_port
+                    #system('echo "IP ' + b.backend.service_name + ': ' + str(svc_ip) + '"')
+                    if svc_ip == None:
+                        svc_ip = ip_error
+                    list_backend.append({'service_ip': svc_ip, 'service_port': svc_port})
             list_hosts.append(
-                {'host_name': host.host, 'name_upstream': host.host.replace(".", "-"), 'backends': list_backend})
+                {'host_name': host.host, 'name_upstream': host.host.replace(".", "-"), 'type_backend':type_backend,\
+                 'backends': list_backend})
         return list_hosts
 
     def get_ingress(self):
@@ -159,7 +200,7 @@ class kube_init:
                 ing = self.extv1beta1.list_ingress_for_all_namespaces(watch=False)
                 list_ing = []
                 for i in ing.items:
-                    if i.metadata.annotations.get('kubernetes.io/ingress.class', False) == 'liberty':
+                    if i.metadata.annotations.get('kubernetes.io/ingress.class', False) == environ['NAME_LIBERTY']:
                         # system('echo "[INFO] Found mode in ingress %s"' % (i.metadata.name))
 
                         # Modos
@@ -207,6 +248,8 @@ class kube_init:
                     system('echo "\033[1m[RELOAD-WRITE]\033[00m Write conf nginx"')
                     self.write_conf(list_ing, 'nginx-template', '/etc/nginx/sites-enabled/default')
                     self.write_conf(list_ing, 'nginx-template-tcp', '/etc/nginx/others/default')
+                    if not path.exists('/.dockerenv'):
+                        break
                     self.reload()
 
                 # print list_ing
