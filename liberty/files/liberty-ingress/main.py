@@ -164,6 +164,7 @@ class kube_init:
     def get_hosts(self, i):
         list_hosts = []
         ip_error = "169.254.10.90"
+        client_ssl = "False"
         for host in i.spec.rules:
             #print host
             list_backend = []
@@ -173,7 +174,8 @@ class kube_init:
                     svc_ip_list = self.get_ip_from_deployment(b.backend.service_name, i.metadata.namespace, ip_error)
                     svc_port = b.backend.service_port
                     for svc_ip in svc_ip_list:
-                        print svc_ip
+                        if svc_ip == None:
+                            svc_ip = ip_error
                         list_backend.append({'service_ip': svc_ip, 'service_port': svc_port})
             else:
                 type_backend = "all"
@@ -187,9 +189,11 @@ class kube_init:
                     if svc_ip == None:
                         svc_ip = ip_error
                     list_backend.append({'service_ip': svc_ip, 'service_port': svc_port})
+            if i.metadata.annotations.get('ingress-liberty/ssl-client', False) == "True":
+                client_ssl = "True"
             list_hosts.append(
                 {'host_name': host.host, 'name_upstream': host.host.replace(".", "-"), 'type_backend':type_backend,\
-                 'backends': list_backend})
+                 'backends': list_backend, 'client_ssl': client_ssl})
         return list_hosts
 
     def get_ingress(self):
