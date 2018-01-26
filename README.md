@@ -29,7 +29,7 @@ Image `tedezed/slug-backup-db-cron`
 - [ ] Support MongoDB
 - [ ] Support Oracle
 - [x] Date for drop
-- [ ] Auto backup rotation
+- [x] Auto backup rotation
 - [x] Support snapshot GCP
 - [ ] Support snapshot AWS
 
@@ -41,8 +41,8 @@ Image `tedezed/emailing`
 
 - [x] Docker build
 - [x] Docker image in Docker Hub
-- [ ] Test with Mailjet
-- [ ] Test in GCP
+- [x] Test with Mailjet
+- [x] Test in GCP
 - [ ] Test in AWS
 
 ## [Slug phpBB](https://github.com/Tedezed/slug-containers/tree/master/phpbb)
