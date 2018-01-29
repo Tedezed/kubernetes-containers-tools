@@ -56,6 +56,18 @@ Image `tedezed/slug-phpbb`
 - [x] Language EN
 - [x] Language ES
 
+## [SFTP Multiuser](https://github.com/Tedezed/slug-containers/tree/master/sftp-share)
+
+SFTP for multiple users
+
+Image `tedezed/sftpd-multiuser`
+
+- [x] Docker build
+- [x] Docker image in Docker Hub
+- [x] Modes: one user, list users.
+- [ ] Security improvements.
+- [ ] Read permissions.
+
 ## [Slug StatefulSet load balancer](https://github.com/Tedezed/slug-containers/tree/master/dynamic_loadbalancer)
 
 Dynamic load balancer for StatefulSet autoscaler "Test"
