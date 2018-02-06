@@ -125,7 +125,7 @@ RUN cp -R /files/error/ /var/www/error \
   && chown www-data:www-data -R /files/error \
   && chown www-data:www-data -R /files/liberty-ingress/default-cert
 
-ENV NAME_LIBERTY="liberty"
+ENV NAME_LIBERTY="liberty" TIMEOUT="60m"
 
 EXPOSE 80
 EXPOSE 443

@@ -1,0 +1,53 @@
+FROM debian:stretch
+MAINTAINER Juan Manuel Torres <juanmanuel.torres@aventurabinaria.es>
+
+LABEL name="crunchydata/pgpool" \
+        vendor="crunchy data" \
+        version="7.3" \
+      	PostgresVersion="9.6" \
+      	PostgresFullVersion="9.6.5" \
+        release="1.6.0" \
+        build-date="2017-10-13" \
+        url="https://crunchydata.com" \
+        summary="Contains the pgpool utility as a PostgreSQL-aware load balancer" \
+        description="Offers a smart load balancer in front of a Postgres cluster, sending writes only to the primary and reads to the replica(s). This allows an application to only have a single connection point when interacting with a Postgres cluster." \
+        io.k8s.description="pgpool container" \
+        io.k8s.display-name="Crunchy pgpool container" \
+        io.openshift.expose-services="" \
+        io.openshift.tags="crunchy,database"
+
+ENV PGVERSION="9.6"
+
+RUN apt-get update \
+	&& apt-get install -y nano \
+	hostname \
+	gettext \
+	ssh \
+	procps \
+	&& apt-get -y install postgresql-$PGVERSION-pgpool2 pgpool2
+
+RUN apt-get install -y sudo \
+	&& echo "daemon   ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
+
+RUN rm -rf /var/lib/apt/lists/*
+
+RUN mkdir -p /opt/cpm/bin /opt/cpm/conf
+
+# add volumes to allow override of pgpool config files
+VOLUME ["/pgconf"]
+
+# open up the postgres port
+EXPOSE 5432 9898
+
+ADD bin/pgpool /opt/cpm/bin
+ADD conf/pgpool /opt/cpm/conf/pgpool
+ADD conf/pgpool/pool_hba.conf  /etc/pgpool-II-96/pool_hba.conf
+ADD conf/pgpool/pool_passwd /etc/pgpool-II-96/pool_passwd
+
+RUN chown -R daemon:daemon /opt/cpm/bin /pgconf
+RUN chmod +x /opt/cpm/bin/startpgpool.sh
+
+USER daemon
+
+CMD ["/opt/cpm/bin/startpgpool.sh"]
+#RUN sleep 999999999999999

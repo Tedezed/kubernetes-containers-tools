@@ -193,7 +193,7 @@ class kube_init:
                 client_ssl = "True"
             list_hosts.append(
                 {'host_name': host.host, 'name_upstream': host.host.replace(".", "-"), 'type_backend':type_backend,\
-                 'backends': list_backend, 'client_ssl': client_ssl})
+                 'backends': list_backend, 'client_ssl': client_ssl, 'timeout': environ['TIMEOUT']})
         return list_hosts
 
     def get_ingress(self):
