@@ -17,11 +17,11 @@
 rm -rf /tmp/pgpool.pid
 rm -rf /tmp/.s.*
 
-env
-
 BINDIR=/opt/cpm/bin
 CONFDIR=/opt/cpm/conf/pgpool
 CONFIGS=/tmp
+
+env
 
 function trap_sigterm() {
 	echo "doing trap logic..."
@@ -41,11 +41,45 @@ sed -i "s/PG_REPLICA_SERVICE_NAME/$PG_REPLICA_SERVICE_NAME/g" $CONFIGS/pgpool.co
 sed -i "s/PG_USERNAME/$PG_USERNAME/g" $CONFIGS/pgpool.conf
 sed -i "s/PG_PASSWORD/$PG_PASSWORD/g" $CONFIGS/pgpool.conf
 
-# populate pool_passwd file
+# Personal configuration
+sed -i "s/PG_NUM_INIT_CHILDREN/$PG_NUM_INIT_CHILDREN/g" $CONFIGS/pgpool.conf
+sed -i "s/PG_MAX_POOL/$PG_MAX_POOL/g" $CONFIGS/pgpool.conf
+sed -i "s/PG_CHILD_LIFE_TIME/$PG_CHILD_LIFE_TIME/g" $CONFIGS/pgpool.conf
+sed -i "s/PG_CLIENT_IDLE_LIMIT/$PG_CLIENT_IDLE_LIMIT/g" $CONFIGS/pgpool.conf
+sed -i "s/PG_MAX_CONNECTIONS/$PG_MAX_CONNECTIONS/g" $CONFIGS/pgpool.conf
+sed -i "s/PG_SUPERUSER_RESERVED_CONNECTIONS/$PG_SUPERUSER_RESERVED_CONNECTIONS/g" $CONFIGS/pgpool.conf
+
+#PCP
+sed -i "s/PCP_PORT/$PCP_PORT/g" $CONFIGS/pgpool.conf
+
+# Debug and log
+sed -i "s/PG_DEBUG/$PG_DEBUG/g" $CONFIGS/pgpool.conf
+sed -i "s/PG_LOG/$PG_LOG/g" $CONFIGS/pgpool.conf
+
+if [ $DOCKER_DEBUG == "on" ]; then
+	sleep 999999999
+fi
+
+# Populate pool_passwd file
 pg_md5 --md5auth --username=$PG_USERNAME --config=$CONFIGS/pgpool.conf $PG_PASSWORD
 
+# PCP without password
+echo "$PG_USERNAME:$(pg_md5 $PG_PASSWORD)" > /etc/pgpool-II-96/pcp.conf
+#export PCPPASSFILE=/tmp/.pcppass
+echo "*:*:$PG_USERNAME:$PG_PASSWORD" > /tmp/.pcppass
+chmod 0600 /tmp/.pcppass
+
+# Start pgpool
 pgpool -n -a $CONFIGS/pool_hba.conf -f $CONFIGS/pgpool.conf  &
 export PGPOOL_PID=$!
+
+# Failover
+sleep 30
+while true
+do
+	bash /opt/cpm/bin/failover.sh
+	sleep 120
+done
 
 echo "waiting for pgpool to be signaled..."
 wait

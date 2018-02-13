@@ -10,3 +10,7 @@ push-centos:
 
 push-debian:
 	docker push tedezed/pgpool-debian:latest
+
+build:
+	docker build -f Dockerfile-debian -t tedezed/pgpool-debian:latest .
+	docker push tedezed/pgpool-debian:latest

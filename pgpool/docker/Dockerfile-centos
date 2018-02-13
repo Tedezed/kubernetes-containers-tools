@@ -26,7 +26,7 @@ RUN yum -y update && yum -y install hostname \
 	openssh-clients \
 	procps-ng \
 	&& yum -y install postgresql96 pgpool-II-96 pgpool-II-96-extensions
-RUN yum -y install nano nmap \
+RUN yum -y install nano nmap sudo \
 RUN yum -y clean all
 
 RUN mkdir -p /opt/cpm/bin /opt/cpm/conf
@@ -35,17 +35,35 @@ RUN mkdir -p /opt/cpm/bin /opt/cpm/conf
 VOLUME ["/pgconf"]
 
 # open up the postgres port
-EXPOSE 5432
+EXPOSE 5432 9898
 
 ADD bin/pgpool /opt/cpm/bin
 ADD conf/pgpool /opt/cpm/conf/pgpool
 ADD conf/pgpool/pool_hba.conf  /etc/pgpool-II-96/pool_hba.conf
 ADD conf/pgpool/pool_passwd /etc/pgpool-II-96/pool_passwd
 
-RUN chown -R daemon:daemon /opt/cpm/bin /pgconf
-RUN chmod +x /opt/cpm/bin/startpgpool.sh
+RUN chown -R daemon:daemon /opt/cpm/bin /pgconf \
+    && chmod +x /opt/cpm/bin/* 
 
-ENV PGHOST="/tmp/"
+RUN touch /etc/pgpool-II-96/pcp.conf \
+    && chown daemon:daemon /etc/pgpool-II-96/pcp.conf \
+    && echo "daemon   ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
+
+ENV PGHOST="/tmp/" \
+    PCP_HOST="/tmp" \
+    PCP_PORT="9898" \
+    PCPPASSFILE="/tmp/.pcppass" \
+    PCPUSER="admin" \
+    PCPPASS="admin" \
+    PG_NUM_INIT_CHILDREN="4" \
+    PG_MAX_POOL="10" \
+    PG_CHILD_LIFE_TIME="100" \
+    PG_CLIENT_IDLE_LIMIT="120" \
+    PG_MAX_CONNECTIONS="100" \
+    PG_SUPERUSER_RESERVED_CONNECTIONS="4" \
+    PG_DEBUG="1" \
+    PG_LOG="on" \
+    DOCKER_DEBUG="off"
 
 USER daemon
 
