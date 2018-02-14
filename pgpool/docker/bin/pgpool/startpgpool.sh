@@ -75,10 +75,10 @@ export PGPOOL_PID=$!
 
 # Failover
 sleep 30
-while true
+while pgrep -F /tmp/pgpool.pid > /dev/null
 do
 	bash /opt/cpm/bin/failover.sh
-	sleep 120
+	sleep $TIME_FAILOVER
 done
 
 echo "waiting for pgpool to be signaled..."

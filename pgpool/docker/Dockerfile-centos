@@ -20,7 +20,6 @@ ENV PGVERSION="9.6" PGDG_REPO="pgdg-centos96-9.6-3.noarch.rpm"
 
 RUN rpm -Uvh https://download.postgresql.org/pub/repos/yum/${PGVERSION}/redhat/rhel-7-x86_64/${PGDG_REPO}
 
-
 RUN yum -y update && yum -y install hostname \
 	gettext \
 	openssh-clients \
@@ -46,8 +45,9 @@ RUN chown -R daemon:daemon /opt/cpm/bin /pgconf \
     && chmod +x /opt/cpm/bin/* 
 
 RUN touch /etc/pgpool-II-96/pcp.conf \
-    && chown daemon:daemon /etc/pgpool-II-96/pcp.conf \
-    && echo "daemon   ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
+    && chown daemon:daemon /etc/pgpool-II-96/pcp.conf
+
+#RUN echo "daemon   ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
 
 ENV PGHOST="/tmp/" \
     PCP_HOST="/tmp" \
@@ -63,6 +63,7 @@ ENV PGHOST="/tmp/" \
     PG_SUPERUSER_RESERVED_CONNECTIONS="4" \
     PG_DEBUG="1" \
     PG_LOG="on" \
+    TIME_FAILOVER="120" \
     DOCKER_DEBUG="off"
 
 USER daemon
