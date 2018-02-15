@@ -63,7 +63,7 @@ ENV PGHOST="/tmp/" \
     PG_SUPERUSER_RESERVED_CONNECTIONS="4" \
     PG_DEBUG="1" \
     PG_LOG="on" \
-    TIME_FAILOVER="120" \
+    TIME_FAILOVER="600" \
     DOCKER_DEBUG="off"
 
 USER daemon

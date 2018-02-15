@@ -81,5 +81,7 @@ do
 	sleep $TIME_FAILOVER
 done
 
+#pgpool -f /tmp/pgpool.conf  reload
+
 echo "waiting for pgpool to be signaled..."
 wait
