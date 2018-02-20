@@ -156,7 +156,7 @@ server {
           proxy_pass https://{{ host['name_upstream'] }};
         }
 
-    {% elif '3'==ing['backend'] %}
+    {% elif '3'==ing['backend'] or '5'==ing['backend'] %}
     # Wordpress
 
     add_header 'Referrer-Policy' 'origin-when-cross-origin';

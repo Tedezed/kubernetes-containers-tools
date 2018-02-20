@@ -6,7 +6,8 @@ ENV USER_UID 1001
 ENV MODE="one_user" \
 	USER="ted" \
 	PASS="tedpass" \
-	DIR="/data/demo"
+	DIR="/data/demo" \
+	OWNER="www-data"
 
 ENV MODE="user_list" \
 	LIST_USERS="admin:admin:/data ted:ted2:/data/demo"
@@ -22,7 +23,12 @@ RUN apt-get update \
  && echo "${DI_HASH}  /usr/local/bin/dumb-init" | sha256sum -c \
  && chmod +x /usr/local/bin/dumb-init
 
-RUN apt-get remove -y --purge --auto-remove nano vim iputils-ping pico
+# Clean
+ENV SUDO_FORCE_REMOVE=yes
+RUN apt-get remove -y --purge --auto-remove nano vim iputils-ping pico sudo
+RUN echo 'Yes, do as I say!' | apt-get remove -y --purge --auto-remove --force-yes vim-common vim-tiny wget util-linux make gcc g++ fakeroot
+
+
 RUN cd / && chmod -R o=-rwx /.dockerenv
 #RUN chmod -R o=-rwx `ls / | grep -v "sys\|proc"` && chmod o=+rx /bin/sh
 RUN sed -i -e "s/DIR_MODE=0755/DIR_MODE=0750/g" /etc/adduser.conf
