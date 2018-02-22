@@ -1,6 +1,6 @@
 # Slug Containers Tools <img src="https://raw.githubusercontent.com/tedezed/slug-containers/master/docs/img/slug.png" width="100">
 
-## [Slug StatefulSet autoscaler](https://github.com/Tedezed/slug-containers/tree/master/statefulset_autoscaler)-[#44033](https://github.com/kubernetes/kubernetes/issues/44033)
+## [Slug StatefulSet autoscaler](https://github.com/Tedezed/slug-containers/tree/master/statefulset_autoscaler) - [#44033](https://github.com/kubernetes/kubernetes/issues/44033)
 
 Image `tedezed/slug-statefulset-autoscaler:latest`
 
