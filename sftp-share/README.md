@@ -1,10 +1,11 @@
 # SFTPD Docker
 
-Source [luzifer/sftp-share](https://hub.docker.com/r/luzifer/sftp-share/)
+---
 
 ## Base Docker Image
 
 - [ubuntu](https://registry.hub.docker.com/_/ubuntu/)
+- Support buckets in GCP.
 
 ## Modes
 
@@ -187,3 +188,7 @@ spec:
           persistentVolumeClaim:
             claimName: demo
 ```
+
+---
+
+Thx [luzifer/sftp-share](https://hub.docker.com/r/luzifer/sftp-share/)
