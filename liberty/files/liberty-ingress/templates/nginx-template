@@ -114,6 +114,11 @@ server {
       add_header X-Content-Type-Options nosniff;
       add_header X-XSS-Protection "1; mode=block";
 
+      error_page 502 /index.html;
+      location = /index.html {
+        root  /files/error;
+      }
+
     # Backends modes #
 
     {% if '1'==ing['backend'] %}
