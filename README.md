@@ -13,6 +13,19 @@ Image `tedezed/slug-statefulset-autoscaler:latest`
 - [ ] Autoscaler StatefulSet crunchy-containers
 - [ ] Autoreduce StatefulSet crunchy-containers
 
+## [SFTP GCP and multiuser](https://github.com/Tedezed/slug-containers/tree/master/sftp-share)
+
+SFTP for multiple users
+
+Image `tedezed/sftpd-multiuser`
+
+- [x] Docker build
+- [x] Docker image in Docker Hub
+- [x] Modes: one user, list users.
+- [x] Support buckets storage of GCP.
+- [x] Security improvements for only one user.
+- [ ] Security improvements for multiuser.
+
 Example of usage: http://www.aventurabinaria.es/kubernetes-stateful-set-autoscale/
 
 ## [Slug backup/snapshot ](https://github.com/Tedezed/slug-containers/tree/master/backup-db-cron)
@@ -56,17 +69,6 @@ Image `tedezed/slug-phpbb`
 - [x] Language EN
 - [x] Language ES
 
-## [SFTP Multiuser](https://github.com/Tedezed/slug-containers/tree/master/sftp-share)
-
-SFTP for multiple users
-
-Image `tedezed/sftpd-multiuser`
-
-- [x] Docker build
-- [x] Docker image in Docker Hub
-- [x] Modes: one user, list users.
-- [ ] Security improvements.
-- [ ] Read permissions.
 
 ## [Slug StatefulSet load balancer](https://github.com/Tedezed/slug-containers/tree/master/dynamic_loadbalancer)
 
