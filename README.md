@@ -13,7 +13,7 @@ Image `tedezed/slug-statefulset-autoscaler:latest`
 - [ ] Autoscaler StatefulSet crunchy-containers
 - [ ] Autoreduce StatefulSet crunchy-containers
 
-## [SFTP GCP and multiuser](https://github.com/Tedezed/slug-containers/tree/master/sftp-share)
+## [SFTP multiuser](https://github.com/Tedezed/slug-containers/tree/master/sftp-share)
 
 SFTP for multiple users
 
