@@ -1,6 +1,7 @@
 # SFTPD multiuser Docker
 
 Project created to share with SFTP the volumes in the cloud.
+
 A practical example is to access to volume for SFTP that uses a web aplication to be edited by an external client without access to the cluster of Kubernetes.
 
 ## Base Docker Image
@@ -10,12 +11,12 @@ A practical example is to access to volume for SFTP that uses a web aplication t
 
 ## Modes
 
-* Mode only one user and example with Wordpress
-* Mode only one user with gcsfuse
-* Mode multiuser
-* Mode multiuser with gcsfuse
+* [Mode only one user](#mode-only-one-user)
+* [Mode only one user with gcsfuse](#mode-only-one-user-with-gcsfuse)
+* [Mode multiuser](#mode-multiuser)
+* [Mode multiuser with gcsfuse](#mode-multiuser-with-gcsfuse)
 
-### Mode only one user
+## Mode only one user
 
 Example Yaml:
 
@@ -139,7 +140,7 @@ spec:
           claimName: wp-sftp
 ```
 
-### Mode only one user with gcsfuse
+## Mode only one user with gcsfuse
 
 Credentials storage:
 
@@ -211,7 +212,7 @@ spec:
 
 You need `readOnly: false` on volumeMounts to change permission to 400 for the file /secrets/cloud/credentials.json, you can only read file if you are user root.
 
-### Mode multiuser
+## Mode multiuser
 
 Encrypt passwords for users:
 
@@ -295,7 +296,7 @@ spec:
             claimName: demo
 ```
 
-### Mode multiuser with gcsfuse
+## Mode multiuser with gcsfuse
 
 Encrypt passwords for users:
 
