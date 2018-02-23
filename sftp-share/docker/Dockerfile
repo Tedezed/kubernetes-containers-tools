@@ -42,6 +42,7 @@ RUN apt-get update \
     && apt-get install gcsfuse -y
 
 ENV GOOGLE_APPLICATION_CREDENTIALS=/secrets/cloud/credentials.json \
+	SFTP_MULTIUSER_FILE=/secrets/sftp-multiuser/sftp-multiuser-db \
 	BUCKET_NAME="ted" \
 	SHELL="/bin/sh"
 
