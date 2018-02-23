@@ -2,6 +2,8 @@
 
 ## [Slug StatefulSet autoscaler](https://github.com/Tedezed/slug-containers/tree/master/statefulset_autoscaler) - [#44033](https://github.com/kubernetes/kubernetes/issues/44033)
 
+Example of usage: https://gist.github.com/Tedezed/29b2efe5aab0beb1809d5fbb82745b47
+
 Image `tedezed/slug-statefulset-autoscaler:latest`
 
 - [x] Docker build
@@ -25,8 +27,6 @@ Image `tedezed/sftpd-multiuser`
 - [x] Support buckets storage of GCP.
 - [x] Security improvements for only one user.
 - [ ] Security improvements for multiuser.
-
-Example of usage: http://www.aventurabinaria.es/kubernetes-stateful-set-autoscale/
 
 ## [Slug backup/snapshot ](https://github.com/Tedezed/slug-containers/tree/master/backup-db-cron)
 
