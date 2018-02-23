@@ -1,4 +1,4 @@
-# SFTPD multiuser Docker
+# SFTPD multiuser
 
 Project created to share with SFTP the volumes in the cloud.
 
