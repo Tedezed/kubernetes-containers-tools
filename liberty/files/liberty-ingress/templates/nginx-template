@@ -161,7 +161,7 @@ server {
           proxy_pass https://{{ host['name_upstream'] }};
         }
 
-    {% elif '3'==ing['backend'] or '5'==ing['backend'] %}
+    {% elif '3'==ing['backend'] %}
     # Wordpress
 
     add_header 'Referrer-Policy' 'origin-when-cross-origin';
@@ -189,11 +189,21 @@ server {
         keepalive_timeout {{ host['timeout'] }};
       }
 
+    {% elif '5'==ing['backend'] %}
+    # Wordpress insecure 
+
+    add_header 'Referrer-Policy' 'origin-when-cross-origin';
+
+      location /{
+        proxy_pass https://{{ host['name_upstream'] }};
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        keepalive_timeout {{ host['timeout'] }};
+      }
+
+
     {% else %}
     # All
-    add_header 'Referrer-Policy' 'origin-when-cross-originr';
-    add_header Content-Security-Policy "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://ssl.google-analytics.com https://assets.zendesk.com https://connect.facebook.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://assets.zendesk.com; font-src 'self' https://themes.googleusercontent.com; frame-src https://assets.zendesk.com https://www.facebook.com https://s-static.ak.facebook.com https://tautt.zendesk.com; object-src 'none'";
-
       location /{
         proxy_pass https://{{ host['name_upstream'] }};
         proxy_set_header Host $host;

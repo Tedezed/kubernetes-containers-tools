@@ -6,7 +6,7 @@
 
 # client.configuration.host
 
-import googleapiclient.discovery, subprocess, logging, string, random
+import googleapiclient.discovery, subprocess, logging, string, random, yaml
 import psycopg2, mysql.connector
 from kubernetes import client, config
 from os import path, getlogin, system, listdir, getuid
@@ -47,12 +47,15 @@ class gcloud_tools:
         return self.compute.snapshots().delete(project=project, snapshot=name).execute()
 
 class kube_init:
-    ruta_exec = path.dirname(path.realpath(__file__))
-    directory_backups = "backups"
-    v1 = None
-    extv1beta1 = None
-    bash_bold = '\033[1m'
-    bash_none = '\033[00m'
+    ruta_exec=path.dirname(path.realpath(__file__))
+    directory_backups="backups"
+    name_configmap_backup="kube-backup-cron-configmap"
+    name_configmap_snapshot="kube-snapshot-cron-configmap"
+    ruta_conf="/secrets/backup/secret-config.yaml"
+    v1=None
+    extv1beta1=None
+    bash_bold='\033[1m'
+    bash_none='\033[00m'
 
     def __init__(self):
 
@@ -78,7 +81,7 @@ class kube_init:
 
         # Load Config
         if not path.exists('/.dockerenv'):
-            config.load_kube_config(config_file='/home/%s/.kube/config_liberty' % (getpwuid(getuid()).pw_name))
+            config.load_kube_config(config_file='/home/%s/.kube/config_liberty_guadaltech' % (getpwuid(getuid()).pw_name))
             # config.load_kube_config()
             # config.load_kube_config(config_file='%s/credentials/config' % (self.ruta_exec))
         else:
@@ -94,12 +97,37 @@ class kube_init:
     def id_generator(self, size=6, chars=string.ascii_uppercase + string.digits):
         return ''.join(random.choice(chars) for _ in range(size))
 
-    def get_configmap(self, name_conf):
+    def check(self, name_conf):
         ret = self.v1.list_config_map_for_all_namespaces(watch=False)
+        key_data_found = False
+        now_datetime = datetime.now()
 
         for i in ret.items:
             if i.metadata.name == name_conf:
                 data = i.data
+                key_data_found = True
+
+        if key_data_found:
+            return key_data_found
+        else:
+            print "[%s] [ERROR] Configmap %s not found" % (now_datetime, name_conf)
+            return key_data_found
+
+    def get_configmap(self, name_conf, conf_mode):
+        ret = self.v1.list_config_map_for_all_namespaces(watch=False)
+
+        if conf_mode == "kubernetes":
+            for i in ret.items:
+                if i.metadata.name == name_conf:
+                    data = i.data
+        elif conf_mode == "secret":
+            stream = open(self.ruta_conf, "r")
+            file_yaml = yaml.load(stream)
+            stream.close()
+            data = file_yaml["data"]
+        else:
+            print "[ERROR] Conf_mode not found."
+            exit()
 
         if name_conf == "kube-backup-cron-configmap":
             list_db = []
@@ -257,14 +285,15 @@ class kube_init:
 
     def start_kube_backup(self):
         now_datetime = datetime.now()
-        list_db = self.get_configmap("kube-backup-cron-configmap")
+        list_db = self.get_configmap(self.name_configmap_backup, self.dic_argv["conf_mode"])
         for db in list_db:
+            print db
             self.bakup_sql(db, now_datetime)
 
     def snapshot(self):
         self.gtools = gcloud_tools()
         now_datetime = datetime.now()
-        list_disk = self.get_configmap("kube-snapshot-cron-configmap")
+        list_disk = self.get_configmap(self.name_configmap_snapshot, self.dic_argv["conf_mode"])
         for disk in list_disk:
             name_snapshot = disk["name_disk"] + "---" + now_datetime.strftime("%Y-%m-%d")
             logging.warning("[%s] [INFO] Create snapshot %s" % (now_datetime, name_snapshot))
@@ -295,10 +324,12 @@ def main():
 
     kluster = kube_init()
     if dic_argv.get("mode", False) == "backup":
-        kluster.start_kube_backup()
+        if kluster.check(kluster.name_configmap_backup):
+            kluster.start_kube_backup()
 
     elif dic_argv.get("mode", False) == "snapshot":
-        kluster.snapshot()
+        if kluster.check(kluster.name_configmap_snapshot):
+            kluster.snapshot()
     else:
         print "[ERROR] Mode not found"
 

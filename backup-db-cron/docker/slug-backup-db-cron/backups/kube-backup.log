@@ -188,3 +188,98 @@ ERROR:root:could not translate host name "postgres-soltec-production" to address
 ERROR:root:[2017-12-27 10:08:52.965361] [ERROR] host postgres-sinceo2-production not found 
 ERROR:root:could not translate host name "postgres-sinceo2-production" to address: Name or service not known
 
+WARNING:urllib3.connectionpool:Retrying (Retry(total=2, connect=None, read=None, redirect=None, status=None)) after connection broken by 'SSLError(SSLError("bad handshake: Error([('SSL routines', 'tls_process_server_certificate', 'certificate verify failed')],)",),)': /api/v1/configmaps?watch=False
+WARNING:urllib3.connectionpool:Retrying (Retry(total=1, connect=None, read=None, redirect=None, status=None)) after connection broken by 'SSLError(SSLError("bad handshake: Error([('SSL routines', 'tls_process_server_certificate', 'certificate verify failed')],)",),)': /api/v1/configmaps?watch=False
+WARNING:urllib3.connectionpool:Retrying (Retry(total=0, connect=None, read=None, redirect=None, status=None)) after connection broken by 'SSLError(SSLError("bad handshake: Error([('SSL routines', 'tls_process_server_certificate', 'certificate verify failed')],)",),)': /api/v1/configmaps?watch=False
+WARNING:urllib3.connectionpool:Retrying (Retry(total=2, connect=None, read=None, redirect=None, status=None)) after connection broken by 'SSLError(SSLError("bad handshake: Error([('SSL routines', 'tls_process_server_certificate', 'certificate verify failed')],)",),)': /api/v1/configmaps?watch=False
+WARNING:urllib3.connectionpool:Retrying (Retry(total=1, connect=None, read=None, redirect=None, status=None)) after connection broken by 'SSLError(SSLError("bad handshake: Error([('SSL routines', 'tls_process_server_certificate', 'certificate verify failed')],)",),)': /api/v1/configmaps?watch=False
+WARNING:urllib3.connectionpool:Retrying (Retry(total=0, connect=None, read=None, redirect=None, status=None)) after connection broken by 'SSLError(SSLError("bad handshake: Error([('SSL routines', 'tls_process_server_certificate', 'certificate verify failed')],)",),)': /api/v1/configmaps?watch=False
+WARNING:urllib3.connectionpool:Retrying (Retry(total=2, connect=None, read=None, redirect=None, status=None)) after connection broken by 'SSLError(SSLError("bad handshake: Error([('SSL routines', 'tls_process_server_certificate', 'certificate verify failed')],)",),)': /api/v1/configmaps?watch=False
+WARNING:urllib3.connectionpool:Retrying (Retry(total=1, connect=None, read=None, redirect=None, status=None)) after connection broken by 'SSLError(SSLError("bad handshake: Error([('SSL routines', 'tls_process_server_certificate', 'certificate verify failed')],)",),)': /api/v1/configmaps?watch=False
+WARNING:urllib3.connectionpool:Retrying (Retry(total=0, connect=None, read=None, redirect=None, status=None)) after connection broken by 'SSLError(SSLError("bad handshake: Error([('SSL routines', 'tls_process_server_certificate', 'certificate verify failed')],)",),)': /api/v1/configmaps?watch=False
+ERROR:root:[2018-02-26 13:45:53.641114] [ERROR] host mysql-freyishop not found 
+ERROR:root:2003: Can't connect to MySQL server on 'mysql-freyishop:3306' (-2 Name or service not known)
+ERROR:root:[2018-02-26 13:45:53.641114] [ERROR] host postgres-soltec-production not found 
+ERROR:root:could not translate host name "postgres-soltec-production" to address: Name or service not known
+
+ERROR:root:[2018-02-26 13:46:20.114829] [ERROR] host mysql-freyishop not found 
+ERROR:root:2003: Can't connect to MySQL server on 'mysql-freyishop:3306' (-2 Name or service not known)
+ERROR:root:[2018-02-26 13:46:20.114829] [ERROR] host postgres-soltec-production not found 
+ERROR:root:could not translate host name "postgres-soltec-production" to address: Name or service not known
+
+ERROR:root:[2018-02-26 13:47:32.177878] [ERROR] host mysql-freyishop not found 
+ERROR:root:2003: Can't connect to MySQL server on 'mysql-freyishop:3306' (-2 Name or service not known)
+ERROR:root:[2018-02-26 13:47:32.177878] [ERROR] host postgres-soltec-production not found 
+ERROR:root:could not translate host name "postgres-soltec-production" to address: Name or service not known
+
+ERROR:root:[2018-02-26 15:48:25.180866] [ERROR] host mysql-freyishop not found 
+ERROR:root:2003: Can't connect to MySQL server on 'mysql-freyishop:3306' (-2 Name or service not known)
+ERROR:root:[2018-02-26 15:48:25.180866] [ERROR] host postgres-soltec-production not found 
+ERROR:root:could not translate host name "postgres-soltec-production" to address: Name or service not known
+
+ERROR:root:[2018-02-26 15:50:59.733699] [ERROR] host service-name1 not found 
+ERROR:root:could not translate host name "service-name1" to address: Temporary failure in name resolution
+
+ERROR:root:[2018-02-26 15:50:59.733699] [ERROR] host service-name2 not found 
+ERROR:root:could not translate host name "service-name2" to address: Temporary failure in name resolution
+
+ERROR:root:[2018-02-26 15:57:45.576714] [ERROR] host service-name1 not found 
+ERROR:root:could not translate host name "service-name1" to address: Name or service not known
+
+ERROR:root:[2018-02-26 15:57:45.576714] [ERROR] host service-name2 not found 
+ERROR:root:could not translate host name "service-name2" to address: Name or service not known
+
+ERROR:root:[2018-02-26 16:13:48.994420] [ERROR] host service-name1 not found 
+ERROR:root:could not translate host name "service-name1" to address: Name or service not known
+
+ERROR:root:[2018-02-26 16:13:48.994420] [ERROR] host service-name2 not found 
+ERROR:root:could not translate host name "service-name2" to address: Name or service not known
+
+ERROR:root:[2018-02-27 15:53:44.922122] [ERROR] host service-name1 not found 
+ERROR:root:could not translate host name "service-name1" to address: Name or service not known
+
+ERROR:root:[2018-02-27 15:53:44.922122] [ERROR] host service-name2 not found 
+ERROR:root:could not translate host name "service-name2" to address: Name or service not known
+
+ERROR:root:[2018-02-27 15:54:24.614723] [ERROR] host service-name1 not found 
+ERROR:root:could not translate host name "service-name1" to address: Name or service not known
+
+ERROR:root:[2018-02-27 15:54:24.614723] [ERROR] host service-name2 not found 
+ERROR:root:could not translate host name "service-name2" to address: Name or service not known
+
+ERROR:root:[2018-02-27 16:03:40.215240] [ERROR] host service-name1 not found 
+ERROR:root:could not translate host name "service-name1" to address: Name or service not known
+
+ERROR:root:[2018-02-27 16:03:40.215240] [ERROR] host service-name2 not found 
+ERROR:root:could not translate host name "service-name2" to address: Name or service not known
+
+ERROR:root:[2018-02-27 16:13:33.906362] [ERROR] host service-name1 not found 
+ERROR:root:could not translate host name "service-name1" to address: Name or service not known
+
+ERROR:root:[2018-02-27 16:13:33.906362] [ERROR] host service-name2 not found 
+ERROR:root:could not translate host name "service-name2" to address: Name or service not known
+
+ERROR:root:[2018-02-27 16:17:55.737879] [ERROR] host service-name1 not found 
+ERROR:root:could not translate host name "service-name1" to address: Name or service not known
+
+ERROR:root:[2018-02-27 16:17:55.737879] [ERROR] host service-name2 not found 
+ERROR:root:could not translate host name "service-name2" to address: Name or service not known
+
+ERROR:root:[2018-02-27 16:18:20.758322] [ERROR] host service-name1 not found 
+ERROR:root:could not translate host name "service-name1" to address: Name or service not known
+
+ERROR:root:[2018-02-27 16:18:20.758322] [ERROR] host service-name2 not found 
+ERROR:root:could not translate host name "service-name2" to address: Name or service not known
+
+ERROR:root:[2018-02-27 16:19:26.580624] [ERROR] host service-name1 not found 
+ERROR:root:could not translate host name "service-name1" to address: Name or service not known
+
+ERROR:root:[2018-02-27 16:19:26.580624] [ERROR] host service-name2 not found 
+ERROR:root:could not translate host name "service-name2" to address: Name or service not known
+
+ERROR:root:[2018-02-27 16:20:20.676307] [ERROR] host service-name1 not found 
+ERROR:root:could not translate host name "service-name1" to address: Name or service not known
+
+ERROR:root:[2018-02-27 16:20:20.676307] [ERROR] host service-name2 not found 
+ERROR:root:could not translate host name "service-name2" to address: Name or service not known
+

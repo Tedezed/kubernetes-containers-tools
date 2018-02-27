@@ -18,6 +18,9 @@ function fun_check_user {
 	chown $OWNER -R $DIR
 	chmod g+rw -R $DIR
 	chgrp $USER -R $DIR
+
+	echo "INFO: Reset pass..."
+	echo "$USER:$PASS"|chpasswd
 }
 
 function fun_gcsfuse {

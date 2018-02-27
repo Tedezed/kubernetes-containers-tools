@@ -1,20 +1,8 @@
 FROM debian:stable
 MAINTAINER Juan Manuel Torres <juanmanuel.torres@aventurabinaria.es>
 
-ENV DAYS_TO_DROP 15
-ENV DAYS_TO_DROP_SNAPSHOT 3
-ENV TIME "10 12 * * *"
+## ----- PYTHON ----- ##
 
-# Mode 0 > DEBUG
-# Mode 1 > Backup
-# Mode 2 > Snapshot
-# Mode 3 > Backup + Snapshot
-
-ENV MODE "1"
-ENV PROJECT test
-ENV ZONE test
-
-##### PYTHON
 ENV MYSQLXPB_PROTOC=/usr/bin/protoc \
  MYSQLXPB_PROTOBUF_INCLUDE_DIR=/usr/include/google/protobuf \
  MYSQLXPB_PROTOBUF_LIB_DIR=/usr/lib/x86_64-linux-gnu
@@ -70,9 +58,9 @@ RUN apt-get install -y \
     python-dev \
     python-setuptools
 
-RUN pip install kubernetes deepdiff psycopg2 mysql-connector
-RUN pip install google-api-python-client
-RUN pip install google-auth google-auth-httplib2
+RUN pip install kubernetes deepdiff psycopg2 mysql-connector \
+    && pip install google-api-python-client \
+    && pip install google-auth google-auth-httplib2
 
 RUN apt-get remove --purge -y \
     build-essential \
@@ -99,11 +87,27 @@ RUN apt-get remove --purge -y \
     python-dev \
     && rm -rf /var/lib/apt/lists/*
 
-##### PYTHON
+## ----- ENV ----- ##
+
+ENV DAYS_TO_DROP=15 \
+    DAYS_TO_DROP_SNAPSHOT=3 \
+    TIME="10 12 * * *"
+
+# Mode 0 > DEBUG
+# Mode 1 > Backup
+# Mode 2 > Snapshot
+# Mode 3 > Backup + Snapshot
+
+ENV MODE="1" \
+    CONF_MODE="kubernetes" \
+    PROJECT="test" \
+    ZONE="test"
+
+## ----- END ----- ##
 
 ADD slug-backup-db-cron/ /slug-backup-db-cron
-
 ADD files/docker-entrypoint.sh /usr/local/bin/
+
 RUN chmod +rx /usr/local/bin/docker-entrypoint.sh /slug-backup-db-cron/main.py /slug-backup-db-cron/start
 
 USER root
