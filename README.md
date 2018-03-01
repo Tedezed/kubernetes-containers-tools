@@ -1,83 +1,13 @@
-# Slug Containers Tools <img src="https://raw.githubusercontent.com/tedezed/slug-containers/master/docs/img/slug.png" width="100">
+# > Slug Containers Tools <img src="https://raw.githubusercontent.com/tedezed/slug-containers/master/docs/img/slug.png" width="100">
 
-## [Slug StatefulSet autoscaler](https://github.com/Tedezed/slug-containers/tree/master/statefulset_autoscaler) - [#44033](https://github.com/kubernetes/kubernetes/issues/44033)
+Containers of the project:
 
-Example of usage: https://gist.github.com/Tedezed/29b2efe5aab0beb1809d5fbb82745b47
-
-Image `tedezed/slug-statefulset-autoscaler:latest`
-
-- [x] Docker build
-- [x] Docker image in Docker Hub
-- [x] Autoscaler StatefulSet
-- [x] Autoscaler using CPU
-- [x] Autoscaler using max/min replicas
-- [x] Autoreduce StatefulSet Normal (Simple containers)
-- [ ] Autoscaler StatefulSet crunchy-containers
-- [ ] Autoreduce StatefulSet crunchy-containers
-
-## [SFTP multiuser](https://github.com/Tedezed/slug-containers/tree/master/sftp-share)
-
-SFTP for multiple users
-
-Image `tedezed/sftpd-multiuser`
-
-- [x] Docker build
-- [x] Docker image in Docker Hub
-- [x] Modes: one user, list users.
-- [x] Support buckets storage of GCP.
-- [x] Security improvements for only one user.
-- [ ] Security improvements for multiuser.
-
-## [Slug backup/snapshot ](https://github.com/Tedezed/slug-containers/tree/master/backup-db-cron)
-
-Slug backup for all databases and snapshot for all disks using cron of Kubernetes
-
-Image `tedezed/slug-backup-db-cron`
-
-- [x] Docker build
-- [x] Docker image in Docker Hub
-- [x] Support PostgreSQL
-- [x] Support MySQL
-- [ ] Support MariaDB
-- [ ] Support MongoDB
-- [ ] Support Oracle
-- [x] Date for drop
-- [x] Auto backup rotation
-- [x] Support snapshot GCP
-- [ ] Support snapshot AWS
-
-## [Slug emailing ](https://github.com/Tedezed/slug-containers/tree/master/emailing)
-
-Solution to send emails in the cloud
-
-Image `tedezed/emailing`
-
-- [x] Docker build
-- [x] Docker image in Docker Hub
-- [x] Test with Mailjet
-- [x] Test in GCP
-- [ ] Test in AWS
-
-## [Slug phpBB](https://github.com/Tedezed/slug-containers/tree/master/phpbb)
-
-Personal image for mount phpBB
-
-Image `tedezed/slug-phpbb`
-
-- [x] Docker build
-- [x] Docker image in Docker Hub
-- [x] Language EN
-- [x] Language ES
-
-
-## [Slug StatefulSet load balancer](https://github.com/Tedezed/slug-containers/tree/master/dynamic_loadbalancer)
-
-Dynamic load balancer for StatefulSet autoscaler "Test"
-
-Image `tedezed/slug-statefulset-dynamic-loadbalancer`
-
-- [x] Docker build
-- [x] Docker image in Docker Hub
-- [x] Dynamic load balancer, using number of replicas of StatefulSet
-- [x] Support replication controller.
-- [ ] Load balancing for all StatefulSet with labels: `slug_loadbalancing: "true"`
+* [slug-statefulset-autoscaler](https://github.com/Tedezed/slug-containers/tree/master/statefulset_autoscaler) - [kubernetes/kubernetes [#44033]](https://github.com/kubernetes/kubernetes/issues/44033) - Autoscaler for the statefulset of Kubernetes.
+* [sftpd-multiuser](https://github.com/Tedezed/slug-containers/tree/master/sftp-share) - SFTP for volumes and buckets.
+* [slug-backup-snapshot](https://github.com/Tedezed/slug-containers/tree/master/backup-db-cron) - Container to make backups and snapshots in Kubernetes.
+* [liberty-dynamic-ingress](https://github.com/Tedezed/slug-containers/tree/master/liberty) - Ingres with Nginx thought-out for Odoo, Wordperss and PrestaShop.
+* [pgpool-centos](https://github.com/Tedezed/slug-containers/tree/master/pgpool) - Container pgpool.
+* [pgbouncer](https://github.com/Tedezed/slug-containers/tree/master/pgbouncer) - Container pgbouncer.
+* [emailing](https://github.com/Tedezed/slug-containers/tree/master/emailing) - Emailing Gateway for cluster of Kubernetes in Google Cloud.
+* [slug-phpbb](https://github.com/Tedezed/slug-containers/tree/master/phpbb) - Container phpbb.
+* [slug-dynamic-loadbalancer](https://github.com/Tedezed/slug-containers/tree/master/dynamic_loadbalancer) - Loadbalancer in test for statefulset.

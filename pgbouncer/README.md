@@ -1,1 +1,3 @@
 # pgbouncer
+
+Image `tedezed/pgbouncer`

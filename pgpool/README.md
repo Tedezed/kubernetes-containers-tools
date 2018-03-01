@@ -1,5 +1,7 @@
-## Thanks to the crunchy-containers project
+# pgpool
 
-Source from: https://github.com/CrunchyData/crunchy-containers
+Image `tedezed/pgpool-centos`
+
+Thanks to the crunchy-containers project
 
 

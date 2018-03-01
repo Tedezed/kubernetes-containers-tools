@@ -1,6 +1,15 @@
 # SFTPD multiuser
 
-Project created to share with SFTP the volumes in the cloud.
+Container created to share with SFTP the volumes and buckets in the cloud.
+
+Image `tedezed/sftpd-multiuser`
+
+- [x] Docker build
+- [x] Docker image in Docker Hub
+- [x] Modes: one user, list users.
+- [x] Support buckets storage of GCP.
+- [x] Security improvements for only one user.
+- [ ] Security improvements for multiuser.
 
 A practical example is to access to volume for SFTP that uses a web aplication to be edited by an external client without access to the cluster of Kubernetes.
 

@@ -26,17 +26,15 @@ class gcloud_tools:
 
     def list_instances(self, project, zone):
         result = self.compute.instances().list(project=project, zone=zone).execute()
-        return result['items']
-
+        return result.get('items', None)
 
     def list_disks(self, project, zone):
         result = self.compute.disks().list(project=project, zone=zone).execute()
-        return result['items']
-
+        return result.get('items', None)
 
     def list_snapshot(self, project):
         result = self.compute.snapshots().list(project=project).execute()
-        return result['items']
+        return result.get('items', None)
 
     def disk_to_snapshot(self, project, zone, disk_name, snapshot_name):
         body = {"name": snapshot_name}
@@ -51,7 +49,7 @@ class kube_init:
     directory_backups="backups"
     name_configmap_backup="kube-backup-cron-configmap"
     name_configmap_snapshot="kube-snapshot-cron-configmap"
-    ruta_conf="/secrets/backup/secret-config.yaml"
+    ruta_conf="/secrets"
     v1=None
     extv1beta1=None
     bash_bold='\033[1m'
@@ -97,31 +95,40 @@ class kube_init:
     def id_generator(self, size=6, chars=string.ascii_uppercase + string.digits):
         return ''.join(random.choice(chars) for _ in range(size))
 
-    def check(self, name_conf):
+    def check(self, name_conf, conf_mode):
         ret = self.v1.list_config_map_for_all_namespaces(watch=False)
         key_data_found = False
         now_datetime = datetime.now()
 
-        for i in ret.items:
-            if i.metadata.name == name_conf:
-                data = i.data
-                key_data_found = True
+        print "[INFO] Conf mode %s" % conf_mode
+        if conf_mode == "conf-map":
+            for i in ret.items:
+                if i.metadata.name == name_conf:
+                    data = i.data
+                    key_data_found = True
 
-        if key_data_found:
-            return key_data_found
+            if key_data_found:
+                return key_data_found
+            else:
+                print "[ERROR] [%s] Configmap %s not found" % (now_datetime, name_conf)
+                return key_data_found
+
+        elif conf_mode == "secret":
+            return True
         else:
-            print "[%s] [ERROR] Configmap %s not found" % (now_datetime, name_conf)
-            return key_data_found
+            print "[ERROR] Conf mode %s not found" % conf_mode
+            return False
 
     def get_configmap(self, name_conf, conf_mode):
         ret = self.v1.list_config_map_for_all_namespaces(watch=False)
-
-        if conf_mode == "kubernetes":
+        if conf_mode == "conf-map":
             for i in ret.items:
                 if i.metadata.name == name_conf:
                     data = i.data
         elif conf_mode == "secret":
-            stream = open(self.ruta_conf, "r")
+            patch_conf = "%s/%s/%s.yaml" % (self.ruta_conf, self.dic_argv["mode"], name_conf)
+            print "[INFO] Read conf from %s" % conf_mode
+            stream = open(patch_conf, "r")
             file_yaml = yaml.load(stream)
             stream.close()
             data = file_yaml["data"]
@@ -182,7 +189,7 @@ class kube_init:
             else:
                 host = self.get_svc_ip(db["name_svc"], db["namespace"])
 
-            print 'Host: %s' % (host)
+            print '[INFO] Host: %s' % (host)
 
             if db["type"] == "postgres":
                 conn = psycopg2.connect(dbname='postgres', user=db["POSTGRES_USER"], \
@@ -200,14 +207,14 @@ class kube_init:
 
         except Exception as e:
             key = False
-            error = '[%s] [ERROR] host %s not found ' % (now_datetime, db["name_svc"])
+            error = '[ERROR] [%s] host %s not found ' % (now_datetime, db["name_svc"])
             print error
             print e
             logging.error(error)
             logging.error(e)
 
         if key:
-            logging.info('[%s] [INFO] Connect to %s ' % (now_datetime, db["name_svc"]))
+            logging.info('[INFO] [%s] Connect to %s ' % (now_datetime, db["name_svc"]))
             cur = conn.cursor()
             if db["type"] == "postgres":
                 cur.execute("""SELECT datname FROM pg_database""")
@@ -226,7 +233,7 @@ class kube_init:
                     if not path.isdir(ruta_backup):
                         system("mkdir %s" % (ruta_backup))
 
-                    print "Dump %s" % r
+                    print "[INFO] Dump %s" % r
                     if db["type"] == "postgres":
                         dump_command = 'pg_dump -Fc --dbname=postgresql://%s:%s@%s:%s/%s > %s/%s___%s___%s.dump' % \
                                        (db["POSTGRES_USER"], db["POSTGRES_PASSWORD"], host, db["port"], str(r[0]), \
@@ -239,10 +246,10 @@ class kube_init:
                     # try:
                     var = direct_output = subprocess.call(dump_command, shell=True)
                     if var == 0:
-                        print "[%s] [INFO] Backup %s" % (now_datetime, r[0])
-                        logging.warning("[%s] [INFO] Backup %s" % (now_datetime, r[0]))
+                        print "[INFO] [%s] Backup %s" % (now_datetime, r[0])
+                        logging.warning("[INFO] [%s] Backup %s" % (now_datetime, r[0]))
                     else:
-                        logging.error("[%s] [ERROR] in backup %s" % (now_datetime, r[0]))
+                        logging.error("[ERROR] [%s] in backup %s" % (now_datetime, r[0]))
 
                     self.drop_dir_datetime(now_datetime, ruta_backup)
 
@@ -261,44 +268,57 @@ class kube_init:
 
             if datetime.strptime(file_date, "%Y-%m-%d").strftime("%Y-%m-%d") <= drop_datetime.strftime("%Y-%m-%d") \
                     and key:
-                logging.warning("[%s] [INFO] Drop file %s" % (now_datetime, file))
-                print "[%s] [INFO] Drop file %s" % (now_datetime, file)
+                logging.warning("[INFO] [%s] Drop file %s" % (now_datetime, file))
+                print "[INFO] [%s] Drop file %s" % (now_datetime, file)
                 system("rm -f %s/%s" % (ruta_backup, file))
 
     def date_drop_snapshot(self, now_datetime):
         drop_datetime = now_datetime - timedelta(days=int(self.dic_argv["subtract_days"]))
+        print "[INFO] Checking snapshot that are on or out the erase date: %s" % drop_datetime
         list_snapshot = self.gtools.list_snapshot(self.dic_argv["project"])
-        for s in list_snapshot:
-            file_date = ""
-            name_split = s["name"].split("---")
-            try:
-                name_date = name_split[1]
-            except Exception as e:
-                key = False
-                print e
-                logging.error(e)
+        if list_snapshot != None:
+            for s in list_snapshot:
+                file_date = ""
+                name_split = s["name"].split("---")
+                try:
+                    name_date = name_split[1]
+                except Exception as e:
+                    key = False
+                    print e
+                    logging.error(e)
 
-            if datetime.strptime(name_date, "%Y-%m-%d").strftime("%Y-%m-%d") <= drop_datetime.strftime("%Y-%m-%d"):
-                logging.warning("[%s] [INFO] Drop snapshot %s" % (now_datetime, s["name"]))
-                print "[%s] [INFO] Drop snapshot %s" % (now_datetime, s["name"])
-                self.gtools.delete_snapshot(self.dic_argv["project"],s["name"])
+                if datetime.strptime(name_date, "%Y-%m-%d").strftime("%Y-%m-%d") <= drop_datetime.strftime("%Y-%m-%d"):
+                    logging.warning("[INFO] [%s] Drop snapshot %s" % (now_datetime, s["name"]))
+                    print "[INFO] [%s] Drop snapshot %s" % (now_datetime, s["name"])
+                    self.gtools.delete_snapshot(self.dic_argv["project"],s["name"])
+        else:
+            print "[INFO] Not found snapshot that are on or out the erase date: %s" % drop_datetime
 
     def start_kube_backup(self):
         now_datetime = datetime.now()
         list_db = self.get_configmap(self.name_configmap_backup, self.dic_argv["conf_mode"])
         for db in list_db:
-            print db
+            #print db
             self.bakup_sql(db, now_datetime)
 
     def snapshot(self):
         self.gtools = gcloud_tools()
         now_datetime = datetime.now()
         list_disk = self.get_configmap(self.name_configmap_snapshot, self.dic_argv["conf_mode"])
+        
         for disk in list_disk:
-            name_snapshot = disk["name_disk"] + "---" + now_datetime.strftime("%Y-%m-%d")
-            logging.warning("[%s] [INFO] Create snapshot %s" % (now_datetime, name_snapshot))
-            print "[%s] [INFO] Create snapshot %s" % (now_datetime, name_snapshot)
-            self.gtools.disk_to_snapshot(self.dic_argv["project"], disk["zone"], disk["name_disk"], name_snapshot)
+            if len(disk["name_disk"]) > 45:
+                name_snapshot = disk["name_disk"][0:45] + "---" + now_datetime.strftime("%Y-%m-%d")
+            else:
+                name_snapshot = disk["name_disk"] + "---" + now_datetime.strftime("%Y-%m-%d")
+
+            logging.warning("[INFO] [%s] Create snapshot %s" % (now_datetime, name_snapshot))
+            print "[INFO] [%s] Create snapshot %s" % (now_datetime, name_snapshot)
+            try:
+                self.gtools.disk_to_snapshot(self.dic_argv["project"], disk["zone"], disk["name_disk"], name_snapshot)
+            except Exception as e:
+                print e
+                logging.error(e)
         self.date_drop_snapshot(now_datetime)
 
 ## Start ##
@@ -324,11 +344,11 @@ def main():
 
     kluster = kube_init()
     if dic_argv.get("mode", False) == "backup":
-        if kluster.check(kluster.name_configmap_backup):
+        if kluster.check(kluster.name_configmap_backup, dic_argv["conf_mode"]):
             kluster.start_kube_backup()
 
     elif dic_argv.get("mode", False) == "snapshot":
-        if kluster.check(kluster.name_configmap_snapshot):
+        if kluster.check(kluster.name_configmap_snapshot, dic_argv["conf_mode"]):
             kluster.snapshot()
     else:
         print "[ERROR] Mode not found"
