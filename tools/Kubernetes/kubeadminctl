@@ -8,7 +8,7 @@ function kubeadminctl-help {
 
 Comands:
 	* cluster
-		- resourses
+		- resources
 	* clean
 		- pod-errors
 		- pod-creating"
@@ -37,7 +37,7 @@ then
 	fi
 elif [ "cluster" = "$1" ]
 then
-	if [ "resourses" = "$2" ]
+	if [ "resources" = "$2" ]
 	then
 		kubectl describe nodes | grep -A4 "Allocated"
 	else

@@ -189,7 +189,7 @@ class kube_init:
             else:
                 host = self.get_svc_ip(db["name_svc"], db["namespace"])
 
-            print '[INFO] Host: %s' % (host)
+            print '[START] Service: %s, Host: %s' % (db["name_svc"], host)
 
             if db["type"] == "postgres":
                 conn = psycopg2.connect(dbname='postgres', user=db["POSTGRES_USER"], \
