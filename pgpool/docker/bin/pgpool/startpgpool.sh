@@ -44,6 +44,7 @@ sed -i "s/PG_PASSWORD/$PG_PASSWORD/g" $CONFIGS/pgpool.conf
 # Personal configuration
 sed -i "s/PG_NUM_INIT_CHILDREN/$PG_NUM_INIT_CHILDREN/g" $CONFIGS/pgpool.conf
 sed -i "s/PG_MAX_POOL/$PG_MAX_POOL/g" $CONFIGS/pgpool.conf
+sed -i "s/PG_MULTIPLER_BACK/$PG_MULTIPLER_BACK/g" $CONFIGS/pgpool.conf
 sed -i "s/PG_CHILD_LIFE_TIME/$PG_CHILD_LIFE_TIME/g" $CONFIGS/pgpool.conf
 sed -i "s/PG_CLIENT_IDLE_LIMIT/$PG_CLIENT_IDLE_LIMIT/g" $CONFIGS/pgpool.conf
 sed -i "s/PG_MAX_CONNECTIONS/$PG_MAX_CONNECTIONS/g" $CONFIGS/pgpool.conf

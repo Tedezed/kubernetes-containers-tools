@@ -4,7 +4,9 @@ MAINTAINER Juan Manuel Torres <juanmanuel.torres@aventurabinaria.es>
 RUN apt-get update \
     && apt-get install -y \
         nano \
-        pgbouncer
+        pgbouncer \
+        postgresql-client-9.6 \
+        postgresql-client-common
 
 VOLUME /files/users
 EXPOSE 5432
