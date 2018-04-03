@@ -1,0 +1,8 @@
+#! /bin/sh -x
+
+pghome="/var/lib/postgresql"
+remote_host=$1
+remote_pgdata=$2
+
+# Start recovery target PostgreSQL server
+ssh -T $remote_host $pghome/bin/pg_ctl -w -D $remote_pgdata start > /dev/null 2>&1 < /dev/null &
