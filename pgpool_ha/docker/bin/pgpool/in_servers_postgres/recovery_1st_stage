@@ -1,27 +1,79 @@
 #!/bin/bash -x
 # Recovery script for streaming replication.
 
-pghome="/var/lib/postgresql"
-archivedir="/var/lib/postgresql/archivedir"
+hostname_master=""
+hostname_replica=""
+kube_ip_master=""
+kube_ip_replica=""
+
+#---
+
+BACKUP_DIR="/var/lib/pgsql/9.6/backups/"
+FECHA=$(date +%d-%m-%Y)
+BACKUP_DIR_TODAY=$BACKUP_DIR$FECHA-$(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 6 | head -n 1)/
+
+pghome="/var/lib/pgsql"
 pgdata=$1
 remote_host=$2
 remote_pgdata=$3
 port=$4
+master_hostname=$(hostname)
 
-hostname=$(hostname)
+if [ "$remote_host" = "$kube_ip_master" ]; then
+	remote_hostname=$hostname_master
+elif [ "$remote_host" = "$kube_ip_replica" ]; then
+	remote_hostname=$hostname_replica
+else
+	remote_hostname=$remote_host
+fi
 
-ssh -T postgres@$remote_host "
-rm -rf $remote_pgdata
-$pghome/bin/pg_basebackup -h $hostname -U repl -D $remote_pgdata -x -c fast
-rm -rf $archivedir/*
+#/var/lib/pgsql/9.6/data|10.63.250.111|/var/lib/pgsql/9.6/data|5432|postgres-node-1
+# ./recovery_1st_stage /var/lib/pgsql/9.6/data 10.63.250.111 /var/lib/pgsql/9.6/data 5432
+echo "$(date)" >> /tmp/postgresql-pgpool.log
+echo "pgdata=$1 remote_host=$2 remote_pgdata=$3 port=$4 master_hostname=$master_hostname remote_hostname=$remote_hostname" >> /tmp/postgresql-pgpool.log
+
+ssh -T postgres@$remote_hostname "
+set -x
+# Stop PostgreSQL
+sudo systemctl stop postgresql-9.6.service
+
+mv $remote_pgdata $BACKUP_DIR_TODAY
+
+pg_basebackup -h $master_hostname -U repl -D $remote_pgdata -x -c fast
+rm -rf $pghome/archivedir/*
 
 cd $remote_pgdata
 cp postgresql.conf postgresql.conf.bak
-sed -e 's/#*hot_standby = off/hot_standby = on/' postgresql.conf.bak > postgresql.conf
+sed -i 's/#hot_standby = off/hot_standby = on/' postgresql.conf.bak
+sed -i 's/#hot_standby_feedback = on/hot_standby_feedback = on/' postgresql.conf.bak
+# sed -i 's/wal_level/#wal_level/' postgresql.conf.bak
+# sed -i 's/max_wal_senders/#max_wal_senders/' postgresql.conf.bak
+# sed -i 's/wal_keep_segments/#wal_keep_segments/' postgresql.conf.bak
+# sed -i 's/archive_mode/#archive_mode/' postgresql.conf.bak
+# sed -i 's/archive_command/#archive_command/' postgresql.conf.bak
+mv postgresql.conf.bak postgresql.conf
 rm -f postgresql.conf.bak
+
 cat > recovery.conf << EOT
 standby_mode = 'on'
-primary_conninfo = 'host="$hostname" port=$port user=repl'
-restore_command = 'scp $hostname:$archivedir/%f %p'
+primary_conninfo = 'host=\"$master_hostname\" port=$port user=repl application_name=\"$remote_hostname\"'
+#restore_command = '$remote_pgdata/wal_restore $master_hostname $pghome/archivedir/%f $pgdata/%p'
+restore_command = 'scp -C postgres@$master_hostname:$pghome/archivedir/%f $pgdata/%p'
+#restore_command = 'cp $pghome/archivedir/%f $pgdata/%p'
+archive_cleanup_command = '$remote_pgdata/archive_cleanup %r'
+trigger_file = '/tmp/postgresql.trigger.5432'
 EOT
+sudo chmod 600 $remote_pgdata/recovery.conf
+
+cat > archive_cleanup << EOT
+#!/bin/bash
+FILE=$1
+sleep 5
+pg_archivecleanup /var/lib/postgresql/9.6/main/pg_xlog $1
+ssh postgres@$master_hostname \"pg_archivecleanup $pghome/archivedir $1 && pg_archivecleanup $pgdata/pg_xlog $1\"
+EOT
+sudo chmod +x $remote_pgdata/archive_cleanup
+
+# Start PostgreSQL
+sudo systemctl start postgresql-9.6.service
 "

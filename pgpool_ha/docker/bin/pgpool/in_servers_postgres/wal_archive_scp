@@ -1,0 +1,13 @@
+#!/bin/bash
+
+POSTGRES_DATA="/var/lib/pgsql/9.6/data/"
+ARCHIVE_DIR="/var/lib/pgsql/archivedir/"
+ORIGEN_WAL_FILE="$1"
+DESTINO_WAL_FILE=$ARCHIVE_DIR$2
+POSTGRES_NODES="postgres-node-1 postgres-node-2"
+
+for N in $POSTGRES_NODES; do
+	scp $ORIGEN_WAL_FILE postgres@$N:$DESTINO_WAL_FILE
+done
+
+exit 0

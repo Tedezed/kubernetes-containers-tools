@@ -1,0 +1,39 @@
+#!/bin/bash
+
+LOG_FILE="/tmp/repmgr-basebackup.log"
+HOSTNAME_MASTER=""
+HOSTNAME_REPLICA=""
+KUBE_IP_MASTER=""
+KUBE_IP_REPLICA=""
+
+#---
+
+echo "Execute repmgr-basebackup..." >> /tmp/repmgr-basebackup.log
+
+# First stage recovery
+# $1 datadir/pgdata
+# $2 desthost/remote_host
+# $3 destdir/remote_pgdata
+# $4 port
+
+BACKUP_DIR="/var/lib/pgsql/9.6/backups/"
+FECHA=$(date +%d-%m-%Y)
+BACKUP_DIR_TODAY="repmgr-$BACKUP_DIR$FECHA-$(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 6 | head -n 1)/"
+
+RECOVERY_NODE=$2
+CLUSTER_PATH=$3
+#MASTERNODE=`/sbin/ifconfig eth0 | grep inet | awk '{print $2}' | sed 's/addr://'`
+MASTERNODE=$(hostname)
+
+if [ "$RECOVERY_NODE" = "$KUBE_IP_MASTER" ]; then
+	REMOTE_HOSTNAME=$HOSTNAME_MASTER
+elif [ "$RECOVERY_NODE" = "$KUBE_IP_REPLICA" ]; then
+	REMOTE_HOSTNAME=$HOSTNAME_REPLICA
+else
+	REMOTE_HOSTNAME=$RECOVERY_NODE
+fi
+
+cmd0=`ssh postgres@$REMOTE_HOSTNAME "mv $CLUSTER_PATH $BACKUP_DIR_TODAY && pg_basebackup -h $MASTERNODE -U repl -D $CLUSTER_PATH -x -c fast"`
+echo $cmd0 >> /tmp/repmgr-basebackup.log
+cmd1=`ssh postgres@$REMOTE_HOSTNAME "repmgr -D $CLUSTER_PATH --force standby clone $MASTERNODE"`
+echo $cmd1 >> /tmp/repmgr-basebackup.log

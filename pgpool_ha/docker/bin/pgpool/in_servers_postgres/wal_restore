@@ -1,0 +1,9 @@
+#!/bin/bash -x
+
+master_hostname=$1
+original_file=$2
+destination_file=$3
+
+echo "$(date)" >> /tmp/replication.log
+echo "master_hostname=$1 original_file=$2 destination_file=$3" >> /tmp/replication.log
+scp postgres@$master_hostname:$original_file $destination_file >> /tmp/replication.log

@@ -30,6 +30,29 @@ function trap_sigterm() {
 
 trap 'trap_sigterm' SIGINT SIGTERM
 
+#sudo sh -c "echo \"$PG_PRIMARY_IP   $PG_PRIMARY_SERVICE_NAME
+#$PG_REPLICA_IP   $PG_REPLICA_SERVICE_NAME
+#\" >> /etc/hosts"
+
+# SSH
+KEYS_PATH=${KEYS_PATH:-/home/daemon/.ssh}
+PRIVATE_KEY=$KEYS_PATH/id_rsa
+PUBLIC_KEY=${PRIVATE_KEY}.pub
+
+if [ ! -f "$PRIVATE_KEY" ]; then
+  sudo chown -R daemon:daemon $KEYS_PATH
+  /usr/bin/ssh-keygen -q -t rsa -N '' -f $PRIVATE_KEY -C "$EMAIL_ID"
+  chmod 700 $KEYS_PATH
+  chmod 644 $PUBLIC_KEY
+  chmod 600 $PRIVATE_KEY
+  chown -R daemon:daemon $KEYS_PATH
+fi
+
+#ssh postgres@$PG_PRIMARY_SERVICE_NAME
+#ssh-copy-id
+# SSH
+
+
 
 # seed with defaults included in the container image, this is the
 # case when /pgconf is not specified
@@ -77,10 +100,14 @@ pgpool -n -a $CONFIGS/pool_hba.conf -f $CONFIGS/pgpool.conf  &
 export PGPOOL_PID=$!
 
 # Failover
-sleep 30
+sleep 10
+#FILE_KEY_PATH="/var/lib/pgsql/.key_auto_failback"
+#ssh -T postgres@$PG_PRIMARY_SERVICE_NAME "rm $FILE_KEY_PATH"
+#ssh -T postgres@$PG_REPLICA_SERVICE_NAME "rm $FILE_KEY_PATH"
 while pgrep -F /tmp/pgpool.pid > /dev/null
 do
-	bash /opt/cpm/bin/failover.sh
+	#bash /opt/cpm/bin/failover.sh
+  bash /opt/cpm/bin/auto_failback.sh
 	sleep $TIME_FAILOVER
 done
 

@@ -4,5 +4,16 @@ pghome="/var/lib/postgresql"
 remote_host=$1
 remote_pgdata=$2
 
+hostname_master=""
+hostname_replica=""
+kube_ip_master=""
+kube_ip_replica=""
+
+if [ "$remote_host" = "$kube_ip_master" ]; then
+	remote_hostname = $hostname_master
+elif [ "$remote_host" = "$kube_ip_replica" ]; then
+	remote_hostname = $hostname_replica
+fi
+
 # Start recovery target PostgreSQL server
-ssh -T $remote_host $pghome/bin/pg_ctl -w -D $remote_pgdata start > /dev/null 2>&1 < /dev/null &
+ssh -T $remote_hostname /usr/pgsql-9.6/bin/pg_ctl -w -D $remote_pgdata start > /dev/null 2>&1 < /dev/null &

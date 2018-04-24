@@ -31,7 +31,7 @@ RUN yum -y clean all
 RUN mkdir -p /opt/cpm/bin /opt/cpm/conf
 
 # add volumes to allow override of pgpool config files
-VOLUME ["/pgconf"]
+VOLUME ["/pgconf", "/home/daemon/.ssh"]
 
 # open up the postgres port
 EXPOSE 5432 9898
@@ -47,7 +47,13 @@ RUN chown -R daemon:daemon /opt/cpm/bin /pgconf \
 RUN touch /etc/pgpool-II-96/pcp.conf \
     && chown daemon:daemon /etc/pgpool-II-96/pcp.conf
 
-#RUN echo "daemon   ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
+RUN echo "daemon   ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers \
+    && mkdir -p /home/daemon \
+    && usermod -d /home/daemon daemon \
+    && mkdir -p /home/daemon/.ssh && chmod 700 /home/daemon/.ssh \
+    && chown daemon:daemon -R /home/daemon \
+    && echo "if [ -f ~/.bashrc ]; then; . ~/.bashrc; fi" > /home/daemon/.bash_profile \
+    && echo ". /etc/bashrc" > /home/daemon/.bashrc
 
 ENV PG_USERNAME="pgpool" \
     PG_PASSWORD="pgpool" \
@@ -67,12 +73,13 @@ ENV PG_USERNAME="pgpool" \
     PG_SUPERUSER_RESERVED_CONNECTIONS="20" \
     PG_DEBUG="1" \
     PG_LOG="on" \
-    PG_DATA_DIRECTORY="/var/lib/postgresql/9.6/main" \
-    PG_HOME="/var/lib/postgresql" \
+    PG_DATA_DIRECTORY="/var/lib/pgsql/9.6/data" \
+    PG_HOME="/var/lib/pgsql" \
     LOG_FAILOVER="/tmp/failover.log" \
-    PG_ARCHIVEDIR="/var/lib/postgresql/archivedir"
+    PG_ARCHIVEDIR="/var/lib/pgsql/archivedir" \
     TIME_FAILOVER="600" \
-    DOCKER_DEBUG="off"
+    DOCKER_DEBUG="off" \
+    EMAIL_ID="example@example.com"
 
 USER daemon
 

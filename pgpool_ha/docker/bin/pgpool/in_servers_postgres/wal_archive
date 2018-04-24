@@ -1,0 +1,9 @@
+#!/bin/bash
+
+original_file="$1"
+destination_file="$2"
+
+echo "$(date)" >> /tmp/replication.log
+echo "original_file=$1 destination_file=$2" >> /tmp/replication.log
+
+cp $1 $2
