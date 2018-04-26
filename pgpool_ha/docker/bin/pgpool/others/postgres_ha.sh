@@ -72,7 +72,7 @@ FECHA=$(date +%d-%m-%Y)
 BACKUP_TODAY="$BACKUP_DIR/repmgr-$FECHA-$(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 6 | head -n 1).tar.gz"
 FILE_MASTER="/root/old_master"
 
-NODES="postgres-node-1 postgres-node-2"
+NODES="pg1 pg2"
 NODE_MASTER_FOUND="3"
 NODE_STANBY_FOUND="3"
 
