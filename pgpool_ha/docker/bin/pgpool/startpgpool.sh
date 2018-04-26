@@ -89,6 +89,9 @@ fi
 pg_md5 --md5auth --username=$PG_USERNAME --config=$CONFIGS/pgpool.conf $PG_PASSWORD
 pg_md5 --md5auth --username=postgres --config=$CONFIGS/pgpool.conf $POSTGRES_PASSWORD
 
+# EXTERNAL
+pg_md5 --md5auth --username=$PG_EXTERNAL_USER --config=$CONFIGS/pgpool.conf $PG_EXTERNAL_PASSWORD
+
 # PCP without password
 echo "$PG_USERNAME:$(pg_md5 $PG_PASSWORD)" > /etc/pgpool-II-96/pcp.conf
 #export PCPPASSFILE=/tmp/.pcppass

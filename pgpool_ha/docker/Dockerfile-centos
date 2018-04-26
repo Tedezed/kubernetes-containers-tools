@@ -57,6 +57,8 @@ RUN echo "daemon   ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers \
 
 ENV PG_USERNAME="pgpool" \
     PG_PASSWORD="pgpool" \
+    PG_EXTERNAL_USER="external" \
+    PG_EXTERNAL_PASSWORD="external" \
     POSTGRES_PASSWORD="postgres" \
     PGHOST="/tmp/" \
     PCP_HOST="/tmp" \

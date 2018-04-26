@@ -13,9 +13,15 @@ FECHA=$(date +%d-%m-%Y)
 BACKUP_TODAY="$BACKUP_DIR/repmgr-$FECHA-$(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 6 | head -n 1).tar.gz"
 
 # NEW MASTER
-NAME_MASTER_NODE=`psql -U $PG_USERNAME -d postgres -c "SHOW pool_nodes" -w | grep primary | awk '{ print $3 }'`
-ID_NODE_MASTER=`psql -U $PG_USERNAME -d postgres -c "SHOW pool_nodes" -w | grep primary | awk '{ print $1 }'`
-STATUS_MASTER=$(pcp_node_info -h 127.0.0.1 -U $PG_USERNAME -p $PCP_PORT -n $ID_NODE_MASTER -w | cut -d " " -f 3)
+if psql -U $PG_USERNAME -d postgres -c 'SHOW pool_nodes' -w | grep -q "primary" ;
+then
+	echo "[INFO] Primary node is OK"
+	NAME_MASTER_NODE=`psql -U $PG_USERNAME -d postgres -c "SHOW pool_nodes" -w | grep primary | awk '{ print $3 }'`
+	ID_NODE_MASTER=`psql -U $PG_USERNAME -d postgres -c "SHOW pool_nodes" -w | grep primary | awk '{ print $1 }'`
+	STATUS_MASTER=$(pcp_node_info -h 127.0.0.1 -U $PG_USERNAME -p $PCP_PORT -n $ID_NODE_MASTER -w | cut -d " " -f 3)
+else
+	STATUS_MASTER="3"
+fi
 
 if (( $STATUS_MASTER == 2 ))
 then
@@ -26,6 +32,7 @@ then
 		NAME_NODE_FAIL=`psql -U $PG_USERNAME -d postgres -c "SHOW pool_nodes" -w | grep down | awk '{ print $3 }'`
 		STATUS_FAIL=$(pcp_node_info -h 127.0.0.1 -U $PG_USERNAME -p $PCP_PORT -n $ID_NODE_FAIL -w | cut -d " " -f 3)
 	else
+		echo "[INFO] Standby node is OK"
 		STATUS_FAIL="0"
 	fi
 	if (( $STATUS_FAIL == 3 ))
@@ -58,4 +65,6 @@ then
 			ssh -T postgres@$NAME_NODE_FAIL "rm $FILE_KEY_PATH"
 		fi
 	fi
+else
+	echo "[ERROR] No node master found"
 fi
