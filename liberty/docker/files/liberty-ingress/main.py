@@ -117,6 +117,7 @@ class kube_init:
 
         list_ip = []
         pod = self.v1.list_pod_for_all_namespaces(watch=False)
+        not_found_pod = True
         for p in pod.items:
             exec("annotation_pod = " + str(p.metadata.annotations.get("kubernetes.io/created-by", {})))
             annotation_pod = annotation_pod.get("reference", {})
@@ -124,10 +125,14 @@ class kube_init:
                 if annotation_pod.get("kind", {}) == "ReplicaSet"\
                         and annotation_pod.get("name", {}) == owner_replicaset\
                         and annotation_pod.get("namespace", {}) == namespace:
+                    not_found_pod = False
                     try:
-                        list_ip.append(p.status.pod_ip)
+                        if p:
+                            list_ip.append(p.status.pod_ip)
                     except:
                         list_ip.append(ip_error)
+        if not_found_pod:
+            list_ip.append(ip_error)
         return list_ip
 
 
