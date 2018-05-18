@@ -109,11 +109,12 @@ RUN mkdir /etc/nginx/geoip \
     && gunzip GeoLiteCity.dat.gz \
     && chown www-data -R /etc/nginx/geoip
 
-RUN pip install kubernetes deepdiff
-
-RUN rm -rf /etc/nginx/conf.d/default.conf
-
-RUN ls /etc/nginx/ -lia
+RUN pip install kubernetes deepdiff \
+    && rm -rf /etc/nginx/conf.d/default.conf \
+    && ls /etc/nginx/ -lia \
+    && apt-get update \
+    && apt-get install -y apache2-utils \
+    && rm -rf /var/lib/apt/lists/*
 
 ADD files/ /files
 RUN cp -R /files/error/ /var/www/error \
@@ -125,7 +126,10 @@ RUN cp -R /files/error/ /var/www/error \
   && chown www-data:www-data -R /files/error \
   && chown www-data:www-data -R /files/liberty-ingress/default-cert
 
-ENV NAME_LIBERTY="liberty" TIMEOUT="60m"
+ENV NAME_LIBERTY="liberty" \
+    TIMEOUT="60m" \
+    SECRET_USER="admin" \
+    SECRET_PASSWD="admin1234567890"
 
 EXPOSE 80
 EXPOSE 443
