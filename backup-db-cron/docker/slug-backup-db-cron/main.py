@@ -129,7 +129,9 @@ class kube_init:
             patch_conf = "%s/%s/%s.yaml" % (self.ruta_conf, self.dic_argv["mode"], name_conf)
             print "[INFO] Read conf from %s" % conf_mode
             stream = open(patch_conf, "r")
-            file_yaml = yaml.load(stream)
+            text_yaml = stream.read()
+            text_yaml = text_yaml.replace('\t', '   ')
+            file_yaml = yaml.load(text_yaml)
             stream.close()
             data = file_yaml["data"]
         else:
@@ -151,7 +153,7 @@ class kube_init:
                         if data_split[1] == "database_list":
                             dic_data[str(data_split[0])] = data_split[1].split("&")
                         else:
-                            dic_data[str(data_split[0])] = data_split[1]
+                            dic_data[str(data_split[0])] = data_split[1].replace(" ", "")
                     except:
                         pass
                 list_db.append(dic_data)
@@ -179,7 +181,8 @@ class kube_init:
     def get_svc_ip(self, name_svc, namespace_svc):
         ret = self.v1.list_service_for_all_namespaces(watch=False)
         for i in ret.items:
-            if i.metadata.name == name_svc and i.metadata.namespace == namespace_svc:
+            if i.metadata.name.replace(" ", "") == name_svc.replace(" ", "")\
+             and i.metadata.namespace.replace(" ", "") == namespace_svc.replace(" ", ""):
                 return i.spec.cluster_ip
 
     def bakup_sql(self, db, now_datetime):
@@ -196,7 +199,7 @@ class kube_init:
                                     host=host, password=db["POSTGRES_PASSWORD"], port=db["port"])
                 key = True
             elif db["type"] == "mysql":
-                conn = mysql.connector.connect(database='mysql', user=db["MYSQL_USER"], \
+                conn = mysql.connector.connect(database='', user=db["MYSQL_USER"], \
                                     host=host, password=db["MYSQL_PASSWORD"], port=db["port"])
                 key = True
             else:
@@ -223,7 +226,7 @@ class kube_init:
 
             rows = cur.fetchall()
             for r in rows:
-                if "template" not in r[0]:
+                if r[0] not in ["template", "template0", "template1" ,"information_schema", "postgres", "mysql", "performance_schema"]:
 
                     ruta_database = "%s/%s/%s" % (self.ruta_exec, self.directory_backups, db["name_svc"])
                     if not path.isdir(ruta_database):
@@ -279,18 +282,18 @@ class kube_init:
         if list_snapshot != None:
             for s in list_snapshot:
                 file_date = ""
-                name_split = s["name"].split("---")
                 try:
-                    name_date = name_split[1]
+                    if "---" in s["name"]:
+                        name_split = s["name"].split("---")
+                        name_date = name_split[1]
+                        if datetime.strptime(name_date, "%Y-%m-%d").strftime("%Y-%m-%d") <= drop_datetime.strftime("%Y-%m-%d"):
+                            logging.warning("[INFO] [%s] Drop snapshot %s" % (now_datetime, s["name"]))
+                            print "[INFO] [%s] Drop snapshot %s" % (now_datetime, s["name"])
+                            self.gtools.delete_snapshot(self.dic_argv["project"],s["name"])
                 except Exception as e:
                     key = False
                     print e
                     logging.error(e)
-
-                if datetime.strptime(name_date, "%Y-%m-%d").strftime("%Y-%m-%d") <= drop_datetime.strftime("%Y-%m-%d"):
-                    logging.warning("[INFO] [%s] Drop snapshot %s" % (now_datetime, s["name"]))
-                    print "[INFO] [%s] Drop snapshot %s" % (now_datetime, s["name"])
-                    self.gtools.delete_snapshot(self.dic_argv["project"],s["name"])
         else:
             print "[INFO] Not found snapshot that are on or out the erase date: %s" % drop_datetime
 

@@ -1,9 +1,9 @@
 
 generate-dhparam:
 	rm -rf files/liberty-ingress/dhparam.pem
-	openssl dhparam -out files/liberty-ingress/dhparam.pem 4096
+	openssl dhparam -out files/liberty-ingress/dhparam.pem 2048
 
-build: generate-dhparam build-small
+build: generate-dhparam build-only
 
 build-only:
 	docker build -f Dockerfile -t tedezed/liberty-dynamic-ingress:latest .
