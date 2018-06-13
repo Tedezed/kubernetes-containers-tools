@@ -1,0 +1,25 @@
+version: '2'
+services:
+  nagios:
+    image: tedezed/nagios:latest
+    environment:
+      NAGIOS_PASS: "nagios"
+      NAGIOS_DEBUG: "ON"
+    ports:
+      - "8888:80"
+    volumes:
+      - ./volumes/nagios_custom_conf:/etc/nagios3/custom
+    links:
+      - mysql
+
+  mysql:
+    image: mysql:5.6
+    ports:
+      - 3306:3333
+    environment:
+      - MYSQL_USER=nagios
+      - MYSQL_PASSWORD=nagios
+      - MYSQL_ADDRESS=nagios_mysql
+      - MYSQL_DATABASE=nagios
+      - MYSQL_RANDOM_ROOT_PASSWORD=yes
+
