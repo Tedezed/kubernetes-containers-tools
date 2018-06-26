@@ -1,0 +1,15 @@
+
+{
+  "type": "service_account",
+  "project_id": "xxxxxxx-23",
+  "private_key_id": "xxxxx",
+  "private_key": "xxxxxxxx",
+  "client_email": "xx223344xx@xx555666xxxx",
+  "client_id": "xxx434534xx",
+  "auth_uri": "xxxxx",
+  "token_uri": "xxxxx",
+  "auth_provider_x509_cert_url": "xxxxx",
+  "client_x509_cert_url": "xxxxxx",
+  "zone": "zone-x1",
+  "cluster": "klusterx-2"
+}
