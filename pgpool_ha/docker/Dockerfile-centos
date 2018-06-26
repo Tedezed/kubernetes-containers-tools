@@ -4,8 +4,8 @@ MAINTAINER Juan Manuel Torres <juanmanuel.torres@aventurabinaria.es>
 LABEL name="crunchydata/pgpool" \
         vendor="crunchy data" \
         version="7.3" \
-      	PostgresVersion="9.6" \
-      	PostgresFullVersion="9.6.5" \
+        PostgresVersion="9.6" \
+        PostgresFullVersion="9.6.5" \
         release="1.6.0" \
         build-date="2017-10-13" \
         url="https://crunchydata.com" \
@@ -21,10 +21,10 @@ ENV PGVERSION="9.6" PGDG_REPO="pgdg-centos96-9.6-3.noarch.rpm"
 RUN rpm -Uvh https://download.postgresql.org/pub/repos/yum/${PGVERSION}/redhat/rhel-7-x86_64/${PGDG_REPO}
 
 RUN yum -y update && yum -y install hostname \
-	gettext \
-	openssh-clients \
-	procps-ng \
-	&& yum -y install postgresql96 pgpool-II-96 pgpool-II-96-extensions
+    gettext \
+    openssh-clients \
+    procps-ng \
+    && yum -y install postgresql96 pgpool-II-96 pgpool-II-96-extensions
 RUN yum -y install nano nmap sudo \
 RUN yum -y clean all
 
@@ -81,8 +81,14 @@ ENV PG_USERNAME="pgpool" \
     PG_ARCHIVEDIR="/var/lib/pgsql/archivedir" \
     TIME_FAILOVER="600" \
     DOCKER_DEBUG="off" \
-    EMAIL_ID="example@example.com"
+    EMAIL_ID="example@example.com" \
+    PGPOOL_MODE="HA"
 
 USER daemon
+
+RUN echo -e "\e[1m \
+    $(psql -V) \
+    $(pgpool -v) \
+\e[0m"
 
 CMD ["/opt/cpm/bin/startpgpool.sh"]

@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -x
+
 # Copyright 2015 Crunchy Data Solutions, Inc.
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -52,11 +54,16 @@ fi
 #ssh-copy-id
 # SSH
 
-
-
 # seed with defaults included in the container image, this is the
 # case when /pgconf is not specified
+
 cp $CONFDIR/* /tmp
+
+if [ $PGPOOL_MODE == "HA" ]; then
+  cp /tmp/pgpool_ha.conf /tmp/pgpool.conf
+elif [ $PGPOOL_MODE == "LOADBALANCING" ]; then
+  cp /tmp/pgpool_loadbalancing.conf /tmp/pgpool.conf
+fi
 
 # populate template with env vars
 sed -i "s/PG_PRIMARY_SERVICE_NAME/$PG_PRIMARY_SERVICE_NAME/g" $CONFIGS/pgpool.conf
