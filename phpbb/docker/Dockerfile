@@ -43,7 +43,9 @@ COPY files/entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh \
 	&& chown -R www-data:www-data /var/www \
 	&& chmod 660 /phpbb-base/images/avatars/upload/ /phpbb-base/config.php \
-	&& chmod 770 /phpbb-base/store/ /phpbb-base/cache/ /phpbb-base/files/
+	&& chmod 770 /phpbb-base/store/ /phpbb-base/cache/ /phpbb-base/files/ \
+	&& sed -i "s/upload_max_filesize = 2M/upload_max_filesize = 100M/g" /etc/php/7.0/cgi/php.ini \
+	&& sed -i "s/post_max_size = 8M/post_max_size = 100M/g" /etc/php/7.0/cgi/php.ini
 
 EXPOSE 80 443
 VOLUME ["/var/cache/nginx", "/var/www/html/"]
