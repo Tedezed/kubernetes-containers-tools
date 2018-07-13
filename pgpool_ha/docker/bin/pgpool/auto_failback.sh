@@ -1,5 +1,7 @@
 #!/bin/bash 
 
+set -x
+
 # Status
 #0 - This state is only used during the initialization. PCP will never display it.
 #1 - Node is up. No connections yet.

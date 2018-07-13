@@ -1,7 +1,5 @@
 #!/bin/bash
 
-set -x
-
 # Copyright 2015 Crunchy Data Solutions, Inc.
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -19,11 +17,7 @@ set -x
 rm -rf /tmp/pgpool.pid
 rm -rf /tmp/.s.*
 
-BINDIR=/opt/cpm/bin
-CONFDIR=/opt/cpm/conf/pgpool
-CONFIGS=/tmp
-
-env
+#env
 
 function trap_sigterm() {
 	echo "doing trap logic..."
@@ -59,34 +53,8 @@ fi
 
 cp $CONFDIR/* /tmp
 
-if [ $PGPOOL_MODE == "HA" ]; then
-  cp /tmp/pgpool_ha.conf /tmp/pgpool.conf
-elif [ $PGPOOL_MODE == "LOADBALANCING" ]; then
-  cp /tmp/pgpool_loadbalancing.conf /tmp/pgpool.conf
-fi
+bash /opt/cpm/bin/replace_conf.sh $PG_PRIMARY_SERVICE_NAME $PG_REPLICA_SERVICE_NAME
 
-# populate template with env vars
-sed -i "s/PG_PRIMARY_SERVICE_NAME/$PG_PRIMARY_SERVICE_NAME/g" $CONFIGS/pgpool.conf
-sed -i "s/PG_REPLICA_SERVICE_NAME/$PG_REPLICA_SERVICE_NAME/g" $CONFIGS/pgpool.conf
-sed -i "s/PG_USERNAME/$PG_USERNAME/g" $CONFIGS/pgpool.conf
-sed -i "s/PG_PASSWORD/$PG_PASSWORD/g" $CONFIGS/pgpool.conf
-
-# Personal configuration
-sed -i "s/PG_NUM_INIT_CHILDREN/$PG_NUM_INIT_CHILDREN/g" $CONFIGS/pgpool.conf
-sed -i "s/PG_MAX_POOL/$PG_MAX_POOL/g" $CONFIGS/pgpool.conf
-sed -i "s/PG_MULTIPLER_BACK/$PG_MULTIPLER_BACK/g" $CONFIGS/pgpool.conf
-sed -i "s/PG_CHILD_LIFE_TIME/$PG_CHILD_LIFE_TIME/g" $CONFIGS/pgpool.conf
-sed -i "s/PG_CLIENT_IDLE_LIMIT/$PG_CLIENT_IDLE_LIMIT/g" $CONFIGS/pgpool.conf
-sed -i "s/PG_MAX_CONNECTIONS/$PG_MAX_CONNECTIONS/g" $CONFIGS/pgpool.conf
-sed -i "s/PG_SUPERUSER_RESERVED_CONNECTIONS/$PG_SUPERUSER_RESERVED_CONNECTIONS/g" $CONFIGS/pgpool.conf
-sed -i "s#PG_DATA_DIRECTORY#$PG_DATA_DIRECTORY#g" $CONFIGS/pgpool.conf
-
-#PCP
-sed -i "s/PCP_PORT/$PCP_PORT/g" $CONFIGS/pgpool.conf
-
-# Debug and log
-sed -i "s/PG_DEBUG/$PG_DEBUG/g" $CONFIGS/pgpool.conf
-sed -i "s/PG_LOG/$PG_LOG/g" $CONFIGS/pgpool.conf
 
 if [ $DOCKER_DEBUG == "on" ]; then
 	sleep 999999999
@@ -106,19 +74,30 @@ echo "*:*:$PG_USERNAME:$PG_PASSWORD" > /tmp/.pcppass
 chmod 0600 /tmp/.pcppass
 
 # Start pgpool
-pgpool -n -a $CONFIGS/pool_hba.conf -f $CONFIGS/pgpool.conf  &
-export PGPOOL_PID=$!
-
-# Failover
-sleep 10
-#FILE_KEY_PATH="/var/lib/pgsql/.key_auto_failback"
-#ssh -T postgres@$PG_PRIMARY_SERVICE_NAME "rm $FILE_KEY_PATH"
-#ssh -T postgres@$PG_REPLICA_SERVICE_NAME "rm $FILE_KEY_PATH"
-while pgrep -F /tmp/pgpool.pid > /dev/null
+PGPOOL_DUMMY="0"
+while [ $PGPOOL_DUMMY == "0" ];
 do
-	#bash /opt/cpm/bin/failover.sh
-  bash /opt/cpm/bin/auto_failback.sh
-	sleep $TIME_FAILOVER
+  echo "[START] Init pgpool....................................."
+  pgpool -n -a $CONFIGS/pool_hba.conf -f $CONFIGS/pgpool.conf  >> /tmp/pgpool.log 2>&1 &
+  sleep 10
+  export PGPOOL_PID=$!
+  while pgrep -F /tmp/pgpool.pid > /dev/null
+  do
+    sleep $TIME_FAILOVER
+    if [ $AUTOFAILOVER == "on" ]; then
+      if [ $FAILOVER_MODE == "on" ]; then
+        #bash /opt/cpm/bin/failover.sh
+        #bash /opt/cpm/bin/auto_failback.sh
+        bash /opt/cpm/bin/others/postgres_ha.sh "pgpool_failover"
+      else
+        bash /opt/cpm/bin/others/postgres_ha.sh "pgpool_dummy"
+      fi
+    fi
+    sleep 10
+  done
+  if [ $AUTOFAILOVER != "on" ] && [ $FAILOVER_MODE != "on" ]; then
+    PGPOOL_DUMMY="1"
+  fi
 done
 
 #pgpool -f /tmp/pgpool.conf  reload

@@ -1,0 +1,185 @@
+#!/bin/bash
+
+function pgpool_before {
+	NODE_MASTER_NAME_INTERNAL=$1
+	NODE_STANBY_NAME_INTERNAL=$2
+	MODE_INTERNAL_INTERNAL=$3
+	NODE_MASTER_STATUS_PGPOOL_INTERNAL=$4
+	NODE_STANBY_STATUS_PGPOOL_INTERNAL=$5
+	ID_NODE_MASTER_PGPOOL_INTERNAL=$6
+	ID_NODE_STANBY_PGPOOL_INTERNAL=$7
+	
+	if [ $NODE_MASTER_STATUS_PGPOOL_INTERNAL = "2" ] && [ $NODE_STANBY_STATUS_PGPOOL_INTERNAL = "3" ];
+	then
+		if [ $MODE_INTERNAL_INTERNAL = "pgpool_failover" ];
+		then
+			echo "[PGPOOL BEFORE][M: OK | S: ER] attach nodeL"
+			pcp_detach_node -U $PG_USERNAME -p $PCP_PORT -n $ID_NODE_STANBY_PGPOOL_INTERNAL -w
+		elif [ $MODE_INTERNAL_INTERNAL = "pgpool_dummy" ];
+		then
+			echo "[PGPOOL BEFORE][M: OK | S: ER] attach node"
+			echo "Start tmp pgpool....."
+			pgpool -n -a $CONFIGS/pool_hba.conf -f $CONFIGS/pgpool.conf --mode=immediate stop
+			bash /opt/cpm/bin/replace_conf.sh $NODE_MASTER_NAME_INTERNAL "dummy_node"
+			sed -i "s/backend_hostname1/#backend_hostname1/g" $CONFIGS/pgpool.conf
+			sed -i "s/backend_port1/#backend_port1/g" $CONFIGS/pgpool.conf
+			sed -i "s/backend_weight1/#backend_weight1/g" $CONFIGS/pgpool.conf
+			sed -i "s/backend_data_directory1/#backend_data_directory1/g" $CONFIGS/pgpool.conf
+			sed -i "s/backend_flag1/#backend_flag1/g" $CONFIGS/pgpool.conf
+			sleep 10
+			#kill -9 $(pgrep -F /tmp/pgpool.pid)
+			pgpool -n -a $CONFIGS/pool_hba.conf -f $CONFIGS/pgpool.conf >> /tmp/pgpool.log 2>&1 &
+		fi
+	elif [ $NODE_MASTER_STATUS_PGPOOL_INTERNAL = "3" ] && [ $NODE_STANBY_STATUS_PGPOOL_INTERNAL = "2" ] && [ $MODE_INTERNAL_INTERNAL = "pgpool_dummy" ];
+	then
+		echo "[PGPOOL BEFORE][M: ER | S: OK]"
+		echo "Start tmp pgpool....."
+		pgpool -n -a $CONFIGS/pool_hba.conf -f $CONFIGS/pgpool.conf --mode=immediate stop
+		bash /opt/cpm/bin/replace_conf.sh $NODE_STANBY_NAME_INTERNAL "dummy_node"
+		sed -i "s/backend_hostname1/#backend_hostname1/g" $CONFIGS/pgpool.conf
+		sed -i "s/backend_port1/#backend_port1/g" $CONFIGS/pgpool.conf
+		sed -i "s/backend_weight1/#backend_weight1/g" $CONFIGS/pgpool.conf
+		sed -i "s/backend_data_directory1/#backend_data_directory1/g" $CONFIGS/pgpool.conf
+		sed -i "s/backend_flag1/#backend_flag1/g" $CONFIGS/pgpool.conf
+		sleep 10
+		#kill -9 $(pgrep -F /tmp/pgpool.pid)
+		pgpool -n -a $CONFIGS/pool_hba.conf -f $CONFIGS/pgpool.conf >> /tmp/pgpool.log 2>&1 &
+	fi
+}
+
+function pgpool_after {
+	NODE_MASTER_NAME_INTERNAL=$1
+	NODE_STANBY_NAME_INTERNAL=$2
+	MODE_INTERNAL_INTERNAL=$3
+	NODE_MASTER_STATUS_PGPOOL_INTERNAL=$4
+	NODE_STANBY_STATUS_PGPOOL_INTERNAL=$5
+	ID_NODE_MASTER_PGPOOL_INTERNAL=$6
+	ID_NODE_STANBY_PGPOOL_INTERNAL=$7
+
+	if [ $NODE_MASTER_STATUS_PGPOOL_INTERNAL = "2" ] && [ $NODE_STANBY_STATUS_PGPOOL_INTERNAL = "2" ];
+	then
+		echo "[PGPOOL][M: OK | S: OK] OK"
+	elif [ $NODE_MASTER_STATUS_PGPOOL_INTERNAL = "3" ] && [ $NODE_STANBY_STATUS_PGPOOL_INTERNAL = "3" ];
+	then
+		echo "[PGPOOL][M: ER | S: ER] cluster error"
+		if [ $MODE_INTERNAL_INTERNAL = "pgpool_failover" ];
+		then
+			pcp_attach_node -U $PG_USERNAME -p $PCP_PORT -n $ID_NODE_MASTER_PGPOOL_INTERNAL -w
+			pcp_attach_node -U $PG_USERNAME -p $PCP_PORT -n $ID_NODE_STANBY_PGPOOL_INTERNAL -w
+			pcp_promote_node -U $PG_USERNAME -p $PCP_PORT -n $ID_NODE_MASTER_PGPOOL_INTERNAL -w
+		elif [ $MODE_INTERNAL_INTERNAL = "pgpool_dummy" ];
+		then
+			pgpool -n -a $CONFIGS/pool_hba.conf -f $CONFIGS/pgpool.conf --mode=immediate stop
+		fi
+	elif [ $NODE_MASTER_STATUS_PGPOOL_INTERNAL = "2" ] && [ $NODE_STANBY_STATUS_PGPOOL_INTERNAL = "3" ];
+	then
+		echo "[PGPOOL][M: OK | S: ER] attach node $NODE_STANBY_NAME_INTERNAL"
+		if [ $MODE_INTERNAL_INTERNAL = "pgpool_failover" ];
+		then
+			pcp_attach_node -U $PG_USERNAME -p $PCP_PORT -n $ID_NODE_STANBY_PGPOOL_INTERNAL -w
+		elif [ $MODE_INTERNAL_INTERNAL = "pgpool_dummy" ];
+		then
+			bash /opt/cpm/bin/replace_conf.sh $NODE_MASTER_NAME_INTERNAL $NODE_STANBY_NAME_INTERNAL
+			pgpool -n -a $CONFIGS/pool_hba.conf -f $CONFIGS/pgpool.conf --mode=immediate stop
+		fi
+	elif [ $NODE_MASTER_STATUS_PGPOOL_INTERNAL = "3" ] && [ $NODE_STANBY_STATUS_PGPOOL_INTERNAL = "2" ];
+	then
+		echo "[PGPOOL][M: ER | S: OK]"
+		if [ $MODE_INTERNAL_INTERNAL = "pgpool_failover" ];
+		then
+			pcp_attach_node -U $PG_USERNAME -p $PCP_PORT -n $ID_NODE_MASTER_PGPOOL_INTERNAL -w
+			pcp_promote_node -U $PG_USERNAME -p $PCP_PORT -n $ID_NODE_MASTER_PGPOOL_INTERNAL -w
+		elif [ $MODE_INTERNAL_INTERNAL = "pgpool_dummy" ];
+		then
+			pgpool -n -a $CONFIGS/pool_hba.conf -f $CONFIGS/pgpool.conf --mode=immediate stop
+		fi
+	else
+		echo "[PGPOOL ERROR] Not found state..."
+	fi
+
+	sleep 2
+	if [ $MODE_INTERNAL_INTERNAL = "pgpool_failover" ];
+	then
+		for num in {0..1}; do
+			echo "$(pcp_node_info -h 127.0.0.1 -U $PG_USERNAME -p $PCP_PORT -n $num -w)"
+		done
+	fi
+}
+
+function clone_standby {
+	NODE_FAIL_COMMAND_INTERNAL=$1
+	BACKUP_TODAY_INTERNAL=$2
+	PG_DATA_DIRECTORY_INTERNAL=$3
+	NODE_NAME_INTERNAL=$4
+
+
+	echo "[INFO] Node fail: $NODE_FAIL_COMMAND_INTERNAL"
+	FAILBACK_COMMANDS="
+	set -x
+	tar -czf $BACKUP_TODAY_INTERNAL $PG_DATA_DIRECTORY_INTERNAL
+	#rm -rf $PG_DATA_DIRECTORY_INTERNAL/*
+
+	sudo systemctl stop postgresql-9.6.service
+	#repmgr -f /var/lib/pgsql/repmgr/repmgr.conf -D /var/lib/pgsql/9.6/data -d repmgr -p 5432 -U repmgr -R postgres standby clone $NODE_NAME_INTERNAL --force
+	repmgr -f /var/lib/pgsql/repmgr/repmgr.conf -D /var/lib/pgsql/9.6/data -d repmgr -p 5432 -U repmgr -R postgres standby clone $NODE_NAME_INTERNAL --force --fast-checkpoint
+	sudo systemctl start postgresql-9.6.service
+	repmgr -f /var/lib/pgsql/repmgr/repmgr.conf -d repmgr -p 5432 -U repmgr -R postgres standby register --force
+	"
+	GO_STANBY_COMMAND=$(ssh -T postgres@$NODE_FAIL_COMMAND_INTERNAL "$FAILBACK_COMMANDS")
+}
+
+function set_master {
+	
+	NODE_MASTER_ID_INTERNAL=$1
+	NODE_STANBY_ID_INTERNAL=$2
+	NODE_MASTER_NAME_INTERNAL=$3
+	NODE_STANBY_NAME_INTERNAL=$4
+	MODE_INTERNAL_INTERNAL=$5
+	FILE_MASTER_INTERNAL=$6
+
+	echo "$NODE_MASTER_ID_INTERNAL $NODE_STANBY_ID_INTERNAL $NODE_MASTER_NAME_INTERNAL \
+	$NODE_STANBY_NAME_INTERNAL $MODE_INTERNAL_INTERNAL $FILE_MASTER_INTERNAL"
+
+	if [ -e $FILE_MASTER_INTERNAL ]
+	then
+		if [ "$(cat "$FILE_MASTER_INTERNAL")" = "$NODE_MASTER_NAME_INTERNAL" ];
+		then
+			RELOAD="0"
+			echo "Master update OK: no reload"
+		else
+			RELOAD="1"
+		fi
+	else
+		RELOAD="1"
+	fi
+
+	if [ $RELOAD = "1" ];
+	then
+		echo "New master: reload"
+		bash -c "echo $NODE_MASTER_NAME_INTERNAL > $FILE_MASTER_INTERNAL"
+		
+		# Kubernetes
+		if [ $MODE_INTERNAL_INTERNAL = "kubernetes" ];
+		then
+			echo "Reload conf Kubernetes..."
+			cp /root/templates/master.yaml /root/master.yaml
+			sed -i "s/NODE_MASTER_IP/$(getent hosts $NODE_MASTER_NAME_INTERNAL | awk '{ print $1 }')/g" /root/master.yaml
+			kubectl delete -f /root/master.yaml
+			kubectl create -f /root/master.yaml
+		# Nginx
+		elif [ $MODE_INTERNAL_INTERNAL = "nginx" ];
+		then
+			echo "Reload Nginx..."
+			cp /etc/nginx/templates/template-postgres.conf /etc/nginx/conf-tcp.d/postgres.conf
+			sed -i "s/PG_NODE_MASTER/$NODE_MASTER_NAME_INTERNAL/g" /etc/nginx/conf-tcp.d/postgres.conf
+			systemctl reload nginx.service
+		elif [ $MODE_INTERNAL_INTERNAL = "pgpool_dummy" ];
+		then
+			echo "Reload pgpool..."
+			pgpool -n -a $CONFIGS/pool_hba.conf -f $CONFIGS/pgpool.conf --mode=immediate stop
+			bash /opt/cpm/bin/replace_conf.sh $NODE_MASTER_NAME_INTERNAL $NODE_STANBY_NAME_INTERNAL
+			sleep 10
+			#kill -9 $(pgrep -F /tmp/pgpool.pid)
+		fi
+	fi
+}

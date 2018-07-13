@@ -80,9 +80,14 @@ ENV PG_USERNAME="pgpool" \
     LOG_FAILOVER="/tmp/failover.log" \
     PG_ARCHIVEDIR="/var/lib/pgsql/archivedir" \
     TIME_FAILOVER="600" \
+    FAILOVER_MODE="off" \
+    AUTOFAILOVER="off" \
     DOCKER_DEBUG="off" \
     EMAIL_ID="example@example.com" \
-    PGPOOL_MODE="HA"
+    PGPOOL_MODE="HA" \
+    BINDIR="/opt/cpm/bin" \
+    CONFDIR="/opt/cpm/conf/pgpool" \
+    CONFIGS="/tmp"
 
 USER daemon
 
