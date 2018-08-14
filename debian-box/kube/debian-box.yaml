@@ -2,7 +2,7 @@ apiVersion: v1
 kind: Pod
 metadata:
   name: debian
-  namespace: wp-guadaltech
+  namespace: default
 spec:
   containers:
   - name: debian
