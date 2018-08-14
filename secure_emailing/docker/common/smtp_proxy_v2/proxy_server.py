@@ -64,6 +64,7 @@ class ProxyServer(SMTPServer):
         # handle upstream SSL
         refused = {}
         try:
+            self.logger.info("[INFO] Send msg from %s" % (mailfrom))
             if self.ssl or self.ssl_out_only:
                 s = smtplib.SMTP_SSL()
             else:

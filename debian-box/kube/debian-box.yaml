@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: debian
+  namespace: wp-guadaltech
+spec:
+  containers:
+  - name: debian
+    image: tedezed:debian-box:8
+    command:
+      - sleep
+      - "infinity"
+

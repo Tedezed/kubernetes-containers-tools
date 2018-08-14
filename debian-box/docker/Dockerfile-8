@@ -1,0 +1,31 @@
+FROM debian:8
+MAINTAINER Juan Manuel Torres <juanmanuel.torres@aventurabinaria.es>
+
+RUN apt-get update \
+	&& apt-get install -y --no-install-recommends \
+		ca-certificates \
+		curl \
+		wget \
+		sudo \
+		python-setuptools \
+		python-support \
+		python-yaml \
+		gcc \
+		make \
+		build-essential \
+		libssl-dev \
+		libffi-dev \
+		unicode \
+		python-unicodecsv \
+		g++ \
+		python-dev \
+		libtool \
+		pkg-config \
+		locales \
+		nano
+
+RUN export GCSFUSE_REPO=gcsfuse-jessie \
+    && echo "deb http://packages.cloud.google.com/apt $GCSFUSE_REPO main" | sudo tee /etc/apt/sources.list.d/gcsfuse.list \
+    && curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add - \
+    && apt-get update \
+    && apt-get install gcsfuse -y

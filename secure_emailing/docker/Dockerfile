@@ -2,6 +2,7 @@ FROM python:2.7
 MAINTAINER Juan Manuel Torres <juanmanuel.torres@aventurabinaria.es>
 
 ENV DEBIAN_FRONTEND="noninteractive" \
+	PORT="1025" \
 	REMOTE_HOST="192.168.1.23" \
 	REMOTE_PORT="2525" \
 	NETWORKS="0.0.0.0/0" \
@@ -21,5 +22,5 @@ RUN chmod +x /mnt/common/executable/bash/entrypoint.sh \
 	&& chmod +x /usr/bin/mailadmin \
 	&& echo "source /mnt/common/smtp_proxy_v2/completion_mailadmin.sh" >> /root/.bashrc
 
-EXPOSE 1025
+EXPOSE 1025 2225 2525
 ENTRYPOINT ["/mnt/common/executable/bash/entrypoint.sh"]

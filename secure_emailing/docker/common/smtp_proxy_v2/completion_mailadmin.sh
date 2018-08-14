@@ -20,15 +20,15 @@ _mailadmin_completions()
   fi
 
   if [ "${#COMP_WORDS[@]}" = "3" ] && [ "${COMP_WORDS[1]}" = "show" ]; then
-    COMPREPLY=($(compgen -W "users domains addresses" "${COMP_WORDS[2]}"))
+    COMPREPLY=($(compgen -W "user domain address" "${COMP_WORDS[2]}"))
   fi
 
   if [ "${#COMP_WORDS[@]}" = "3" ] && [ "${COMP_WORDS[1]}" = "add" ]; then
-    COMPREPLY=($(compgen -W "users domains addresses" "${COMP_WORDS[2]}"))
+    COMPREPLY=($(compgen -W "user domain address" "${COMP_WORDS[2]}"))
   fi
 
   if [ "${#COMP_WORDS[@]}" = "3" ] && [ "${COMP_WORDS[1]}" = "grant" ]; then
-    COMPREPLY=($(compgen -W "domains addresses" "${COMP_WORDS[2]}"))
+    COMPREPLY=($(compgen -W "domain address" "${COMP_WORDS[2]}"))
   fi
 
   # Level 4 in grant
