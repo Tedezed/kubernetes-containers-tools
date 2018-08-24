@@ -109,6 +109,7 @@ class kube_init:
 
     def get_ip_from_deployment(self, name, namespace, ip_error):
         replica_set = self.extv1beta1.list_replica_set_for_all_namespaces(watch=False)
+        owner_replicaset = None
         for rs in replica_set.items:
             if rs.metadata.owner_references[0].kind == "Deployment"\
                     and rs.metadata.owner_references[0].name == name\
@@ -119,18 +120,24 @@ class kube_init:
         pod = self.v1.list_pod_for_all_namespaces(watch=False)
         not_found_pod = True
         for p in pod.items:
-            exec("annotation_pod = " + str(p.metadata.annotations.get("kubernetes.io/created-by", {})))
-            annotation_pod = annotation_pod.get("reference", {})
-            if annotation_pod != {}:
-                if annotation_pod.get("kind", {}) == "ReplicaSet"\
-                        and annotation_pod.get("name", {}) == owner_replicaset\
-                        and annotation_pod.get("namespace", {}) == namespace:
-                    not_found_pod = False
-                    try:
-                        if p:
-                            list_ip.append(p.status.pod_ip)
-                    except:
-                        list_ip.append(ip_error)
+            #system('echo "%s"' % (p['metadata']['owner_references'][0]['name']))
+            if p.metadata.owner_references:
+                #system('echo "%s"' % (p.metadata.owner_references[0].name))
+                #
+                #exec("annotation_pod = " + str(p.metadata.annotations.get("kubernetes.io/created-by", {})))
+                annotation_pod = p.metadata.owner_references[0]
+                #annotation_pod = annotation_pod.get("reference", {})
+                #
+                if annotation_pod != {}:
+                    if annotation_pod.kind == "ReplicaSet"\
+                            and annotation_pod.name == owner_replicaset\
+                            and p.metadata.namespace == namespace:
+                        not_found_pod = False
+                        try:
+                            if p:
+                                list_ip.append(p.status.pod_ip)
+                        except:
+                            list_ip.append(ip_error)
         if not_found_pod:
             list_ip.append(ip_error)
         return list_ip

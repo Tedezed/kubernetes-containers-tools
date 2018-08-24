@@ -1,7 +1,7 @@
 
 generate-dhparam:
 	rm -rf files/liberty-ingress/dhparam.pem
-	openssl dhparam -out files/liberty-ingress/dhparam.pem 2048
+	openssl dhparam -out files/liberty-ingress/dhparam.pem 1024
 
 build: generate-dhparam build-only
 
