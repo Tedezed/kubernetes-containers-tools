@@ -6,7 +6,7 @@ metadata:
 spec:
   containers:
   - name: debian
-    image: tedezed:debian-box:8
+    image: tedezed/debian-box:8
     command:
       - sleep
       - "infinity"

@@ -117,8 +117,8 @@ RUN pip install kubernetes deepdiff \
     && rm -rf /var/lib/apt/lists/*
 
 ADD files/ /files
-RUN mkdir -p /files/liberty-ingress/default-cert \
-  && mkdir -p /files/liberty-ingress/certs \
+RUN mkdir -p /files/liberty-ingress/default-cert/ \
+  && mkdir -p /files/liberty-ingress/certs/ \
   && cp -R /files/error/ /var/www/error \
   && cp /files/docker-entrypoint.sh /usr/local/bin/ \
   && chmod +rx /usr/local/bin/docker-entrypoint.sh \
