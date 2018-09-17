@@ -57,9 +57,9 @@ server {
         add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;
 
         location /{
-          proxy_pass http://{{ host['name_upstream'] }};
-          proxy_set_header Host $host;
+          proxy_set_header   Host $host;
           proxy_set_header X-Real-IP $remote_addr;
+          proxy_pass http://{{ host['name_upstream'] }};
           keepalive_timeout {{ host['timeout'] }};
         }
         
@@ -117,10 +117,13 @@ server {
     {% if '1'==ing['backend'] %}
 
       location ~* (^/.*(css|woff|otf|js|jpg|jpeg|gif|png|ico|cur|gz|svg|svgz|mp3|mp4|ogg|ogv)$|^/web/image.*) {
-              proxy_pass http://{{ host['name_upstream'] }};
+          proxy_pass http://{{ host['name_upstream'] }};
       }
 
       location / {
+          proxy_redirect     off;
+          proxy_set_header   Host $host;
+          proxy_set_header X-Real-IP $remote_addr;
           proxy_pass http://{{ host['name_upstream'] }};
       }
 
@@ -130,6 +133,7 @@ server {
       }
 
       location /web/database/manager {
+        proxy_set_header   Host $host;
         auth_basic "Restricted Content";
         auth_basic_user_file /etc/nginx/.htpasswd;
         proxy_pass http://{{ host['name_upstream'] }};

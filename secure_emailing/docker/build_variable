@@ -2,5 +2,19 @@ export NAME_REGISTRY="tedezed"
 export NAME_IMAGE="secure-emailing"
 export VERSION_IMAGE="latest"
 
-export RELAYHOST="192.168.1.23"
+export DEBUG="True"
+
+export RELAYHOST="127.0.0.1"
 export RELAYHOST_PORT="2525"
+
+export DB_VERSION="9.6"
+export DB_HOST="127.0.0.1"
+export DB_PORT="5432"
+export DB_USER="emailing"
+export DB_NAME="emailing"
+export PGPASSWORD="ted97"
+
+read -r -p 'SMTP_KEY : ' SMTP_KEY
+read -r -p 'SMTP_SECRET : ' SMTP_SECRET
+export SMTP_KEY=$SMTP_KEY
+export SMTP_SECRET=$SMTP_SECRET

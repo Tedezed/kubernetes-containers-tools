@@ -1,0 +1,35 @@
+version: "2.0"
+services:
+    secure:
+        image: $NAME_REGISTRY/$NAME_IMAGE:$VERSION_IMAGE
+        environment:
+            RELAYHOST: "$RELAYHOST"
+            RELAYHOST_PORT: "$RELAYHOST_PORT"
+            DB_HOST: "$DB_HOST"
+            DB_PORT: "$DB_PORT"
+            DB_USER: "$DB_USER"
+            DB_NAME: "$DB_NAME"
+            PGPASSWORD: "$PGPASSWORD"
+            DEBUG: "$DEBUG"
+        ports:
+            - "1025:1025"
+        volumes:
+            - ./common/:/mnt/common/:rw,z
+    emailing:
+        image: postgres:${DB_VERSION}
+        environment:
+            POSTGRES_USER: "$DB_USER"
+            POSTGRES_PASSWORD: "$PGPASSWORD"
+        ports:
+            - "2345:5432"
+        volumes:
+            - ./volumes/db:/var/lib/postgresql/data:rw,z
+    db:
+        image: postgres:${DB_VERSION}
+        environment:
+            POSTGRES_USER: "$DB_USER"
+            POSTGRES_PASSWORD: "$PGPASSWORD"
+        ports:
+            - "2345:5432"
+        volumes:
+            - ./volumes/db:/var/lib/postgresql/data:rw,z

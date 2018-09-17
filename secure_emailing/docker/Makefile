@@ -18,6 +18,9 @@ push:
 	#gcloud docker -- push ${NAME_REGISTRY}/${NAME_IMAGE}:${VERSION_IMAGE}
 	docker push ${NAME_REGISTRY}/${NAME_IMAGE}:${VERSION_IMAGE}
 
+start:
+	docker-compose -f local.yaml up
+
 all: build push
 
 default: all
