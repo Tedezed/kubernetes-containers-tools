@@ -1,0 +1,22 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  annotations:
+    kubernetes.io/ingress.class: liberty-debug
+    kubernetes.io/tls-acme: "true"
+    ingress-liberty/mode: "tls-acme"
+  name: ingress-test
+  namespace: default
+spec:
+  rules:
+  - host: www.test.es
+    http:
+      paths:
+      - backend:
+          serviceName: phpbb-hama
+          servicePort: 80
+        path: /
+  tls:
+  - hosts:
+    - www.test.es
+    secretName: test-tls-nginx

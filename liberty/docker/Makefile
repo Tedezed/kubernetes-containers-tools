@@ -12,3 +12,10 @@ build-only:
 
 push:
 	docker push tedezed/liberty-dynamic-ingress:latest
+
+debug:
+	echo "......."
+	echo "Copy: cp ~/.kube/config ~/.kube/config-slug"
+	echo "Replace: - cluster -> sever:'https://IP' in ~/.kube/config-slug to 'https://kuberentes' and add IP kuberentes to /etc/hosts"
+	echo "......."
+	python files/liberty-ingress/main.py

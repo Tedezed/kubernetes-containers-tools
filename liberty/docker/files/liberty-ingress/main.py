@@ -250,6 +250,18 @@ class kube_init:
                                        'patch': self.ruta_exec}
                             list_ing.append(dic_ing)
 
+                        elif i.metadata.annotations.get('ingress-liberty/mode', False) == 'tls-acme' \
+                            and i.metadata.annotations.get('kubernetes.io/tls-acme', False) == 'true':
+
+                            list_hosts = self.get_hosts(i)
+                            for secret in i.spec.tls:
+                                secret_acme = secret.secret_name
+                                for host_acme in secret.hosts:
+                                    print host_acme
+                                    print secret_acme
+
+                            import pdb; pdb.set_trace()
+
                 ddiff = DeepDiff(list_ing, old_list_ing)
                 if ddiff:
                     system('echo "%s"' % list_ing)

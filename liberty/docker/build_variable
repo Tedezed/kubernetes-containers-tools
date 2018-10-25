@@ -1,0 +1,2 @@
+export NAME_LIBERTY="liberty-debug"
+export TIMEOUT="120"
