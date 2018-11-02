@@ -1,0 +1,7 @@
+export VERSION_IMAGE="latest"
+export NAME_LIBERTY="liberty"
+export TIMEOUT="120"
+export GOOGLE_APPLICATION_CREDENTIALS="/gcp-liberty.json"
+export SVC_CERT_GENERATOR="kube-lego-nginx"
+export NAMESPACE_CERT_GENERATOR="default"
+export SVC_CERT_GENERATOR_PORT="8080"

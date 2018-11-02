@@ -1,6 +1,13 @@
 #FROM nginx:latest
 FROM debian:stretch-slim
 
+# Ingress Controller Liberty
+# Creator: Juan Manuel Torres
+# Source: https://github.com/Tedezed
+# Mail: juanmanuel.torres@aventurabinaria.es
+
+MAINTAINER Juan Manuel Torres <juanmanuel.torres@aventurabinaria.es>
+
 ENV KMASTER="kubernetes" \
     TIME_QUERY="17"\
     TYPE_BALANCE="roundrobin"\
@@ -91,6 +98,7 @@ RUN mkdir /var/cache/nginx \
     --with-ld-opt='-Wl,-z,relro -Wl,--as-needed' \
     --with-ipv6 \
     --with-http_geoip_module \
+    --with-http_v2_module \
     --add-module=nginx-goodies-nginx-sticky-module-ng-c78b7dd79d0d
 
 RUN cd /usr/src/nginx-1.10.3 \
@@ -116,9 +124,20 @@ RUN pip install kubernetes deepdiff \
     && apt-get install -y apache2-utils \
     && rm -rf /var/lib/apt/lists/*
 
+ENV NAME_LIBERTY="liberty" \
+    TIMEOUT="60m" \
+    SECRET_USER="admin" \
+    SECRET_PASSWD="admin1234567890" \
+    SUPPORT_EMAIL="soporte@guadaltech.es" \
+    TEAM_NAME="Support Team" \
+    NAMESPACE_CERT_GENERATOR="default" \
+    SVC_CERT_GENERATOR="kube-lego-nginx" \
+    SVC_CERT_GENERATOR_PORT="8080"
+
 ADD files/ /files
 RUN mkdir -p /files/liberty-ingress/default-cert/ \
   && mkdir -p /files/liberty-ingress/certs/ \
+  && openssl dhparam -out /files/liberty-ingress/dhparam.pem 1024 \
   && cp -R /files/error/ /var/www/error \
   && cp /files/docker-entrypoint.sh /usr/local/bin/ \
   && chmod +rx /usr/local/bin/docker-entrypoint.sh \
@@ -127,11 +146,6 @@ RUN mkdir -p /files/liberty-ingress/default-cert/ \
   && chown www-data:www-data -R /etc/nginx/others \
   && chown www-data:www-data -R /files/error \
   && chown www-data:www-data -R /files/liberty-ingress/default-cert
-
-ENV NAME_LIBERTY="liberty" \
-    TIMEOUT="60m" \
-    SECRET_USER="admin" \
-    SECRET_PASSWD="admin1234567890"
 
 EXPOSE 80
 EXPOSE 443

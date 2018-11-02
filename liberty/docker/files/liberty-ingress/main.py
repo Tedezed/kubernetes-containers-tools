@@ -2,13 +2,12 @@
 # -*- coding: utf-8 -*-
 
 # Ingress Controller Liberty
-
+# Creator: Juan Manuel Torres
 # Source: https://github.com/Tedezed
 # Mail: juanmanuel.torres@aventurabinaria.es
 
 from kubernetes import client, config
-import pwd
-import traceback
+import pwd, traceback, pprint
 from os import path, getlogin, system, getuid, environ
 from sys import argv
 from base64 import b64decode
@@ -23,6 +22,7 @@ class kube_init:
     extv1beta1 = None
     bash_bold = '\033[1m'
     bash_none = '\033[00m'
+    ip_error = "169.254.1.10"
 
     system('nginx -v')
 
@@ -87,18 +87,25 @@ class kube_init:
         system('nginx -t')
         system('service nginx reload')
 
-    def get_ip_from_service(self, name, namespace, ip_error):
+    def get_ip_from_service(self, name, namespace = "", ip_error = "169.254.1.10"):
         services = self.v1.list_service_for_all_namespaces(watch=False)
         list_svc = []
         for s in services.items:
-            if s.metadata.name == name and s.metadata.namespace == namespace:
-                # system('echo "[INFO] %s - %s: %s"' % (name, namespace, s.spec.cluster_ip))
-                try:
-                    return s.spec.cluster_ip
-                except:
-                    return ip_error
+            if namespace == "":
+                if s.metadata.name == name:
+                    try:
+                        return s.spec.cluster_ip
+                    except:
+                        return ip_error
+            else:
+                if s.metadata.name == name and s.metadata.namespace == namespace:
+                    # system('echo "[INFO] %s - %s: %s"' % (name, namespace, s.spec.cluster_ip))
+                    try:
+                        return s.spec.cluster_ip
+                    except:
+                        return ip_error
 
-    def get_ip_from_pod(self, name, namespace, ip_error):
+    def get_ip_from_pod(self, name, namespace, ip_error = "169.254.1.10"):
         pod = self.v1.list_pod_for_all_namespaces(watch=False)
         for p in pod.items:
             if p.metadata.name == name and p.metadata.namespace == namespace:
@@ -107,7 +114,7 @@ class kube_init:
                 except:
                     return ip_error
 
-    def get_ip_from_deployment(self, name, namespace, ip_error):
+    def get_ip_from_deployment(self, name, namespace, ip_error = "169.254.1.10"):
         replica_set = self.extv1beta1.list_replica_set_for_all_namespaces(watch=False)
         owner_replicaset = None
         for rs in replica_set.items:
@@ -145,6 +152,7 @@ class kube_init:
 
 
     def get_secret(self, ing_name_secret, ing_namespace_secret):
+        print '[DEBUG] Get secret %s' % ing_name_secret
         secrets = self.v1.list_secret_for_all_namespaces(watch=False)
         dic_cert = {}
         for s in secrets.items:
@@ -165,17 +173,18 @@ class kube_init:
         dic_cert = {}
         for s in secrets.items:
             if s.metadata.namespace == ing_namespace_secret and s.metadata.name == ing_name_secret:
-                # system('echo "[INFO] Found secret for ingress %s"' % (s.metadata.name))
-
+                system('echo "[INFO] Found secret for ingress %s"' % (s.metadata.name))
                 dir_name = s.metadata.namespace + '_' + s.metadata.name
                 for d in s.data:
                     patch_cert = '%s/certs/%s/%s' % (self.ruta_exec, dir_name, str(d))
                     dic_cert[str(d)] = str(patch_cert)
+        if dic_cert == {}:
+            dic_cert['tls.crt'] = '/files/liberty-ingress/certs/kube-system_liberty-tls/tls.crt'
+            dic_cert['tls.key'] = '/files/liberty-ingress/certs/kube-system_liberty-tls/tls.key'
         return dic_cert
 
-    def get_hosts(self, i):
+    def get_hosts(self, i, ip_error = "169.254.1.10"):
         list_hosts = []
-        ip_error = "169.254.10.90"
         client_ssl = "False"
         for host in i.spec.rules:
             #print host
@@ -220,6 +229,7 @@ class kube_init:
                         # system('echo "[INFO] Found mode in ingress %s"' % (i.metadata.name))
 
                         # Modos
+                        found_tls_acme = False
                         if i.metadata.annotations.get('ingress-liberty/mode', False) == 'ssl':
 
                             list_hosts = self.get_hosts(i)
@@ -253,26 +263,54 @@ class kube_init:
                         elif i.metadata.annotations.get('ingress-liberty/mode', False) == 'tls-acme' \
                             and i.metadata.annotations.get('kubernetes.io/tls-acme', False) == 'true':
 
+                            found_tls_acme = True
                             list_hosts = self.get_hosts(i)
+
+                            if i.metadata.annotations.get('ingress-liberty/backend', False):
+                                backend = i.metadata.annotations.get('ingress-liberty/backend', False)
+
+                            list_certs=[]
                             for secret in i.spec.tls:
-                                secret_acme = secret.secret_name
-                                for host_acme in secret.hosts:
-                                    print host_acme
-                                    print secret_acme
+                                dic_certs={}
+                                dic_certs[secret.secret_name] = self.dic_get_secret(secret.secret_name, i.metadata.namespace)
+                                dic_certs["secret_name"] = secret.secret_name
+                                dic_certs["hosts"] = secret.hosts
+                                list_certs.append(dic_certs)
 
-                            import pdb; pdb.set_trace()
+                            dic_ing = {'name_ing': i.metadata.name, 'ing_namespace_secret': i.metadata.namespace,
+                                       'list_hosts': list_hosts, 'mode': 'tls-acme',
+                                       'dic_certs': list_certs, 'backend': backend, 'patch': self.ruta_exec,
+                                       'name_cert_generator': environ['SVC_CERT_GENERATOR'], 'namespace_cert_generator': environ['NAMESPACE_CERT_GENERATOR']}
+                            list_ing.append(dic_ing)
 
-                ddiff = DeepDiff(list_ing, old_list_ing)
+                freeze_list_ing = list(list_ing)
+                ddiff = DeepDiff(freeze_list_ing, old_list_ing)
                 if ddiff:
-                    system('echo "%s"' % list_ing)
+                    system('echo "Diff: %s"' % ddiff)
+                    # Search cert_generator
+                    if found_tls_acme:
+                        name_cert_generator = environ['SVC_CERT_GENERATOR']
+                        port_cert_generator = environ['SVC_CERT_GENERATOR_PORT']
+                        ip_cert_generator = self.get_ip_from_service(name_cert_generator)
+                        list_hosts = [{"name_upstream": name_cert_generator, "backend": {"service_ip": ip_cert_generator, \
+                            "service_port": port_cert_generator}}]
+                        dic_cert_generator = { "mode": "cert_generator", "list_hosts" : list_hosts}
+                        list_ing.append(dic_cert_generator)
+                    system('echo "%s"' % freeze_list_ing)
+                    #pprint.PrettyPrinter(indent=4).pprint(list_ing)
                     for i in list_ing:
                         if i['mode'] == 'ssl':
+                            print '[DEBUG] Configure mode ssl'
                             #system('echo "%s"' % i)
                             dic_cert = self.get_secret(i["ing_name_secret"], i["ing_namespace_secret"])
                             if dic_cert == {}:
                                 list_ing.remove(i)
                                 system('echo "[ERROR] Not Found %s in namespace %s"' % (i["ing_name_secret"], i["ing_namespace_secret"]))
                                 sleep(5)
+                        elif i['mode'] == 'tls-acme':
+                            print '[DEBUG] Configure mode tls-acme'
+                            for secret in i["dic_certs"]:
+                                dic_cert = self.get_secret(secret["secret_name"], i["ing_namespace_secret"])
                     system('echo "\033[1m[RELOAD-WRITE]\033[00m Write conf nginx"')
                     self.write_conf(list_ing, 'nginx-template', '/etc/nginx/sites-enabled/default')
                     self.write_conf(list_ing, 'nginx-template-tcp', '/etc/nginx/others/default')
@@ -281,7 +319,7 @@ class kube_init:
                     self.reload()
 
                 # print list_ing
-                old_list_ing = list_ing
+                old_list_ing = freeze_list_ing
                 sleep(int(self.dic_argv["time_query"]))
 
             except Exception as e:

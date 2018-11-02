@@ -1,3 +1,8 @@
+# Ingress Controller Liberty
+# Creator: Juan Manuel Torres
+# Source: https://github.com/Tedezed
+# Mail: juanmanuel.torres@aventurabinaria.es
+
 server {
         listen 80 default;
         listen 443 default ssl;
@@ -20,7 +25,7 @@ server {
 
   {% if 'ssl'==ing['mode'] %}
 
-  ################# {{ host['name_upstream'] }} #################
+  ################# SSL: {{ host['name_upstream'] }} #################
 
   upstream {{ host['name_upstream'] }} {
   {% if 'deployment'==host['type_backend'] %}
@@ -199,8 +204,140 @@ server {
 
     }
 
-  ################# {{ host['name_upstream'] }} #################
+  ################# SSL: {{ host['name_upstream'] }} #################
 
+  {% elif 'cert_generator'==ing['mode'] %}
+
+  ################# TLS-ACME: {{ host['name_upstream'] }} #################
+
+  upstream {{ host['name_upstream'] }} {
+    least_conn;
+    keepalive 32;
+    server {{ host['backend']['service_ip'] }}:{{ host['backend']['service_port'] }} max_fails=0 fail_timeout=0;
+  }
+
+  {% elif 'tls-acme'==ing['mode'] %}
+  ################# TLS-ACME: {{ host['name_upstream'] }} #################
+
+  upstream {{ host['name_upstream'] }} {
+  {% if 'deployment'==host['type_backend'] %}
+    sticky expires=1h;
+  {% endif %}
+
+  {% set port80 = {'found':False} %}
+  {% set port443 = {'found':False} %}
+  # https://stackoverflow.com/questions/9486393/jinja2-change-the-value-of-a-variable-inside-a-loop
+  {% for backend in host['backends'] recursive %}
+    # Search port: {{ backend }}
+    {% if '80'==backend['service_port']|string %}
+      # Port found {{ backend['service_port'] }}
+      {% if port80.update({'found':True}) %} {% endif %}
+    {% elif '443'==backend['service_port']|string %}
+      # Port found {{ backend['service_port'] }}
+      {% if port443.update({'found':True}) %} {% endif %}
+    {% endif %}
+  {% endfor %}
+
+  {% for backend in host['backends'] recursive %}
+    {% if (port80.found) and (port443.found) %}
+      # Port force backend 80 - 80:{{port80}}/443:{{port443}}
+      server {{ backend['service_ip'] }}:80 max_fails=0 fail_timeout=0;
+    {% else %}
+      # Port backend - 80:{{port80}}/443:{{port443}}
+      server {{ backend['service_ip'] }}:{{ backend['service_port'] }} max_fails=0 fail_timeout=0;
+    {% endif %}
+  {% endfor %}
+  }
+
+  server {
+        server_name {{ host['host_name'] }};
+        listen 80;
+        listen [::]:80;
+        set $proxy_upstream_name "-";
+        listen 443  ssl http2;
+        listen [::]:443  ssl http2;
+
+        # CERTITIFICADOS
+        ssl on;
+        ssl_dhparam {{ ing['patch'] }}/dhparam.pem;
+        {% for cert in ing['dic_certs'] recursive %}
+          # {{ host['host_name'] }} in {{ cert['hosts'] }}
+          {% if host['host_name'] in cert['hosts'] %}
+            ssl_certificate {{ cert[cert['secret_name']]['tls.crt'] }};
+            ssl_certificate_key {{ cert[cert['secret_name']]['tls.key'] }};
+          {% endif %}
+        {% endfor %}
+        #ssl_certificate /ingress-controller/ssl/example-tls-nginx.pem;
+        #ssl_certificate_key /ingress-controller/ssl/example-tls-nginx.pem;
+        #ssl_trusted_certificate /ingress-controller/ssl/example-tls-nginx-full-chain.pem;
+        ssl_stapling                            on;
+        ssl_stapling_verify                     on;
+
+        # .well-known/acme-challenge/_selftest
+        location /.well-known/acme-challenge {
+            port_in_redirect off;
+            set $proxy_upstream_name "";
+            set $namespace      {{ ing['namespace_cert_generator'] }};
+            set $ingress_name   {{ ing['name_cert_generator'] }};
+            set $service_name   {{ ing['name_cert_generator'] }};
+
+            client_max_body_size                    "1024m";
+            proxy_set_header Host                   $host;
+            proxy_set_header ssl-client-cert        "";
+            proxy_set_header ssl-client-verify      "";
+            proxy_set_header ssl-client-dn          "";
+            proxy_set_header X-Forwarded-Host       $host;
+            proxy_set_header X-Original-URI         $request_uri;
+            proxy_set_header X-Original-Forwarded-For $http_x_forwarded_for;
+            proxy_set_header Proxy                  "";
+            proxy_connect_timeout                   1800s;
+            proxy_send_timeout                      1800s;
+            proxy_read_timeout                      1800s;
+            proxy_buffering                         off;
+            proxy_buffer_size                       "4k";
+            proxy_buffers                           4 "4k";
+            proxy_request_buffering                 "on";
+            proxy_http_version                      1.1;
+            proxy_cookie_domain                     off;
+            proxy_cookie_path                       off;
+            proxy_next_upstream                     error timeout invalid_header http_502 http_503 http_504;
+            proxy_pass http://{{ ing['name_cert_generator'] }};
+            proxy_redirect                          off;
+        }
+
+        location / {
+            port_in_redirect off;
+            set $proxy_upstream_name "{{ host['name_upstream'] }}";
+            #set $namespace      "default";
+            #set $ingress_name   "example-ingress";
+            #set $service_name   "svc-example";
+
+            client_max_body_size                    "1024m";
+            proxy_set_header Host                   $host;
+            proxy_set_header ssl-client-cert        "";
+            proxy_set_header ssl-client-verify      "";
+            proxy_set_header ssl-client-dn          "";
+            proxy_set_header X-Forwarded-Host       $host;
+            proxy_set_header X-Original-URI         $request_uri;
+            proxy_set_header X-Original-Forwarded-For $http_x_forwarded_for;
+            proxy_set_header Proxy                  "";
+            proxy_connect_timeout                   1800s;
+            proxy_send_timeout                      1800s;
+            proxy_read_timeout                      1800s;
+            proxy_buffering                         off;
+            proxy_buffer_size                       "4k";
+            proxy_buffers                           4 "4k";
+            proxy_request_buffering                 "on";
+            proxy_http_version                      1.1;
+            proxy_cookie_domain                     off;
+            proxy_cookie_path                       off;
+            proxy_next_upstream                     error timeout invalid_header http_502 http_503 http_504;
+            proxy_pass http://{{ host['name_upstream'] }};
+            proxy_redirect                          off;
+        }
+    }
+
+  ################# TLS-ACME: {{ host['name_upstream'] }} #################
   {% endif %}
 
   {% endfor %}

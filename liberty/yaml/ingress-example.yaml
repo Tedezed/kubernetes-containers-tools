@@ -2,9 +2,10 @@ apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
   annotations:
-    kubernetes.io/ingress.class: liberty-debug
+    kubernetes.io/ingress.class: "liberty-debug"
     kubernetes.io/tls-acme: "true"
     ingress-liberty/mode: "tls-acme"
+    ingress-liberty/backend: "1"
   name: ingress-test
   namespace: default
 spec:
@@ -13,10 +14,80 @@ spec:
     http:
       paths:
       - backend:
-          serviceName: phpbb-hama
+          serviceName: test
           servicePort: 80
         path: /
   tls:
   - hosts:
     - www.test.es
     secretName: test-tls-nginx
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: ingress-test2
+  namespace: default
+  annotations:
+    kubernetes.io/ingress.class: "liberty-debug"
+    kubernetes.io/tls-acme: "true"
+    ingress-liberty/mode: "tls-acme"
+    ingress-liberty/backend: "1"
+spec:
+  tls:
+  - hosts:
+    - test2.com
+    secretName: test2-com-tls
+  - hosts:
+    - www.test2.com
+    secretName: wwwtest2-com-tls
+  - hosts:
+    - test2.es
+    secretName: test2-es-tls
+  - hosts:
+    - www.test2.es
+    secretName: wwwtest2-es-tls
+  rules:
+  - host: test2.com
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: test2
+          servicePort: 80
+      - path: /
+        backend:
+          serviceName: test2
+          servicePort: 443
+  - host: www.test2.com
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: test2
+          servicePort: 80
+      - path: /
+        backend:
+          serviceName: test2
+          servicePort: 443
+  - host: test2.es
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: test2
+          servicePort: 80
+      - path: /
+        backend:
+          serviceName: test2
+          servicePort: 443
+  - host: www.test2.es
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: test2
+          servicePort: 80
+      - path: /
+        backend:
+          serviceName: test2
+          servicePort: 443

@@ -1,17 +1,21 @@
+# Ingress Controller Liberty
+# Creator: Juan Manuel Torres
+# Source: https://github.com/Tedezed
+# Mail: juanmanuel.torres@aventurabinaria.es
 
-generate-dhparam:
-	rm -rf files/liberty-ingress/dhparam.pem
-	openssl dhparam -out files/liberty-ingress/dhparam.pem 1024
+build:
+	docker build -f Dockerfile -t tedezed/liberty-dynamic-ingress:${VERSION_IMAGE} .
+	rm -rf files/liberty-ingress/certs/*
+	rm -rf files/liberty-ingress/default-cert/*
 
-build: generate-dhparam build-only
-
-build-only:
-	docker build -f Dockerfile -t tedezed/liberty-dynamic-ingress:latest .
+build-no-cache:
+	bash tools/drop || true
+	docker build -f Dockerfile -t tedezed/liberty-dynamic-ingress:${VERSION_IMAGE} --no-cache .
 	rm -rf files/liberty-ingress/certs/*
 	rm -rf files/liberty-ingress/default-cert/*
 
 push:
-	docker push tedezed/liberty-dynamic-ingress:latest
+	docker push tedezed/liberty-dynamic-ingress:${VERSION_IMAGE}
 
 debug:
 	echo "......."
@@ -19,3 +23,9 @@ debug:
 	echo "Replace: - cluster -> sever:'https://IP' in ~/.kube/config-slug to 'https://kuberentes' and add IP kuberentes to /etc/hosts"
 	echo "......."
 	python files/liberty-ingress/main.py
+	cat /etc/nginx/sites-enabled/default
+
+force_pull_image:
+	kubectl patch deployment liberty-ingress -p "{\"spec\":{\"template\":{\"metadata\":{\"labels\":{\"date\":\"`date +'%s'`\"}}}}}" -n kube-system
+
+default: build push force_pull_image
