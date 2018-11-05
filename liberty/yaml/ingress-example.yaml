@@ -3,6 +3,7 @@ kind: Ingress
 metadata:
   annotations:
     kubernetes.io/ingress.class: "liberty-debug"
+    ingress-liberty/backend-entity: "deployment"
     kubernetes.io/tls-acme: "true"
     ingress-liberty/mode: "tls-acme"
     ingress-liberty/backend: "1"

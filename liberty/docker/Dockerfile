@@ -126,6 +126,7 @@ RUN pip install kubernetes deepdiff \
 
 ENV NAME_LIBERTY="liberty" \
     TIMEOUT="60m" \
+    MODE="production" \
     SECRET_USER="admin" \
     SECRET_PASSWD="admin1234567890" \
     SUPPORT_EMAIL="soporte@guadaltech.es" \

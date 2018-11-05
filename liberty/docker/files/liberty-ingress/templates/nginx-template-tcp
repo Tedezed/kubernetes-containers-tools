@@ -1,7 +1,3 @@
-# Ingress Controller Liberty
-# Creator: Juan Manuel Torres
-# Source: https://github.com/Tedezed
-# Mail: juanmanuel.torres@aventurabinaria.es
 
 {% for ing in list_ing recursive %}
   {% for host in ing['list_hosts'] recursive %}

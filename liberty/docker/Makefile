@@ -23,7 +23,7 @@ debug:
 	echo "Replace: - cluster -> sever:'https://IP' in ~/.kube/config-slug to 'https://kuberentes' and add IP kuberentes to /etc/hosts"
 	echo "......."
 	python files/liberty-ingress/main.py
-	cat /etc/nginx/sites-enabled/default
+	#cat /etc/nginx/sites-enabled/default
 
 force_pull_image:
 	kubectl patch deployment liberty-ingress -p "{\"spec\":{\"template\":{\"metadata\":{\"labels\":{\"date\":\"`date +'%s'`\"}}}}}" -n kube-system

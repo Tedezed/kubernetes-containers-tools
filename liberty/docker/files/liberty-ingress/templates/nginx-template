@@ -1,7 +1,3 @@
-# Ingress Controller Liberty
-# Creator: Juan Manuel Torres
-# Source: https://github.com/Tedezed
-# Mail: juanmanuel.torres@aventurabinaria.es
 
 server {
         listen 80 default;
@@ -250,10 +246,16 @@ server {
   }
 
   server {
+    listen 80;
+    listen [::]:80;
+    set $proxy_upstream_name "-";
+    server_name {{ host['host_name'] }};
+    return 301 https://$host$request_uri;
+  }
+
+
+  server {
         server_name {{ host['host_name'] }};
-        listen 80;
-        listen [::]:80;
-        set $proxy_upstream_name "-";
         listen 443  ssl http2;
         listen [::]:443  ssl http2;
 

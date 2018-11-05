@@ -81,6 +81,10 @@ class kube_init:
         file_conf_template.close()
         return template_render
 
+    def level_print(self, level="None", text="Empty"):
+        if environ['MODE'] == level:
+            print(text)
+
     def reload(self):
         system('chown www-data:www-data %s/certs/*' % (self.ruta_exec))
         system('chown www-data:www-data -R /etc/nginx/*')
@@ -120,21 +124,21 @@ class kube_init:
         for rs in replica_set.items:
             if rs.metadata.owner_references[0].kind == "Deployment"\
                     and rs.metadata.owner_references[0].name == name\
-                    and rs.metadata.namespace == namespace:
+                    and rs.metadata.namespace == namespace\
+                    and rs.spec.replicas > 0:
                 owner_replicaset = rs.metadata.name
+                self.level_print('debug', owner_replicaset)
 
         list_ip = []
         pod = self.v1.list_pod_for_all_namespaces(watch=False)
         not_found_pod = True
         for p in pod.items:
-            #system('echo "%s"' % (p['metadata']['owner_references'][0]['name']))
             if p.metadata.owner_references:
-                #system('echo "%s"' % (p.metadata.owner_references[0].name))
-                #
                 #exec("annotation_pod = " + str(p.metadata.annotations.get("kubernetes.io/created-by", {})))
                 annotation_pod = p.metadata.owner_references[0]
+                #self.level_print('debug' , 'echo "%s"' % (annotation_pod))
                 #annotation_pod = annotation_pod.get("reference", {})
-                #
+                #self.level_print('debug', annotation_pod)
                 if annotation_pod != {}:
                     if annotation_pod.kind == "ReplicaSet"\
                             and annotation_pod.name == owner_replicaset\
@@ -218,9 +222,11 @@ class kube_init:
         return list_hosts
 
     def get_ingress(self):
+        system('echo "[INFO] Class for Liberty: %s"' % environ['NAME_LIBERTY'])
         self.get_secret("liberty-tls", "kube-system")
         old_list_ing = [2]
         while True:
+            found_tls_acme = False
             try:
                 ing = self.extv1beta1.list_ingress_for_all_namespaces(watch=False)
                 list_ing = []
