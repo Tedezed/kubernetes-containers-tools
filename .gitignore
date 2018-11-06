@@ -1,1 +1,2 @@
 liberty/files/liberty-ingress/dhparam.pem
+*.pyc
