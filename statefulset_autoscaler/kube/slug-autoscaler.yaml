@@ -4,8 +4,8 @@ metadata:
   name: slug-autoscaler
   namespace: kube-system
 ---
-apiVersion: v1
-kind: ReplicationController
+apiVersion: extensions/v1beta1
+kind: Deployment
 metadata:
   name: slug-autoscaler
   namespace: kube-system
@@ -19,7 +19,8 @@ spec:
       serviceAccountName: slug-autoscaler
       containers:
       - name: slug-autoscaler
-        image: tedezed/slug-statefulset-autoscaler:latest
+        image: tedezed/slug-statefulset-autoscaler:2.0
+        imagePullPolicy: Always
         env:
           - name: HEAPSTER
             value: http://heapster/api/v1/model

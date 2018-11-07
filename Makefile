@@ -7,5 +7,6 @@ slug-dynamic_loadbalancer:
 	docker push tedezed/slug-dynamic-loadbalancer:latest
 
 slug-statefulset_autoscaler:
-	cd statefulset_autoscaler/docker && docker build -f Dockerfile -t tedezed/slug-statefulset-autoscaler:latest .
-	docker push tedezed/slug-statefulset-autoscaler:latest
+	cd statefulset_autoscaler/docker && docker build -f Dockerfile -t tedezed/slug-statefulset-autoscaler:2.0 .
+	docker push tedezed/slug-statefulset-autoscaler:2.0
+	kubectl patch deployment slug-autoscaler -p "{\"spec\":{\"template\":{\"metadata\":{\"labels\":{\"date\":\"`date +'%s'`\"}}}}}" -n kube-system
