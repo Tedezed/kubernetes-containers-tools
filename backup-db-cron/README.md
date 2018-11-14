@@ -36,6 +36,12 @@ Path of the backups: `/slug-backup-db-cron/backups`
 * **TIME**: Time in format for crontab.
 * **DAYS_TO_DROP**
 * **DAYS_TO_DROP_SNAPSHOT**
+* **EMAIL_MODE**: Sending alertsm, use OFF or SMTP.
+* **EMAIL_SEND_TO**
+* **EMAIL_SERVER**
+* **EMAIL_PORT**
+* **EMAIL_USER**
+* **EMAIL_PASSWORD**
 
 
 ### Configuration modes:

@@ -6,10 +6,12 @@
 
 # client.configuration.host
 
+import smtplib
+from email.mime.text import MIMEText
 import googleapiclient.discovery, subprocess, logging, string, random, yaml
 import psycopg2, mysql.connector
 from kubernetes import client, config
-from os import path, getlogin, system, listdir, getuid
+from os import path, getlogin, system, listdir, getuid, environ
 from pwd import getpwuid
 from sys import argv
 from copy import deepcopy
@@ -18,6 +20,7 @@ from deepdiff import DeepDiff
 from jinja2 import Environment, FileSystemLoader
 from time import sleep
 from datetime import datetime, timedelta
+from psutil import disk_usage
 
 class gcloud_tools:
 
@@ -94,6 +97,59 @@ class kube_init:
 
     def id_generator(self, size=6, chars=string.ascii_uppercase + string.digits):
         return ''.join(random.choice(chars) for _ in range(size))
+
+    def check_disk(self, check_path = '/'):
+        obj_Disk = disk_usage(check_path)
+
+        total = int(obj_Disk.total / (1024.0 ** 3))
+        used = int(obj_Disk.used / (1024.0 ** 3))
+        free = int(obj_Disk.free / (1024.0 ** 3))
+        percent_used = int(obj_Disk.percent)
+
+        status_disk = """Check: %s
+        Total disk: %sG
+        Used: %sG
+        Free: %sG
+        Percent used: %s%%
+        """ % (check_path, total, used, free, percent_used)
+
+        print status_disk
+        warning_percent = 80
+        critical_percent = 90
+        if percent_used > warning_percent:
+            status = "WARNING"
+        elif percent_used > critical_percent:
+            status = "CRITICAL"
+
+        if percent_used > warning_percent and environ['EMAIL_MODE'] != "OFF":
+            print "Try send email..."
+            self.send_mail("[SLUG-BACKUP] Status %s" % status, status_disk)
+
+    def send_mail(self, subject, body):
+        send_to = ["%s" % (environ['EMAIL_SEND_TO'])]
+        email_mode = environ['EMAIL_MODE']
+        email_server = environ['EMAIL_SERVER']
+        email_port = environ['EMAIL_PORT']
+        email_user = environ['EMAIL_USER']
+        email_password = environ['EMAIL_PASSWORD']
+
+        server = smtplib.SMTP(email_server, email_port)
+        server.ehlo()
+        server.starttls()
+        server.ehlo()
+        server.login(email_user, email_password)
+
+        msg = MIMEText(body, "html")
+        msg['Subject'] = subject
+        msg['From'] = email_user
+        msg['To'] = ', '.join(send_to)
+
+        try:
+            for s in send_to:
+                server.sendmail(email_user, s, msg.as_string())
+            print '[INFO] Email sent!'
+        except Exception as e:  
+            print '[ERROR] Email: %s' % (e)
 
     def check(self, name_conf, conf_mode):
         ret = self.v1.list_config_map_for_all_namespaces(watch=False)
@@ -346,6 +402,7 @@ def main():
     dic_argv = argument_to_dic(list_argv)
 
     kluster = kube_init()
+    kluster.check_disk("/slug-backup-db-cron/backups")
     if dic_argv.get("mode", False) == "backup":
         if kluster.check(kluster.name_configmap_backup, dic_argv["conf_mode"]):
             kluster.start_kube_backup()

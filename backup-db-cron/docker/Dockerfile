@@ -59,8 +59,8 @@ RUN apt-get install -y \
     python-setuptools
 
 RUN pip install kubernetes deepdiff psycopg2 mysql-connector \
-    && pip install google-api-python-client
-RUN pip install google-auth google-auth-httplib2 psycopg2-binary
+    && pip install google-api-python-client setuptools
+RUN pip install google-auth google-auth-httplib2 psycopg2-binary psutil
 
 RUN apt-get remove --purge -y \
     build-essential \
@@ -101,7 +101,8 @@ ENV DAYS_TO_DROP=15 \
 ENV MODE="1" \
     CONF_MODE="conf-map" \
     PROJECT="project-name-test" \
-    ZONE="europe-west1-b"
+    ZONE="europe-west1-b" \
+    EMAIL_MODE="OFF"
 
 ## ----- END ----- ##
 
