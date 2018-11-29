@@ -131,7 +131,7 @@ class kube_init:
         email_server = environ['EMAIL_SERVER']
         email_port = environ['EMAIL_PORT']
         email_user = environ['EMAIL_USER']
-        email_password = environ['EMAIL_PASSWORD']
+        email_password = str(environ['EMAIL_PASSWORD'].encode('utf-8'))
 
         server = smtplib.SMTP(email_server, email_port)
         server.ehlo()
@@ -252,11 +252,11 @@ class kube_init:
 
             if db["type"] == "postgres":
                 conn = psycopg2.connect(dbname='postgres', user=db["POSTGRES_USER"], \
-                                    host=host, password=db["POSTGRES_PASSWORD"], port=db["port"])
+                                    host=host, password=str(db["POSTGRES_PASSWORD"].encode('utf-8')), port=db["port"])
                 key = True
             elif db["type"] == "mysql":
                 conn = mysql.connector.connect(database='', user=db["MYSQL_USER"], \
-                                    host=host, password=db["MYSQL_PASSWORD"], port=db["port"])
+                                    host=host, password=str(db["MYSQL_PASSWORD"].encode('utf-8')), port=db["port"])
                 key = True
             else:
                 error = '[Error] Not valid database type found'
@@ -295,18 +295,18 @@ class kube_init:
                     print "[INFO] Dump %s" % r
                     if db["type"] == "postgres":
                         dump_command = 'pg_dump -Fc --dbname=postgresql://%s:%s@%s:%s/%s > %s/%s___%s___%s.dump' % \
-                                       (db["POSTGRES_USER"], db["POSTGRES_PASSWORD"], host, db["port"], str(r[0]), \
+                                       (db["POSTGRES_USER"], str(db["POSTGRES_PASSWORD"].encode('utf-8')), host, db["port"], str(r[0]), \
                                         ruta_backup, str(r[0]), now_datetime.strftime("%Y-%m-%d"), self.id_generator())
                     elif db["type"] == "mysql":
                         dump_command = 'mysqldump  -u %s -p%s -h %s -P %s --databases %s > %s/%s___%s___%s.dump' % \
-                                       (db["MYSQL_USER"], db["MYSQL_PASSWORD"], host, db["port"], str(r[0]), \
+                                       (db["MYSQL_USER"], str(db["MYSQL_PASSWORD"].encode('utf-8')), host, db["port"], str(r[0]), \
                                         ruta_backup, str(r[0]), now_datetime.strftime("%Y-%m-%d"), self.id_generator())
 
                     # try:
-                    var = direct_output = subprocess.call(dump_command, shell=True)
+                    var = direct_output = subprocess.call(str(dump_command), shell=True)
                     if var == 0:
-                        print "[INFO] [%s] Backup %s" % (now_datetime, r[0])
-                        logging.warning("[INFO] [%s] Backup %s" % (now_datetime, r[0]))
+                        print "[INFO] [%s] Backup %s..." % (now_datetime, r[0])
+                        logging.warning("[INFO] [%s] Backup %s..." % (now_datetime, r[0]))
                     else:
                         logging.error("[ERROR] [%s] in backup %s" % (now_datetime, r[0]))
 

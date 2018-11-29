@@ -102,7 +102,8 @@ ENV MODE="1" \
     CONF_MODE="conf-map" \
     PROJECT="project-name-test" \
     ZONE="europe-west1-b" \
-    EMAIL_MODE="OFF"
+    EMAIL_MODE="OFF" \
+    PYTHONIOENCODING="UTF-8"
 
 ## ----- END ----- ##
 

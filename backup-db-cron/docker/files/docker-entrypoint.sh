@@ -1,7 +1,14 @@
 #!/bin/bash
 set -e
 
-echo "ver 0.0.0.7"
+echo "ver 1.0"
+
+#export PYTHONIOENCODING="UTF-8"
+echo "
+import sys
+reload(sys)
+sys.setdefaultencoding('utf-8')
+" >> /usr/lib/python2.7/sitecustomize.py
 
 # Drop /etc/crontab
 echo > /etc/crontab
