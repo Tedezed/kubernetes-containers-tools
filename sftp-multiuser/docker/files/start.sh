@@ -2,6 +2,9 @@
 
 set -x
 
+export USER=$(sed ':a;N;$!ba;s/\n/ /g' <<< $USER)
+export PASS=$(sed ':a;N;$!ba;s/\n/ /g' <<< $PASS)
+
 ### Functions ###
 
 function fun_check_user {
