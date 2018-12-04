@@ -18,9 +18,8 @@ function fun_check_user {
 	fi
 
 	echo "INFO: Reset permissions..."
-	chown $OWNER -R $DIR
-	chmod g+rw -R $DIR
-	chgrp $USER -R $DIR
+	chmod 770 -R $DIR
+	chown $OWNER:$USER -R $DIR
 
 	if [ $MODE != 'user_list' ] && [ $MODE != 'user_list_gcsfuse' ]; then
 		echo "INFO: Reset pass..."
