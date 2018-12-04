@@ -22,8 +22,10 @@ function fun_check_user {
 	chmod g+rw -R $DIR
 	chgrp $USER -R $DIR
 
-	echo "INFO: Reset pass..."
-	echo "$USER:$PASS"|chpasswd
+	if [ $MODE != 'user_list' ] && [ $MODE != 'user_list_gcsfuse' ]; then
+		echo "INFO: Reset pass..."
+		echo "$USER:$PASS"|chpasswd
+	fi
 }
 
 function fun_gcsfuse {
