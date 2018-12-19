@@ -1,0 +1,6 @@
+export USER_LOCAL=$(whoami)
+
+# Build
+export NAME_REGISTRY="tedezed"
+export NAME_IMAGE="cron-backup-kubernetes"
+export VERSION_IMAGE="latest"

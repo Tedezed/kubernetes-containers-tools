@@ -1,0 +1,58 @@
+#gcloud compute disks create cron-backup-kubernetes --size=5GB
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-cron-backup-kubernetes
+  namespace: kube-system
+spec:
+  accessModes:
+  - ReadWriteOnce
+  capacity:
+    storage: 5Gi
+  gcePersistentDisk:
+    fsType: ext4
+    pdName: cron-backup-kubernetes
+    readOnly: false
+  claimRef:
+    name: pvc-cron-backup-kubernetes
+    namespace: kube-system
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: pvc-cron-backup-kubernetes
+  namespace: kube-system
+spec:
+  accessModes:
+  - ReadWriteOnce
+  resources:
+     requests:
+       storage: 5Gi
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: cron-backup-kubernetes
+  namespace: kube-system
+---
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  name: cron-backup-kubernetes
+  namespace: kube-system
+spec:
+  schedule: "10 2 * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          serviceAccountName: cron-backup-kubernetes
+          containers:
+          - name: cron-backup-kubernetes
+            image: tedezed/cron-backup-kubernetes:latest
+            env:
+              - name: DAYS
+                value: "15"
+            command: ["/bin/bash"]
+            args: ["-c", "/mnt/custom/entrypoint.d/00-init.sh >> /root/backups/cron.log"]
+          restartPolicy: OnFailure

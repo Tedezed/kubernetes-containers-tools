@@ -1,0 +1,29 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: cron-backup-kubernetes
+  namespace: kube-system
+---
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  name: cron-backup-kuberentes
+  namespace: kube-system
+  labels:
+    app: cron-backup-kuberentes
+spec:
+  replicas: 1
+  selector:
+    name: cron-backup-kuberentes
+  template:
+    metadata:
+      labels:
+        name: cron-backup-kuberentes
+    spec:
+      serviceAccountName: cron-backup-kubernetes
+      containers:
+      - name: cron-backup-kuberentes
+        image: tedezed/cron-backup-kubernetes:latest
+        command:
+          - sleep
+          - "infinity"
