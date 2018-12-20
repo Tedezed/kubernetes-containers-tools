@@ -1,7 +1,7 @@
 FROM debian:9
 
 ENV DEBIAN_FRONTEND="noninteractive" \
-	DAY="15"
+	DAYS="15"
 
 ADD custom /mnt/custom
 

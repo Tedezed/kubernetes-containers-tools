@@ -27,3 +27,12 @@ spec:
         command:
           - sleep
           - "infinity"
+        volumeMounts:
+        - name: vol-backup-kubernetes
+          mountPath: /root/backups
+          subPath: backups/
+          readOnly: false
+      volumes:
+      - name: vol-backup-kubernetes
+        persistentVolumeClaim:
+          claimName: pvc-cron-backup-kubernetes

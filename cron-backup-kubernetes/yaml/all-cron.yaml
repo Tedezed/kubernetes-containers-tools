@@ -55,4 +55,14 @@ spec:
                 value: "15"
             command: ["/bin/bash"]
             args: ["-c", "/mnt/custom/entrypoint.d/00-init.sh >> /root/backups/cron.log"]
+            volumeMounts:
+            - name: vol-backup-kubernetes
+              mountPath: /root/backups
+              subPath: backups/
+              readOnly: false
+          volumes:
+          - name: vol-backup-kubernetes
+            persistentVolumeClaim:
+              claimName: pvc-cron-backup-kubernetes
           restartPolicy: OnFailure
+

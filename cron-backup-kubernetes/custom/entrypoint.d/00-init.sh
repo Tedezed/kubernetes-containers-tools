@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -e
+set -x
 echo "v0.1"
 echo "User: $(whoami)"
 echo "Start backup - $(date)"
