@@ -11,7 +11,7 @@ spec:
     storage: 5Gi
   gcePersistentDisk:
     fsType: ext4
-    pdName: cron-backup-kubernetes
+    pdName: cron-backup-kubernetes-pro
     readOnly: false
   claimRef:
     name: pvc-cron-backup-kubernetes
