@@ -19,7 +19,14 @@ function fun_check_user {
 
 	echo "INFO: Reset permissions..."
 	chmod 770 -R $DIR
+	# SSH authorized_keys
+	mkdir -p $DIR/.ssh
+	touch $DIR/.ssh
+	chmod 700 -R $DIR/.ssh
+	chmod 600 -R $DIR/.ssh/authorized_keys
 	chown $OWNER:$USER -R $DIR
+	chown $USER $DIR
+	chown $USER -R $DIR/.ssh
 
 	if [ $MODE != 'user_list' ] && [ $MODE != 'user_list_gcsfuse' ]; then
 		echo "INFO: Reset pass..."
@@ -82,5 +89,11 @@ if [ $MODE = 'gcsfuse' ]; then
 	fun_gcsfuse
 fi
 
+#touch /var/log/sshd.log && tailf /var/log/sshd.log &
+#exec /usr/sbin/sshd -E /var/log/sshd.log -d -D
 
-exec /usr/sbin/sshd -D
+while true;
+do
+	exec /usr/sbin/sshd -D
+	sleep 3
+done
