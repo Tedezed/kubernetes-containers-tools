@@ -29,3 +29,8 @@ RUN export GCSFUSE_REPO=gcsfuse-jessie \
     && curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add - \
     && apt-get update \
     && apt-get install gcsfuse -y
+
+RUN curl -o /tmp/kubectl -SL https://storage.googleapis.com/kubernetes-release/release/v1.10.0/bin/linux/amd64/kubectl \
+        && chmod +x /tmp/kubectl \
+        && mv /tmp/kubectl /usr/local/bin/kubectl
+
