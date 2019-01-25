@@ -18,7 +18,7 @@ function fun_check_user {
 	fi
 
 	echo "INFO: Reset permissions..."
-	chmod 770 -R $DIR
+	chmod 775 -R $DIR
 	# SSH authorized_keys
 	mkdir -p $DIR/.ssh
 	touch $DIR/.ssh

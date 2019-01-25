@@ -6,8 +6,9 @@ adduser --disabled-password --ingroup phpbb --gecos "" --uid $UID phpbb
 if [ ! -f /var/www/html/key_no_drop  ]; then
 	echo "First start..."
 	cp -R /phpbb-base/* /var/www/html/
-	chown www-data:www-data -R /var/cache/nginx
-	chown www-data:www-data -R /var/www/html
+	chmod 775 -R /var/www/html
+	chown www-data -R /var/cache/nginx
+	chown www-data -R /var/www/html
 	touch /var/www/html/key_no_drop
 fi
 
