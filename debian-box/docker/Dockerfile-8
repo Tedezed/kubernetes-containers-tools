@@ -22,7 +22,10 @@ RUN apt-get update \
 		libtool \
 		pkg-config \
 		locales \
-		nano
+		nano \
+		dnsutils \
+		mysql-client \
+		postgresql-client
 
 RUN export GCSFUSE_REPO=gcsfuse-jessie \
     && echo "deb http://packages.cloud.google.com/apt $GCSFUSE_REPO main" | sudo tee /etc/apt/sources.list.d/gcsfuse.list \
