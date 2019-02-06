@@ -21,7 +21,7 @@ Based on: https://github.com/bcoe/secure-smtpd
 |  Relay email  | // tcpdump -i eth0 'port 25'
  ---------------
        ^
-       |  Port: 25
+       | Port: 25
        |
  ----------------                             --------------
 |  Secure email  | <---- Port: 5432 -------> |  PostgreSQL  |

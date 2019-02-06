@@ -25,7 +25,10 @@ RUN apt-get update \
 		nano \
 		dnsutils \
 		mysql-client \
-		postgresql-client
+		postgresql-client \
+		nmap \
+		telnet \
+		netcat
 
 RUN export GCSFUSE_REPO=gcsfuse-jessie \
     && echo "deb http://packages.cloud.google.com/apt $GCSFUSE_REPO main" | sudo tee /etc/apt/sources.list.d/gcsfuse.list \

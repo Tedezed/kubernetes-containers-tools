@@ -12,7 +12,7 @@ class StoreCredentials(object):
         self.username = username
         self.password = password
 
-           # Conf database
+        # Conf database
         parser = SafeConfigParser()
         parser.read('emailing.conf')
         self.db_name = parser.get('POSTGRES', 'db_name')

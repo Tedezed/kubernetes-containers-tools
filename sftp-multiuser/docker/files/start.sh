@@ -21,7 +21,6 @@ function fun_check_user {
 	chmod 775 -R $DIR
 	# SSH authorized_keys
 	mkdir -p $DIR/.ssh
-	touch $DIR/.ssh
 	chmod 700 -R $DIR/.ssh
 	chmod 600 -R $DIR/.ssh/authorized_keys
 	chown $OWNER:$USER -R $DIR
