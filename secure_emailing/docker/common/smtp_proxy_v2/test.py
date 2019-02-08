@@ -51,9 +51,17 @@ if len(sys.argv) > 1:
 
 		server = smtplib.SMTP(str(mailserver), str(mailport))
 		server.ehlo()
-		#server.starttls()
-		#server.ehlo()
-		server.login(user, passwd)
+		try:
+			server.starttls()
+			server.ehlo()
+		except:
+			server.ehlo()
+			print('[WARNING] Server not support tls')
+
+		try:
+			server.login(user, passwd)
+		except:
+			print('[WARNING] Server not support login')
 
 		msg = MIMEText(txt, "html")
 		msg['Subject'] = sub
