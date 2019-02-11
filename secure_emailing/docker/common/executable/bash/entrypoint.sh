@@ -31,4 +31,4 @@ fi
 
 # Run server Python
 echo "Run Securemail"
-python /mnt/common/smtp_proxy_v2/mail_relay.py --localport $PORT --remotehost $REMOTE_HOST --remoteport $REMOTE_PORT
+python /mnt/common/smtp_proxy_v2/mail_relay.py --localhost 0.0.0.0 --localport $PORT --remotehost $REMOTE_HOST --remoteport $REMOTE_PORT
