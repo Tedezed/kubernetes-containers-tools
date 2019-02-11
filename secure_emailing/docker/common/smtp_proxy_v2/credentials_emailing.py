@@ -12,9 +12,13 @@ class StoreCredentials(object):
         self.username = username
         self.password = password
 
+        print('[INFO] Login: %s' % self.username)
+        if username == None or password == None:
+            return False
+
         # Conf database
         parser = SafeConfigParser()
-        parser.read('emailing.conf')
+        parser.read('/mnt/common/smtp_proxy_v2/emailing.conf')
         self.db_name = parser.get('POSTGRES', 'db_name')
         self.db_user = parser.get('POSTGRES', 'db_user')
         self.db_passwd = parser.get('POSTGRES', 'db_passwd')
@@ -50,6 +54,9 @@ class StoreCredentials(object):
         self.username = username
         self.password = password
 
+        if username == None or password == None:
+            return False
+
         data_pg_exit = self.data_pg(self.username, self.password)
 
         if data_pg_exit:
@@ -61,6 +68,9 @@ class StoreCredentials(object):
         self.username = username
         self.password = password
 
+        if username == None or password == None:
+            return False
+
         domainfrom = mailfrom.split('@')
         domainfrom = domainfrom[1]
 
@@ -68,7 +78,7 @@ class StoreCredentials(object):
 
         if data_pg_exit:
             parser = SafeConfigParser()
-            parser.read('emailing.conf')
+            parser.read('/mnt/common/smtp_proxy_v2/emailing.conf')
             self.db_name = parser.get('POSTGRES', 'db_name')
             self.db_user = parser.get('POSTGRES', 'db_user')
             self.db_passwd = parser.get('POSTGRES', 'db_passwd')

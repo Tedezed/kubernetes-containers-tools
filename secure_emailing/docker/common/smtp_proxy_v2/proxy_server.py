@@ -73,10 +73,13 @@ class ProxyServer(SMTPServer):
             s.connect(self._remoteaddr[0], self._remoteaddr[1])
             if self.credential_validator.stored:
                 # we had credentials passed in, use them
-                s.login(
-                    self.credential_validator.username,
-                    self.credential_validator.password
-                )
+                try:
+                    s.login(
+                        self.credential_validator.username,
+                        self.credential_validator.password
+                    )
+                except:
+                    print('[WARNING] Server not support login')
             try:
                 refused = s.sendmail(mailfrom, rcpttos, data)
                 if refused != {}:

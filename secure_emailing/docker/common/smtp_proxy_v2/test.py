@@ -50,12 +50,11 @@ if len(sys.argv) > 1:
 			targetscorrect.append(date[0])
 
 		server = smtplib.SMTP(str(mailserver), str(mailport))
-		server.ehlo()
 		try:
+			server.ehlo()
 			server.starttls()
 			server.ehlo()
 		except:
-			server.ehlo()
 			print('[WARNING] Server not support tls')
 
 		try:
