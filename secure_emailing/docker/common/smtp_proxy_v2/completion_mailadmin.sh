@@ -11,7 +11,7 @@ _mailadmin_completions()
 
   # Level 1
   if [ "${#COMP_WORDS[@]}" = "2" ]; then
-  	COMPREPLY=($(compgen -W "list show add grant help" "${COMP_WORDS[1]}"))
+  	COMPREPLY=($(compgen -W "list show add del grant help" "${COMP_WORDS[1]}"))
   fi
 
   # Level 2
@@ -24,6 +24,10 @@ _mailadmin_completions()
   fi
 
   if [ "${#COMP_WORDS[@]}" = "3" ] && [ "${COMP_WORDS[1]}" = "add" ]; then
+    COMPREPLY=($(compgen -W "user domain address" "${COMP_WORDS[2]}"))
+  fi
+
+  if [ "${#COMP_WORDS[@]}" = "3" ] && [ "${COMP_WORDS[1]}" = "del" ]; then
     COMPREPLY=($(compgen -W "user domain address" "${COMP_WORDS[2]}"))
   fi
 

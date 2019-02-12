@@ -183,6 +183,65 @@ def add_address_to_user(command):
 	else:
 		print "Address or user not exist"
 
+def del_user(command):
+	name_user = command.split(" ")[2]
+	if validate(name_user, "user"):
+		cur = conn.cursor()
+		cur.execute("""DELETE FROM emailing_users
+						WHERE id = (SELECT id 
+									FROM emailing_users
+									WHERE name = '%s')""" \
+									% (name_user))
+		cur.execute("""DELETE FROM emailing_users_addresses
+						WHERE id_user = (SELECT id 
+									FROM emailing_users
+									WHERE name = '%s')""" \
+									% (name_user))
+		cur.execute("""DELETE FROM emailing_users_domains
+						WHERE id_user = (SELECT id 
+									FROM emailing_users
+									WHERE name = '%s')""" \
+									% (name_user))
+		cur.close()
+	else:
+		print "User %s not exist" % name_user
+
+def del_domain(command):
+	name_domain = command.split(" ")[2]
+	if validate(name_domain, "domain"):
+		cur = conn.cursor()
+		cur.execute("""DELETE FROM emailing_domains
+						WHERE id = (SELECT id 
+									FROM emailing_domains
+									WHERE domain = '%s')""" \
+									% (name_domain))
+		cur.execute("""DELETE FROM emailing_users_domains
+						WHERE id_domain = (SELECT id 
+									FROM emailing_domains
+									WHERE domain = '%s');""" \
+									% (name_domain))
+		cur.close()
+	else:
+		print "Domain %s not exist" % name_domain
+
+def del_address(command):
+	name_address = command.split(" ")[2]
+	if validate(name_address, "address"):
+		cur = conn.cursor()
+		cur.execute("""DELETE FROM emailing_addresses
+						WHERE id = (SELECT id 
+									FROM emailing_addresses
+									WHERE address = '%s')""" \
+									% (name_address))
+		cur.execute("""DELETE FROM emailing_users_addresses
+						WHERE id_address = (SELECT id 
+									FROM emailing_addresses
+									WHERE address = '%s')""" \
+									% (name_address))
+		cur.close()
+	else:
+		print "Adress %s not exist" % name_address
+
 def help():
 	print """Mailadmin
   Commnads:
@@ -243,6 +302,12 @@ while key:
 				add_domain_to_user(command)
 			elif "grant address" == "%s %s" % (command.split(" ")[0], command.split(" ")[1]):
 				add_address_to_user(command)
+			elif "del user" == "%s %s" % (command.split(" ")[0], command.split(" ")[1]):
+				del_user(command)
+			elif "del domain" == "%s %s" % (command.split(" ")[0], command.split(" ")[1]):
+				del_domain(command)
+			elif "del address" == "%s %s" % (command.split(" ")[0], command.split(" ")[1]):
+				del_address(command)
 			else:
 				print "Unrecognized command %s" % command
 			# Commit	
