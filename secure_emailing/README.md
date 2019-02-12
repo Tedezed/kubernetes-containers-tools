@@ -1,4 +1,6 @@
-# Secure Emailing - Control of permissions for SMTP relay
+# Secure Emailing
+
+### Control of permissions for SMTP relay.
 
 Problem with GCP (Port 25 is always blocked and cannot be used): https://cloud.google.com/compute/docs/tutorials/sending-mail/
 
