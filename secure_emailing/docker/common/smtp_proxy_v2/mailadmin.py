@@ -116,9 +116,12 @@ def add_user(command):
 		pass_user_external = hash_object.hexdigest()
 
 		cur = conn.cursor()
-		cur.execute("SELECT max(id) FROM emailing_users")
-		next_id = cur.fetchone()[0] + 1
-		cur.execute("INSERT INTO emailing_users (id, name, passwd) VALUES (%s, '%s', '%s')" % (next_id, name_user, pass_user_external))
+		try:
+			cur.execute("SELECT max(id) FROM emailing_users")
+			next_id = cur.fetchone()[0] + 1
+			cur.execute("INSERT INTO emailing_users (id, name, passwd) VALUES (%s, '%s', '%s')" % (next_id, name_user, pass_user_external))
+		except Exception as e:
+			cur.execute("INSERT INTO emailing_users (id, name, passwd) VALUES (%s, '%s', '%s')" % (1, name_user, pass_user_external))
 		cur.close()
 
 def add_domain(command):
@@ -127,9 +130,12 @@ def add_domain(command):
 		print "Domain %s exist" % name_domain
 	else:
 		cur = conn.cursor()
-		cur.execute("SELECT max(id) FROM emailing_domains")
-		next_id = cur.fetchone()[0] + 1
-		cur.execute("INSERT INTO emailing_domains (id, domain) VALUES (%s, '%s')" % (next_id, name_domain))
+		try:
+			cur.execute("SELECT max(id) FROM emailing_domains")
+			next_id = cur.fetchone()[0] + 1
+			cur.execute("INSERT INTO emailing_domains (id, domain) VALUES (%s, '%s')" % (next_id, name_domain))
+		except Exception as e:
+			cur.execute("INSERT INTO emailing_domains (id, domain) VALUES (%s, '%s')" % (1, name_domain))
 		cur.close()
 
 def add_address(command):
@@ -138,9 +144,12 @@ def add_address(command):
 		print "Adress %s exist" % name_address
 	else:
 		cur = conn.cursor()
-		cur.execute("SELECT max(id) FROM emailing_addresses")
-		next_id = cur.fetchone()[0] + 1
-		cur.execute("INSERT INTO emailing_addresses (id, address) VALUES (%s, '%s')" % (next_id, name_address))
+		try:
+			cur.execute("SELECT max(id) FROM emailing_addresses")
+			next_id = cur.fetchone()[0] + 1
+			cur.execute("INSERT INTO emailing_addresses (id, address) VALUES (%s, '%s')" % (next_id, name_address))
+		except Exception as e:
+			cur.execute("INSERT INTO emailing_addresses (id, address) VALUES (%s, '%s')" % (1, name_address))
 		cur.close()
 
 def add_domain_to_user(command):
