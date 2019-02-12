@@ -22,5 +22,5 @@ RUN chmod +x /mnt/common/executable/bash/entrypoint.sh \
 	&& chmod +x /usr/bin/mailadmin \
 	&& echo "source /mnt/common/smtp_proxy_v2/completion_mailadmin.sh" >> /root/.bashrc
 
-EXPOSE 1025 2225 2525 25
+EXPOSE 1025 2225 2525 25 9000
 ENTRYPOINT ["/mnt/common/executable/bash/entrypoint.sh"]

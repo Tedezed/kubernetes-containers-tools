@@ -187,11 +187,6 @@ def del_user(command):
 	name_user = command.split(" ")[2]
 	if validate(name_user, "user"):
 		cur = conn.cursor()
-		cur.execute("""DELETE FROM emailing_users
-						WHERE id = (SELECT id 
-									FROM emailing_users
-									WHERE name = '%s')""" \
-									% (name_user))
 		cur.execute("""DELETE FROM emailing_users_addresses
 						WHERE id_user = (SELECT id 
 									FROM emailing_users
@@ -202,6 +197,11 @@ def del_user(command):
 									FROM emailing_users
 									WHERE name = '%s')""" \
 									% (name_user))
+		cur.execute("""DELETE FROM emailing_users
+				WHERE id = (SELECT id 
+							FROM emailing_users
+							WHERE name = '%s')""" \
+							% (name_user))
 		cur.close()
 	else:
 		print "User %s not exist" % name_user
@@ -210,15 +210,15 @@ def del_domain(command):
 	name_domain = command.split(" ")[2]
 	if validate(name_domain, "domain"):
 		cur = conn.cursor()
+		cur.execute("""DELETE FROM emailing_users_domains
+				WHERE id_domain = (SELECT id 
+							FROM emailing_domains
+							WHERE domain = '%s');""" \
+							% (name_domain))
 		cur.execute("""DELETE FROM emailing_domains
 						WHERE id = (SELECT id 
 									FROM emailing_domains
 									WHERE domain = '%s')""" \
-									% (name_domain))
-		cur.execute("""DELETE FROM emailing_users_domains
-						WHERE id_domain = (SELECT id 
-									FROM emailing_domains
-									WHERE domain = '%s');""" \
 									% (name_domain))
 		cur.close()
 	else:
@@ -228,13 +228,13 @@ def del_address(command):
 	name_address = command.split(" ")[2]
 	if validate(name_address, "address"):
 		cur = conn.cursor()
-		cur.execute("""DELETE FROM emailing_addresses
-						WHERE id = (SELECT id 
+		cur.execute("""DELETE FROM emailing_users_addresses
+						WHERE id_address = (SELECT id 
 									FROM emailing_addresses
 									WHERE address = '%s')""" \
 									% (name_address))
-		cur.execute("""DELETE FROM emailing_users_addresses
-						WHERE id_address = (SELECT id 
+		cur.execute("""DELETE FROM emailing_addresses
+						WHERE id = (SELECT id 
 									FROM emailing_addresses
 									WHERE address = '%s')""" \
 									% (name_address))
