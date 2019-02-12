@@ -2,7 +2,8 @@
 
 Control of permissions for SMTP relay.
 
-Problem with GCP (Port 25 is always blocked and cannot be used, even through SMTP relay using G Suite): https://cloud.google.com/compute/docs/tutorials/sending-mail/
+Problem with GCP (Port 25 is always blocked and cannot be used): https://cloud.google.com/compute/docs/tutorials/sending-mail/
+
 Based on: https://github.com/bcoe/secure-smtpd
 
 ```
