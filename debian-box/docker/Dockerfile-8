@@ -29,15 +29,20 @@ RUN apt-get update \
 		nmap \
 		telnet \
 		netcat \
-		python3
+		python3 \
+		lsb-release
 
 RUN export GCSFUSE_REPO=gcsfuse-jessie \
     && echo "deb http://packages.cloud.google.com/apt $GCSFUSE_REPO main" | sudo tee /etc/apt/sources.list.d/gcsfuse.list \
     && curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add - \
     && apt-get update \
-    && apt-get install gcsfuse -y
+    && apt-get install gcsfuse -y \
+    && export CLOUD_SDK_REPO="cloud-sdk-$(lsb_release -c -s)" && \
+    echo "deb http://packages.cloud.google.com/apt $CLOUD_SDK_REPO main" | tee -a /etc/apt/sources.list.d/google-cloud-sdk.list && \
+    curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add - && \
+    apt-get update -y && apt-get install google-cloud-sdk -y \
+    && curl -o /tmp/kubectl -SL https://storage.googleapis.com/kubernetes-release/release/v1.10.0/bin/linux/amd64/kubectl \
+    && chmod +x /tmp/kubectl \
+    && mv /tmp/kubectl /usr/local/bin/kubectl
 
-RUN curl -o /tmp/kubectl -SL https://storage.googleapis.com/kubernetes-release/release/v1.10.0/bin/linux/amd64/kubectl \
-        && chmod +x /tmp/kubectl \
-        && mv /tmp/kubectl /usr/local/bin/kubectl
 
