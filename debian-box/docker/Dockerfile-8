@@ -28,7 +28,8 @@ RUN apt-get update \
 		postgresql-client \
 		nmap \
 		telnet \
-		netcat
+		netcat \
+		python3
 
 RUN export GCSFUSE_REPO=gcsfuse-jessie \
     && echo "deb http://packages.cloud.google.com/apt $GCSFUSE_REPO main" | sudo tee /etc/apt/sources.list.d/gcsfuse.list \
