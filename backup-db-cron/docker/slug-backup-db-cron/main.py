@@ -360,11 +360,8 @@ class kube_init:
             #print db
             self.bakup_sql(db, now_datetime)
 
-    def snapshot(self):
-        self.gtools = gcloud_tools()
+    def snapshot_op(self, list_disk):
         now_datetime = datetime.now()
-        list_disk = self.get_configmap(self.name_configmap_snapshot, self.dic_argv["conf_mode"])
-        
         for disk in list_disk:
             if len(disk["name_disk"]) > 45:
                 name_snapshot = disk["name_disk"][0:45] + "---" + now_datetime.strftime("%Y-%m-%d")
@@ -379,6 +376,32 @@ class kube_init:
                 print e
                 logging.error(e)
         self.date_drop_snapshot(now_datetime)
+
+    def snapshot(self):
+        self.gtools = gcloud_tools()
+        list_disk = self.get_configmap(self.name_configmap_snapshot, self.dic_argv["conf_mode"])
+        
+        if list_disk:
+            self.snapshot_op(list_disk)
+
+    def snapshot_filter_label(self):
+        self.gtools = gcloud_tools()
+        list_disk_gcp = self.gtools.list_disks(self.dic_argv["project"], self.dic_argv["zone"])
+
+        list_disk = []
+        for disk in list_disk_gcp:
+            disk_labels = disk.get("labels", [])
+            disk_label_backup = "false"
+            for l in disk_labels:
+                if l == "backup":
+                    disk_label_backup = disk_labels[l]
+            if disk["status"] == "READY" and disk_label_backup.lower() ==  "true":
+                dict_disk = {"name_disk": disk["name"], "zone": self.dic_argv["zone"]}
+                list_disk.append(dict_disk)
+
+        if list_disk:
+            self.snapshot_op(list_disk)
+
 
 ## Start ##
 
@@ -410,6 +433,10 @@ def main():
     elif dic_argv.get("mode", False) == "snapshot":
         if kluster.check(kluster.name_configmap_snapshot, dic_argv["conf_mode"]):
             kluster.snapshot()
+
+    elif dic_argv.get("mode", False) == "snapshot_label":
+        kluster.snapshot_filter_label()
+
     else:
         print "[ERROR] Mode not found"
 

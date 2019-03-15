@@ -58,7 +58,8 @@ RUN apt-get install -y \
     python-dev \
     python-setuptools
 
-RUN pip install kubernetes deepdiff psycopg2 mysql-connector \
+RUN pip install --upgrade setuptools wheel \
+    && pip install kubernetes deepdiff psycopg2 mysql-connector \
     && pip install google-api-python-client setuptools
 RUN pip install google-auth google-auth-httplib2 psycopg2-binary psutil
 
