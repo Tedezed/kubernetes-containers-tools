@@ -232,3 +232,12 @@ spec:
         persistentVolumeClaim:
           claimName: pvc-slug-backup
 ```
+
+You can also use google disks and create snapshots with labels with MODE 4 or 5.
+Cron: https://github.com/Tedezed/slug-containers/blob/master/backup-db-cron/docker/slug-backup-db-cron/start
+
+Add label `backup`:
+```
+gcloud compute disks update disk-1 --update-labels backup=true
+gcloud compute disks update disk-2 --update-labels backup=true
+```
