@@ -7,7 +7,7 @@
 
 set -e
 
-echo "ver 1.0"
+echo "ver 1.2"
 
 echo "Generate default cert..."
 mkdir -p /files/liberty-ingress/certs/

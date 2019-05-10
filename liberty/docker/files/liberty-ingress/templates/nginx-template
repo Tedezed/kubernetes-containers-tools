@@ -34,26 +34,21 @@ server {
   ################# SSL: {{ host['name_upstream'] }} #################
 
   upstream {{ host['name_upstream'] }} {
-  {% if 'deployment'==host['type_backend'] %}
-    #sticky name=session_id expires=1h;
     sticky expires=1h;
-  {% endif %}
   {% for backend in host['backends'] recursive %}
     {% if '80'==backend['service_port'] %}
-      server {{ backend['service_ip'] }} max_conns=220;
-      queue 40 timeout=10s;
+      server {{ backend['service_ip'] }};
+      #queue 40 timeout=10s;
     {% else %}
-      server {{ backend['service_ip'] }}:{{ backend['service_port'] }} max_conns=220;
-      queue 40 timeout=10s;
+      server {{ backend['service_ip'] }}:{{ backend['service_port'] }};
+      #queue 40 timeout=10s;
     {% endif %}
   {% endfor %}
   }
 
 
   upstream {{ host['name_upstream'] }}_longpolling {
-  {% if 'deployment'==host['type_backend'] %}
     sticky expires=1h;
-  {% endif %}
   {% for backend in host['backends'] recursive %}
       server {{ backend['service_ip'] }}:8072;
   {% endfor %}
@@ -231,10 +226,7 @@ server {
   ################# TLS-ACME: {{ host['name_upstream'] }} #################
 
   upstream {{ host['name_upstream'] }} {
-  {% if 'deployment'==host['type_backend'] %}
     sticky expires=1h;
-  {% endif %}
-
   {% set port80 = {'found':False} %}
   {% set port443 = {'found':False} %}
   # https://stackoverflow.com/questions/9486393/jinja2-change-the-value-of-a-variable-inside-a-loop
