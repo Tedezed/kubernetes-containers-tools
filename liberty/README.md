@@ -23,7 +23,7 @@ Default: IP backend from service.
 -----------------       -----------
 ```
 
-Pod: IP backend from Pod.
+Pod: IP backend from Pod `ingress-liberty/backend-entity: pod`
 ```
 -----------------       -------
 | Liberty/Nginx | ----> | Pod |
