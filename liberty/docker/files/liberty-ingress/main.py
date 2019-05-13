@@ -49,11 +49,10 @@ class kube_init(nginx_brainslug, get_methods):
         # Load Config
         if not path.exists('/.dockerenv'):
             try:
-                config.load_kube_config(config_file='/home/%s/.kube/config-slug' % (getlogin()))
+                #config.load_kube_config()
                 config.load_kube_config(config_file='/home/%s/.kube/config-slug' % (getlogin()))
             except OSError:
                 config.load_kube_config(config_file='/home/%s/.kube/config-slug' % (pwd.getpwuid(getuid()).pw_name))
-            config.load_kube_config(config_file='/home/%s/.kube/config-slug' % (pwd.getpwuid(getuid()).pw_name))
         # config.load_kube_config()
         # config.load_kube_config(config_file='%s/credentials/config' % (self.ruta_exec))
         else:

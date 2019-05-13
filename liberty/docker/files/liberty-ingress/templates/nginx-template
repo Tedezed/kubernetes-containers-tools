@@ -33,6 +33,7 @@ server {
 
   ################# SSL: {{ host['name_upstream'] }} #################
 
+  # {{ host }}
   upstream {{ host['name_upstream'] }} {
     sticky expires=1h;
   {% for backend in host['backends'] recursive %}
