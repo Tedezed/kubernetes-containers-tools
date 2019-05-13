@@ -13,7 +13,7 @@ LEGO_SUPPORTED_INGRESS_CLASS="nginx,liberty"
 
 ## Backend modes
 
-All backend use sticky session Nginx or session affinity.
+All backend use sticky session Nginx.
 
 Default: IP backend from service.
 
@@ -23,7 +23,7 @@ Default: IP backend from service.
 -----------------       -----------
 ```
 
-Pod: IP backend from Pod `ingress-liberty/backend-entity: pod`
+Pod: IP backend from Pod, annotation `ingress-liberty/backend-entity: pod` for session affinity.
 ```
 -----------------       -------
 | Liberty/Nginx | ----> | Pod |
