@@ -342,7 +342,11 @@ server {
             proxy_cookie_domain                     off;
             proxy_cookie_path                       off;
             proxy_next_upstream                     error timeout invalid_header http_502 http_503 http_504;
-            proxy_pass http://{{ host['name_upstream'] }};
+            {% if '4'==ing['backend'] %}
+               proxy_pass https://{{ host['name_upstream'] }};
+            {% else %}
+              proxy_pass http://{{ host['name_upstream'] }};
+            {% endif %}
             proxy_redirect                          off;
         }
     }

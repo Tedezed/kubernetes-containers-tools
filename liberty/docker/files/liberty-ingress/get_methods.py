@@ -191,7 +191,7 @@ class get_methods:
                         # system('echo "[INFO] Found mode in ingress %s"' % (i.metadata.name))
 
                         # Modos
-                        found_tls_acme = False
+                        #found_tls_acme = False
                         if i.metadata.annotations.get('ingress-liberty/mode', False) == 'ssl':
 
                             list_hosts = self.get_hosts(i)
