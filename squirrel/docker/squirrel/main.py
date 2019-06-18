@@ -20,7 +20,7 @@ class sqrl():
     nuts = {}
 
     # Controller
-    domain_api = "squirrel.local"
+    domain_api = "tree.squirrel.local"
 
     # GPG
     try:
@@ -71,9 +71,10 @@ class sqrl():
 def main():
     squirrel = sqrl()
     if squirrel.dic_argv.get("mode", False) == "controller":
-        controller.daemon_controller(squirrel)
+        ct = controller(squirrel)
+        ct.daemon_controller()
     elif squirrel.dic_argv.get("mode", False) == "cronjob":
-        cronjob.daemon_controller(squirrel)
+        cronjob.rotation(squirrel)
     else:
         print("Use: mode=(controller or cronjob)")
 

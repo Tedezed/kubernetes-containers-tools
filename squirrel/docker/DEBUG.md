@@ -1,0 +1,1 @@
+make build && make push && kubectl delete pod $(kubectl get pod | grep squirrel | awk '{ print $1 }')
