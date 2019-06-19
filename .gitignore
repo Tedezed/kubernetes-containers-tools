@@ -3,3 +3,6 @@ liberty/files/liberty-ingress/dhparam.pem
 .idea
 *.log
 .log
+*.pub
+*.key
+away/*
