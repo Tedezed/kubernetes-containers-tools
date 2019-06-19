@@ -1,3 +1,5 @@
+#!/usr/bin/python3
+
 # password rotation (Squirrel, Nuts Warehouse)
 # By Tedezed
 
@@ -5,9 +7,10 @@ import gnupg, random, string, re, json
 from kubernetes import client, config
 from os import path, getlogin, system, getuid, environ
 from sys import argv
+from getpass import getpass
 
 from controller.controller import *
-from cronjob.cronjob import *
+from nuts_manager.nuts_manager import *
 
 class sqrl():
 
@@ -21,6 +24,7 @@ class sqrl():
 
     # Controller
     domain_api = "tree.squirrel.local"
+    api_version = "v1"
 
     # GPG
     try:
@@ -74,7 +78,18 @@ def main():
         ct = controller(squirrel)
         ct.daemon_controller()
     elif squirrel.dic_argv.get("mode", False) == "cronjob":
-        cronjob.rotation(squirrel)
+        nm = nuts_manager(squirrel)
+        nm.rotation()
+    elif squirrel.dic_argv.get("mode", False) == "client-create-key":
+        nm = nuts_manager(squirrel)
+        key_pass = getpass()
+        nm.createKey(
+            squirrel.dic_argv.get("key_file", False),
+            squirrel.dic_argv.get("email", False),
+            key_pass,
+            1024,
+            "RSA"
+        )
     else:
         print("Use: mode=(controller or cronjob)")
 

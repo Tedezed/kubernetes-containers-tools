@@ -1,3 +1,5 @@
+#!/usr/bin/python3
+
 import json
 import yaml
 from kubernetes import client, config, watch
@@ -34,7 +36,7 @@ class controller():
 
     def streams(self, kind):
         stream = watch.Watch().stream(self.crds.list_cluster_custom_object, \
-            self.squirrel.domain_api, "v1", kind, resource_version=self.resource_version)
+            self.squirrel.domain_api, self.squirrel.api_version, kind, resource_version=self.resource_version)
         for event in stream:
             obj = event["object"]
             operation = event['type']
