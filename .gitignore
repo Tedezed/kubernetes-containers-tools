@@ -5,4 +5,4 @@ liberty/files/liberty-ingress/dhparam.pem
 .log
 *.pub
 *.key
-squirrel/docker/squirrel/away
+squirrel/docker/squirrel/away/*
