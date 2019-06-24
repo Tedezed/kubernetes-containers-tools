@@ -6,18 +6,23 @@
 
 import gnupg, random, string, re, json
 from kubernetes import client, config
+from kubernetes.client.rest import ApiException
 from os import path, getlogin, system, getuid, environ
 from sys import argv
-import base64
+import base64, hashlib
 
 class nuts_manager():
 
     def __init__(self, squirrel):
         self.squirrel = squirrel
-        config.load_incluster_config()
-        self.configuration = client.Configuration()
-        self.configuration.assert_hostname = False
-        self.api_instance = client.ApiextensionsApi(client.ApiClient(self.configuration))
+        if path.exists('/.dockerenv'):
+            config.load_incluster_config()
+            self.configuration = client.Configuration()
+            self.configuration.assert_hostname = False
+            self.api_instance = client.ApiextensionsApi(client.ApiClient(self.configuration))
+            self.api_client = client.api_client.ApiClient(configuration=self.configuration)
+
+            self.crds = client.CustomObjectsApi(self.api_client)
 
     def randomStringDigits(self, stringLength=6):
         lettersAndDigits = string.ascii_letters + string.digits
@@ -45,18 +50,20 @@ class nuts_manager():
     def importKey(self, keyfile, key_data=False):
         if keyfile:
             key_data = open(keyfile).read()
+        print(key_data)
         import_result = self.squirrel.gpg.import_keys(key_data)
         print(import_result.results)
 
     def encryptText(self, email, text_to_encrypt):
-        encrypted_data = self.squirrel.gpg.encrypt(text_to_encrypt, email)
+        encrypted_data = self.squirrel.gpg.encrypt(text_to_encrypt, email, always_trust=True)
         encrypted_string = str(encrypted_data)
-        #print('ok: ', encrypted_data.ok)
-        #print('status: ', encrypted_data.status)
-        #print('stderr: ', encrypted_data.stderr)
-        #print('unencrypted_string: ', text_to_encrypt)
-        #print('encrypted_string: ', encrypted_string)
-        return str(encrypted_string)
+        print(encrypted_data)
+        print('ok: ', encrypted_data.ok)
+        print('status: ', encrypted_data.status)
+        print('stderr: ', encrypted_data.stderr)
+        print('unencrypted_string: ', text_to_encrypt)
+        print('encrypted_string: ', encrypted_string)
+        return encrypted_string
 
     def dencryptText(self, password, encrypted_string):
         decrypted_data = self.squirrel.gpg.decrypt(encrypted_string, passphrase=password)
@@ -83,20 +90,81 @@ class nuts_manager():
         #squirrel = sqrl()
         crds = client.CustomObjectsApi()
         nutcrackers = crds.list_cluster_custom_object(self.squirrel.domain_api, self.squirrel.api_version, 'nutcrackers')["items"]
-        print(nutcrackers)
         secrets = self.squirrel.v1.list_secret_for_all_namespaces(watch=False)
         for s in secrets.items:
-            try:
-                for inx, a in enumerate(s.metadata.annotations):
+            if s.metadata.annotations:
+                for a in s.metadata.annotations:
                     if a == "squirrel" and s.metadata.annotations[a] == "true":
-                        print(a)
-                        random_pass = self.randomStringDigits(26)
-                        print(base64.b64decode(nutcrackers[0]["data"]["keypub"]))
-                        self.importKey(False, base64.b64decode(nutcrackers[0]["data"]["keypub"]))
-                        secret_text = self.encryptText(nutcrackers[0]["data"]["email"], random_pass)
-                        print(secret_text)
-            except TypeError:
-                pass
+                        squirrel_user_key = s.metadata.annotations.get("squirrel_username_key", False)
+                        squirrel_pass_key = s.metadata.annotations.get("squirrel_password_key", False)
+                        squirrel_user = s.data.get(squirrel_user_key, False)
+                        squirrel_pass = s.data.get(squirrel_user_key, False)
+                        squirrel_service = s.metadata.annotations.get("squirrel_service", False)
+                        squirrel_name = s.metadata.name
+                        squirrel_namespace = s.metadata.namespace
+                        squirrel_type_frontend = s.metadata.annotations.get("squirrel_type_frontend", False)
+                        squirrel_type_backend = s.metadata.annotations.get("squirrel_type_backend", False)
+
+                        if squirrel_user_key and squirrel_pass_key and \
+                          squirrel_service and squirrel_type_frontend and \
+                          squirrel_type_backend and squirrel_user and squirrel_pass:
+                            print("[INFO] Process %s, namespace %s" % (squirrel_name, squirrel_namespace))
+                            random_pass = self.randomStringDigits(26)
+                            for nc in nutcrackers:
+                                permissions_fail = True
+                                for p in nc["permissions"]:
+                                    permissions = p.split("/")
+                                    #print(permissions)
+                                    #print("%s %s" % (squirrel_namespace, squirrel_service))
+                                    if permissions[0] == squirrel_namespace and \
+                                      permissions[1] == squirrel_service:
+                                        permissions_fail = False
+                                        nut_email = nc["data"]["email"]
+                                        print("[INFO] Create nut for %s" % nut_email)
+
+                                        nut_keypub = nc["data"]["keypub"]
+                                        #nc["permissions"]
+                                        self.importKey(False, base64.b64decode(nut_keypub))
+                                        secret_text = self.encryptText(nut_email, random_pass)
+
+                                        md5_unique_name = hashlib.new('md5')
+                                        string_md5 = '%s-%s-%s-%s' % (squirrel_service, squirrel_name, squirrel_namespace, nut_email)
+                                        md5_unique_name.update(string_md5.encode())
+                                        metadata = {'name': md5_unique_name.hexdigest(), 'namespace': squirrel_namespace}
+
+                                        new_nut = dict(self.squirrel.squirrel_body)
+                                        new_nut["metadata"] = metadata
+                                        new_nut["kind"] = "Nuts"
+                                        new_nut["data"]["nut"] = base64.b64encode(secret_text.encode()).decode()
+
+                                        #import pdb; pdb.set_trace()
+                                        try:
+                                            api_response = crds.delete_namespaced_custom_object(\
+                                                self.squirrel.domain_api, \
+                                                self.squirrel.api_version, \
+                                                squirrel_namespace, \
+                                                'nuts', \
+                                                md5_unique_name.hexdigest(), client.V1DeleteOptions())
+                                            print(api_response)
+                                        except ApiException as e:
+                                            print("Exception when calling CustomObjectsApi->delete_namespaced_custom_object: %s\n" % e)
+
+                                        try:
+                                            api_response = crds.create_namespaced_custom_object(\
+                                                self.squirrel.domain_api, \
+                                                self.squirrel.api_version, \
+                                                squirrel_namespace, \
+                                                'nuts', \
+                                                new_nut)
+                                            print("Nut %s for %s" % (secret_text, nut_email))
+                                        except ApiException as e:
+                                            print("Exception when calling CustomObjectsApi->create_namespaced_custom_object: %s\n" % e)
+                                if permissions_fail:
+                                    print("[INFO] No have permissions in %s, namespace %s" % (squirrel_service, squirrel_namespace))
+                                else:
+                                    print("[INFO] Permissions in %s, namespace %s" % (squirrel_service, squirrel_namespace))
+                        else:
+                            print("[ERROR] in %s, namespace %s" % (squirrel_name, squirrel_namespace))
         exit()
         #squirrel.createKey('mykeyfile', 'juanmanuel.torres@aventurabinaria.es', '1234567890')
         squirrel.importKey('mykeyfile.pub')

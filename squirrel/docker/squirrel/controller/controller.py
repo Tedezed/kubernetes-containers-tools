@@ -10,7 +10,7 @@ import os
 class controller():
 
     def __init__(self, squirrel):
-        self.squirrel= squirrel
+        self.squirrel = squirrel
         config.load_incluster_config()
         self.configuration = client.Configuration()
         self.configuration.assert_hostname = False

@@ -1,3 +1,6 @@
 away/*
 *.pub
 *.key
+random_seed
+*.gpg
+*.gpg~

@@ -3,6 +3,8 @@
 # Mail: juanmanuel.torres@aventurabinaria.es
 
 build:
+	#rm -rf squirrel/*.key
+	#rm -rf squirrel/*.pub
 	docker build -f Dockerfile -t tedezed/squirrel:latest .
 
 push:

@@ -25,6 +25,8 @@ class sqrl():
     # Controller
     domain_api = "tree.squirrel.local"
     api_version = "v1"
+    squirrel_body = {'metadata': {}, 'apiVersion': 'tree.squirrel.local/v1', \
+        'type': 'Opaque', 'data': {}}
 
     # GPG
     try:
@@ -74,22 +76,41 @@ class sqrl():
 
 def main():
     squirrel = sqrl()
+    nm = nuts_manager(squirrel)
     if squirrel.dic_argv.get("mode", False) == "controller":
         ct = controller(squirrel)
         ct.daemon_controller()
     elif squirrel.dic_argv.get("mode", False) == "cronjob":
-        nm = nuts_manager(squirrel)
         nm.rotation()
     elif squirrel.dic_argv.get("mode", False) == "client-create-key":
-        nm = nuts_manager(squirrel)
         key_pass = getpass()
-        nm.createKey(
-            squirrel.dic_argv.get("key_file", False),
-            squirrel.dic_argv.get("email", False),
-            key_pass,
-            1024,
-            "RSA"
-        )
+        key_file = squirrel.dic_argv.get("key-file", False)
+        email = squirrel.dic_argv.get("email", False)
+        if email and key_file:
+            nm.createKey(
+                key_file,
+                email,
+                key_pass,
+                1024,
+                "RSA"
+            )
+        else:
+            print("Use: mode='client-create-key' key-file='local.pub' email='admin@example.com'")
+    elif squirrel.dic_argv.get("mode", False) == "import-key":
+        key_file = squirrel.dic_argv.get("key-file", False)
+        if key_file:
+            nm.importKey(key_file)
+        else:
+            print("Use: mode='import-key' key-file='local.pub'")
+    elif squirrel.dic_argv.get("mode", False) == "encrypt-text":
+        email = squirrel.dic_argv.get("email", False)
+        text = squirrel.dic_argv.get("text", False)
+        if email:
+            print(nm.encryptText(email, text))
+        else:
+            print("Use: mode='encrypt-text' email='admin@example.com' text='hello!'")
+    elif squirrel.dic_argv.get("mode", False) == "list-keys":
+        print(squirrel.gpg.list_keys())
     else:
         print("Use: mode=(controller or cronjob)")
 
