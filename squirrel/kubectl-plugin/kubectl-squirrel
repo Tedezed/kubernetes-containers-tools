@@ -1,0 +1,67 @@
+#!/bin/bash
+
+SQUIRREL_USER_DIR="$HOME/.squirrel"
+LOCAL_KEY="local"
+
+if [[ "$1" == "drop-all" ]]
+then
+	rm -rf $SQUIRREL_USER_DIR
+else
+	if [ ! -d "$SQUIRREL_USER_DIR" ]; then
+		mkdir -p $SQUIRREL_USER_DIR
+	 	bash -c "cd $SQUIRREL_USER_DIR \
+	  		&& git init \
+	  		&& git remote add origin https://github.com/Tedezed/slug-containers.git \
+	  		&& git fetch --depth=1 \
+	  		&& git checkout master \
+	  		&& git config core.sparseCheckout true \
+	  		&& echo squirrel/ >> .git/info/sparse-checkout \
+	  		&& git read-tree -mu HEAD"
+		read -r -p 'Email: ' USER_EMAIL
+		echo "{'email': '$USER_EMAIL', 'local_key': '$LOCAL_KEY'}" > $SQUIRREL_USER_DIR/config
+		OLD_DIR=$(pwd)
+		cd $SQUIRREL_USER_DIR \
+		&& python3 $SQUIRREL_USER_DIR/squirrel/docker/squirrel/main.py \
+			mode="client-create-key" \
+			key-file="$LOCAL_KEY" \
+			email="$USER_EMAIL" \
+			bits="4096"
+		cd $OLD_DIR
+		ls $SQUIRREL_USER_DIR
+	fi
+fi
+
+if [[ "$1" == "version" ]]
+then
+    echo "v0.1"
+    exit 0
+elif [[ "$1" == "nuts" ]]
+then
+	if [ -z "$2" ]
+	then
+		NAMESPACE="default"
+	else
+		NAMESPACE=$2
+	fi
+   	kubectl get nuts -n $NAMESPACE -o custom-columns=NAME:metadata.name,EMAIL:.data.email,SERVICE:.data.squirrel_service,CREATION:.metadata.creationTimestamp
+elif [[ "$1" == "decrypt" ]]
+then
+	if [ -z "$2" ]
+	then
+		exit 1
+	else
+		NUT_NAME=$2
+	fi
+		if [ -z "$3" ]
+	then
+		exit 1
+	else
+		NUT_NAMESPACE=$3
+	fi
+	NUT_JSON=$(kubectl get nut $NUT_NAME -n $NUT_NAMESPACE -o json)
+	NUT=$(echo $NUT_JSON | jq '.data.nut' | cut -d '"' -f 2)
+	echo $NUT | base64 --decode
+	python3 $SQUIRREL_USER_DIR/squirrel/docker/squirrel/main.py mode="decrypt-text" encrypted-string="$NUT"
+fi
+
+exit 0
