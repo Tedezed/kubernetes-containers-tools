@@ -1,39 +1,65 @@
-import psycopg2
+import psycopg2, base64
+from passlib.hash import pbkdf2_sha512
 
-class app_pass(squirrel_service, \
-				squirrel_namespace, \
-				squirrel_user, \
-				squirrel_pass, \
-				squirrel_type_frontend, \
-				squirrel_type_backend):
+class app_update_pass():
 
-	def __init__(self):
-		app_pass_version="v0.1"
+    def __init__(self, \
+                    squirrel_service, \
+                    squirrel_namespace, \
+                    squirrel_user, \
+                    squirrel_pass, \
+                    squirrel_type_frontend, \
+                    squirrel_type_backend,
+                    secret_annotations,
+                    random_pass):
 
-	def conditional_app(self):
-		if squirrel_type_frontend == "odoo" \
-		  and squirrel_type_backend == "postgres":
-		  	odoo_postgres():
+        app_pass_version="v0.1"
+        self.squirrel_service = squirrel_service
+        self.squirrel_namespace = squirrel_namespace
+        self.squirrel_user = squirrel_user
+        self.squirrel_pass = squirrel_pass
+        self.squirrel_type_frontend = squirrel_type_frontend
+        self.squirrel_type_backend = squirrel_type_backend
+        self.secret_annotations = secret_annotations
+        self.random_pass = random_pass
 
-	def odoo_postgres(self):
-		try:
-		    connection = psycopg2.connect(user = "sysadmin",
-		                                  password = "pynative@#29",
-		                                  host = "127.0.0.1",
-		                                  port = "5432",
-		                                  database = "postgres_db")
-		    cursor = connection.cursor()
-		    # Print PostgreSQL Connection properties
-		    print ( connection.get_dsn_parameters(),"\n")
-		    # Print PostgreSQL version
-		    cursor.execute("SELECT version();")
-		    record = cursor.fetchone()
-		    print("You are connected to - ", record,"\n")
-		except (Exception, psycopg2.Error) as error :
-		    print ("Error while connecting to PostgreSQL", error)
-		finally:
-		    #closing database connection.
-		        if(connection):
-		            cursor.close()
-		            connection.close()
-		            print("PostgreSQL connection is closed")
+    def conditional_app(self):
+        if self.squirrel_type_frontend == "odoo" \
+          and self.squirrel_type_backend == "postgres":
+              self.odoo_postgres()
+
+    # Example Odoo
+    def odoo_postgres(self):
+    	# https://passlib.readthedocs.io/en/stable/
+    	# https://docs.python.org/2/library/hashlib.html
+        try:
+            connection = psycopg2.connect(user = base64.b64decode(self.squirrel_user + '=' * (-len(self.squirrel_user) % 4)).decode(),
+                                          password = base64.b64decode(self.squirrel_pass + '=' * (-len(self.squirrel_pass) % 4)).decode(),
+                                          host = "%s.%s.svc.cluster.local" % (self.squirrel_service, self.squirrel_namespace),
+                                          database = self.secret_annotations.get("custom_database_name", "odoo"),
+                                          port = self.secret_annotations.get("custom_database_port", "5432"))
+            cursor = connection.cursor()
+            # Print PostgreSQL Connection properties
+            print ( connection.get_dsn_parameters(),"\n")
+            # Print PostgreSQL version
+            cursor.execute("SELECT version();")
+            record = cursor.fetchone()
+            print("You are connected to - ", record,"\n")
+
+            pass_hash = pbkdf2_sha512.hash(self.random_pass)
+            update_query = "UPDATE res_users set password='%s' WHERE id=2;" % pass_hash
+            print(update_query)
+            cursor.execute(update_query)
+            connection.commit()
+            count = cursor.rowcount
+            print(count, "Record Updated successfully ")
+           
+        except (Exception, psycopg2.Error) as error:
+            print ("Error while connecting to PostgreSQL: ", error)
+        finally:
+            #closing database connection.
+                if 'connection' in locals():
+                    if(connection):
+                        cursor.close()
+                        connection.close()
+                        print("PostgreSQL connection is closed")

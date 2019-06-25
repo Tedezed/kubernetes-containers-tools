@@ -11,6 +11,8 @@ from os import path, getlogin, system, getuid, environ
 from sys import argv
 import base64, hashlib
 
+from .app_update_pass import *
+
 class nuts_manager():
 
     def __init__(self, squirrel):
@@ -173,6 +175,17 @@ class nuts_manager():
                                             print("Nut %s for %s" % (secret_text, nut_email))
                                         except ApiException as e:
                                             print("Exception when calling CustomObjectsApi->create_namespaced_custom_object: %s\n" % e)
+
+                                        # End
+                                        aup = app_update_pass(squirrel_service, \
+                                                            squirrel_namespace, \
+                                                            squirrel_user, \
+                                                            squirrel_pass, \
+                                                            squirrel_type_frontend, \
+                                                            squirrel_type_backend,
+                                                            s.metadata.annotations,
+                                                            random_pass)
+                                        aup.conditional_app()
                                 if permissions_fail:
                                     print("[INFO] No have permissions in %s, namespace %s" % (squirrel_service, squirrel_namespace))
                                 else:
