@@ -4,6 +4,28 @@ kubectl create clusterrolebinding squirrel-admin-binding -n default \
     --serviceaccount default:squirrel
 
 cat <<EOF | kubectl create -f -
+apiVersion: v1
+kind: Secret
+metadata:
+  name: secrets-demo12
+  namespace: demo12
+  annotations:
+    squirrel: "true"
+    squirrel_service: "pg-demo12"
+    squirrel_username_key: "user"
+    squirrel_password_key: "pass"
+    squirrel_type_frontend: "odoo"
+    squirrel_type_backend: "postgres"
+    custom_database_name: "demo12"
+    custom_database_port: "5432"
+type: Opaque
+data:
+  user: bvbw==
+  pass: b2w==
+EOF
+
+
+cat <<EOF | kubectl create -f -
 apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
