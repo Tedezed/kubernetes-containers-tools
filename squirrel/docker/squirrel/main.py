@@ -8,6 +8,7 @@ from kubernetes import client, config
 from os import path, getlogin, system, getuid, environ
 from sys import argv
 from getpass import getpass
+import base64
 
 from controller.controller import *
 from nuts_manager.nuts_manager import *
@@ -77,7 +78,6 @@ class sqrl():
 def main():
     squirrel = sqrl()
     nm = nuts_manager(squirrel)
-    print(squirrel.dic_argv.get("mode", False))
     if squirrel.dic_argv.get("mode", False) == "controller":
         ct = controller(squirrel)
         ct.daemon_controller()
@@ -105,12 +105,13 @@ def main():
         else:
             print("Use: mode='import-key' key-file='local.pub'")
     elif squirrel.dic_argv.get("mode", False) == "decrypt-text":
-        encrypted_string = squirrel.dic_argv.get("encrypted_string", False)
+        # Decrypt for client
+        encrypted_string = squirrel.dic_argv.get("encrypted-string", False)
         if encrypted_string:
             key_pass = getpass()
-            print(nm.dencryptText(key_pass, encrypted_string))
+            print(nm.dencryptText(key_pass, encrypted_string, "base64"))
         else:
-            print("Use: mode='decrypt-text' encrypted-text='XXXXXXXXX'")
+            print("Use: mode='decrypt-text' encrypted-string='XXXXXXXXX'")
     elif squirrel.dic_argv.get("mode", False) == "encrypt-text":
         email = squirrel.dic_argv.get("email", False)
         text = squirrel.dic_argv.get("text", False)

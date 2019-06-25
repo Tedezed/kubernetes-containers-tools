@@ -57,18 +57,26 @@ class nuts_manager():
     def encryptText(self, email, text_to_encrypt):
         encrypted_data = self.squirrel.gpg.encrypt(text_to_encrypt, email, always_trust=True)
         encrypted_string = str(encrypted_data)
-        print(encrypted_data)
+        #print(encrypted_data)
         print('ok: ', encrypted_data.ok)
         print('status: ', encrypted_data.status)
-        print('stderr: ', encrypted_data.stderr)
-        print('unencrypted_string: ', text_to_encrypt)
-        print('encrypted_string: ', encrypted_string)
+        #print('stderr: ', encrypted_data.stderr)
+        #print('unencrypted_string: ', text_to_encrypt)
+        #print('encrypted_string: ', encrypted_string)
         return encrypted_string
 
-    def dencryptText(self, password, encrypted_string):
-        decrypted_data = self.squirrel.gpg.decrypt(encrypted_string, passphrase=password)
-        #print('ok: ', decrypted_data.ok)
-        #print('status: ', decrypted_data.status)
+    def dencryptText(self, password, encrypted_string, mode=False):
+        if mode == "base64":
+            print("Mode input base64")
+            print(encrypted_string)
+            print(base64.b64decode(encrypted_string + '=' * (-len(encrypted_string) % 4)).decode())
+            decrypted_data = self.squirrel.gpg.decrypt(\
+                str(base64.b64decode(encrypted_string + '=' * (-len(encrypted_string) % 4)).decode()),\
+                passphrase=password)
+        else:
+            decrypted_data = self.squirrel.gpg.decrypt(encrypted_string, passphrase=password)
+        print('ok: ', decrypted_data.ok)
+        print('status: ', decrypted_data.status)
         #print('stderr: ', decrypted_data.stderr)
         #print('decrypted string: ', decrypted_data.data)
         return str(decrypted_data.data)
