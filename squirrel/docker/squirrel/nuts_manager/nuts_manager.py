@@ -131,20 +131,26 @@ class nuts_manager():
                                         string_md5 = '%s-%s-%s-%s' % (squirrel_service, squirrel_name, squirrel_namespace, nut_email)
                                         md5_unique_name.update(string_md5.encode())
                                         metadata = {'name': md5_unique_name.hexdigest(), 'namespace': squirrel_namespace}
+                                        #metadata = {'name': nc["metadata"]["name"], 'namespace': squirrel_namespace}
 
                                         new_nut = dict(self.squirrel.squirrel_body)
                                         new_nut["metadata"] = metadata
                                         new_nut["kind"] = "Nuts"
                                         new_nut["data"]["nut"] = base64.b64encode(secret_text.encode()).decode()
+                                        new_nut["data"]["email"] = nut_email
+                                        new_nut["data"]["squirrel_name"] = squirrel_name
+                                        new_nut["data"]["squirrel_service"] = squirrel_service
 
                                         #import pdb; pdb.set_trace()
+                                        print(nc["metadata"]["name"])
                                         try:
                                             api_response = crds.delete_namespaced_custom_object(\
                                                 self.squirrel.domain_api, \
                                                 self.squirrel.api_version, \
                                                 squirrel_namespace, \
                                                 'nuts', \
-                                                md5_unique_name.hexdigest(), client.V1DeleteOptions())
+                                                md5_unique_name.hexdigest(),
+                                                client.V1DeleteOptions())
                                             print(api_response)
                                         except ApiException as e:
                                             print("Exception when calling CustomObjectsApi->delete_namespaced_custom_object: %s\n" % e)

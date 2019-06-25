@@ -77,6 +77,7 @@ class sqrl():
 def main():
     squirrel = sqrl()
     nm = nuts_manager(squirrel)
+    print(squirrel.dic_argv.get("mode", False))
     if squirrel.dic_argv.get("mode", False) == "controller":
         ct = controller(squirrel)
         ct.daemon_controller()
@@ -86,12 +87,13 @@ def main():
         key_pass = getpass()
         key_file = squirrel.dic_argv.get("key-file", False)
         email = squirrel.dic_argv.get("email", False)
+        bits = squirrel.dic_argv.get("bits", 1024)
         if email and key_file:
             nm.createKey(
                 key_file,
                 email,
                 key_pass,
-                1024,
+                bits,
                 "RSA"
             )
         else:
@@ -102,6 +104,13 @@ def main():
             nm.importKey(key_file)
         else:
             print("Use: mode='import-key' key-file='local.pub'")
+    elif squirrel.dic_argv.get("mode", False) == "decrypt-text":
+        encrypted_string = squirrel.dic_argv.get("encrypted_string", False)
+        if encrypted_string:
+            key_pass = getpass()
+            print(nm.dencryptText(key_pass, encrypted_string))
+        else:
+            print("Use: mode='decrypt-text' encrypted-text='XXXXXXXXX'")
     elif squirrel.dic_argv.get("mode", False) == "encrypt-text":
         email = squirrel.dic_argv.get("email", False)
         text = squirrel.dic_argv.get("text", False)
