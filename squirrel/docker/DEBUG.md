@@ -70,13 +70,5 @@ QAlsmvd2ju5H84PF0IQfv6+ZCX4xeubrZp8/k2fXJ9TSNk3g4g==
 -----END PGP MESSAGE-----" | base64 -w0)
 EOF
 
-{'metadata': {'name': 'juanmanuel.torres-test', 'namespace': 'default'}, 'apiVersion': 'tree.squirrel.local/v1', 'type': 'Opaque', 'kind': 'Nuts', 'data': {'nut': 'LS0tLS1CRUdJTiBQR1AgTUVTU0FHRS0tLS0tCgpoSXdEaEVDeCs0MmF0UllCQS85MGNPbC9XWUJHaSszOEYvT3A5a0ZuSTJRUU95RzFiVUtKbEM1WkpCSkRlQmY4CnZPdldxMkhzRDdaUHZnTXFIU09uUnBtUDdWWldNcjFKNW01SjloMDZSbDhjTmdQVmF4eHNKU0pLUXE3SnNvcUIKVUo5T29ud3RMand1b3F1eHBSTG9QY3BiSlI2akFwNFFHV2VPUzEvZGZFcVJNMGJIa0RicXVUQXJHcXVwWHRKVgpBY3BZZmpKV2FSdGtnU21FU21iTFpjZlBsRmNKZlQxZU5PRWcvUmx5cVR4Qk0yeG5jUElYNVZDV3VEcjFXNEVzClFBbHNtdmQyanU1SDg0UEYwSVFmdjYrWkNYNHhldWJyWnA4L2syZlhKOVRTTmszZzRnPT0KPUdvNk8KLS0tLS1FTkQgUEdQIE1FU1NBR0UtLS0tLQo='}}
-
 python3 main.py mode="cronjob"
 
-
-
-
-# Kubectl Plugin
-
-sudo cp ./kubectl-squirrel /usr/local/bin
