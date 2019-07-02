@@ -3,6 +3,7 @@ kubectl create clusterrolebinding squirrel-admin-binding -n default \
     --clusterrole cluster-admin \
     --serviceaccount default:squirrel
 
+kubectl delete secret secrets-demo12 -n demo12
 cat <<EOF | kubectl create -f -
 apiVersion: v1
 kind: Secret
@@ -11,6 +12,7 @@ metadata:
   namespace: demo12
   annotations:
     squirrel: "true"
+    squirrel_rotation_data: "pass, masterpass"
     squirrel_service: "pg-demo12"
     squirrel_username_key: "user"
     squirrel_password_key: "pass"
@@ -18,10 +20,12 @@ metadata:
     squirrel_type_backend: "postgres"
     custom_database_name: "demo12"
     custom_database_port: "5432"
+    custom_database_id: "2"
 type: Opaque
 data:
-  user: bvbw==
-  pass: b2w==
+  user: b2Rvbw==
+  pass: b2Rvbw==
+  masterpass: b2Rvbw==
 EOF
 
 

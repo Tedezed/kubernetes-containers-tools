@@ -28,7 +28,7 @@ class app_update_pass():
           and self.squirrel_type_backend == "postgres":
               self.odoo_postgres()
 
-    # Example Odoo
+    # Example Odoo512
     def odoo_postgres(self):
     	# https://passlib.readthedocs.io/en/stable/
     	# https://docs.python.org/2/library/hashlib.html
@@ -46,13 +46,17 @@ class app_update_pass():
             record = cursor.fetchone()
             print("You are connected to - ", record,"\n")
 
-            pass_hash = pbkdf2_sha512.hash(self.random_pass)
-            update_query = "UPDATE res_users set password='%s' WHERE id=2;" % pass_hash
-            print(update_query)
-            cursor.execute(update_query)
-            connection.commit()
-            count = cursor.rowcount
-            print(count, "Record Updated successfully ")
+            id_update_pass = self.secret_annotations.get("custom_database_id", False)
+            if id_update_pass:
+                pass_hash = pbkdf2_sha512.hash(self.random_pass)
+                update_query = "UPDATE res_users set password='%s' WHERE id=%s;" % (pass_hash, id_update_pass)
+                print(update_query)
+                cursor.execute(update_query)
+                connection.commit()
+                count = cursor.rowcount
+                print(count, "Record Updated successfully ")
+            else:
+                raise Exception("[ERROR] Annotations custom_database_id not found in secret")
            
         except (Exception, psycopg2.Error) as error:
             print ("Error while connecting to PostgreSQL: ", error)

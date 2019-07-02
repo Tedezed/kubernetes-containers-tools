@@ -4,12 +4,11 @@
 # https://www.saltycrane.com/blog/2011/10/python-gnupg-gpg-example/
 # https://github.com/kubernetes-client/python/blob/master/kubernetes/docs/ApiextensionsV1beta1Api.md
 
-import gnupg, random, string, re, json
+import gnupg, random, string, re, json, base64, hashlib, copy
 from kubernetes import client, config
 from kubernetes.client.rest import ApiException
 from os import path, getlogin, system, getuid, environ
 from sys import argv
-import base64, hashlib
 
 from .app_update_pass import *
 
@@ -17,6 +16,7 @@ class nuts_manager():
 
     def __init__(self, squirrel):
         self.squirrel = squirrel
+        self.squirrel_length_random = 26
         if path.exists('/.dockerenv'):
             config.load_incluster_config()
             self.configuration = client.Configuration()
@@ -96,6 +96,51 @@ class nuts_manager():
         with open('%s/nuts.json' % self.squirrel_away, 'w') as outfile:  
             json.dump(self.nuts, outfile)
 
+    def clean_dict(self, input_dict):
+        try:
+            del input_dict["api_version"]
+            del input_dict["metadata"]["resource_version"]
+            del input_dict["metadata"]["creation_timestamp"]
+            del input_dict["metadata"]["uid"]
+            del input_dict["metadata"]["self_link"]
+            input_dict["apiVersion"] = 'v1'
+        except Exception as e:
+            print("[ERROR] %s" % e)
+        return input_dict
+
+    def rotation_secrets(self):
+        secrets = self.squirrel.v1.list_secret_for_all_namespaces(watch=False)
+        for s in secrets.items:
+            if s.metadata.annotations:
+                for a in s.metadata.annotations:
+                    if a == "squirrel" and s.metadata.annotations[a] == "true":
+                        squirrel_length_random = s.metadata.annotations.get("squirrel_length_random", self.squirrel_length_random)
+                        if s.metadata.annotations.get("squirrel_rotation_data", False):
+                            s.kind = 'Secret'
+                            secret = copy.deepcopy(s)
+                            squirrel_rotation_data = s.metadata.annotations["squirrel_rotation_data"]
+                            squirrel_rotation_data = squirrel_rotation_data.replace(" ", "")
+                            squirrel_rotation_data = squirrel_rotation_data.split(",")
+                            for d in squirrel_rotation_data:
+                                print(d)
+                                new_pass = self.randomStringDigits(squirrel_length_random)
+                                new_pass_base64 = base64.b64encode(new_pass.encode()).decode()
+                                new_pass_base64 = new_pass_base64 + '=' * (-len(new_pass_base64) % 4)
+                                secret.data[d] = new_pass_base64
+                            #old_secret = s.to_dict()
+                            #old_secret = json.dumps(self.clean_dict(old_secret))
+                            #new_secret = secret.to_dict()
+                            #new_secret = json.dumps(self.clean_dict(new_secret))
+                            #print(old_secret)
+                            #print(new_secret)
+                            #print(type(client.V1Secret()))
+                            try:
+                                api_response = self.squirrel.v1.patch_namespaced_secret(secret.metadata.name, \
+                                    secret.metadata.namespace, secret)
+                                print("[INFO] %s" % api_response)
+                            except ApiException as e:
+                                print("Exception when calling CoreV1Api->patch_namespaced_secret: %s\n" % e)
+
     def rotation(self):
         #squirrel = sqrl()
         crds = client.CustomObjectsApi()
@@ -114,20 +159,22 @@ class nuts_manager():
                         squirrel_namespace = s.metadata.namespace
                         squirrel_type_frontend = s.metadata.annotations.get("squirrel_type_frontend", False)
                         squirrel_type_backend = s.metadata.annotations.get("squirrel_type_backend", False)
+                        squirrel_length_random = s.metadata.annotations.get("squirrel_length_random", self.squirrel_length_random)
 
                         if squirrel_user_key and squirrel_pass_key and \
                           squirrel_service and squirrel_type_frontend and \
                           squirrel_type_backend and squirrel_user and squirrel_pass:
                             print("[INFO] Process %s, namespace %s" % (squirrel_name, squirrel_namespace))
-                            random_pass = self.randomStringDigits(26)
+                            random_pass = self.randomStringDigits(squirrel_length_random)
                             for nc in nutcrackers:
                                 permissions_fail = True
                                 for p in nc["permissions"]:
                                     permissions = p.split("/")
                                     #print(permissions)
                                     #print("%s %s" % (squirrel_namespace, squirrel_service))
-                                    if permissions[0] == squirrel_namespace and \
-                                      permissions[1] == squirrel_service:
+                                    if (permissions[0] == squirrel_namespace and \
+                                      permissions[1] == squirrel_service) or \
+                                      (permissions[0] == '*' and permissions[1] == '*'):
                                         permissions_fail = False
                                         nut_email = nc["data"]["email"]
                                         print("[INFO] Create nut for %s" % nut_email)
