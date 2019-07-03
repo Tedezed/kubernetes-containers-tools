@@ -6,6 +6,10 @@ Rotation of passwords and storage using gpg for applications in Kubernetes
 
 # Install
 
+```
+kubectl create -f https://raw.githubusercontent.com/Tedezed/slug-containers/master/squirrel/install.yaml
+```
+
 ## Create Nutcrackers
 
 Example Admin:
