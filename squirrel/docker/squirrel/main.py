@@ -65,10 +65,11 @@ class sqrl():
 
         # Load Kubernetes Config
         if not path.exists('/.dockerenv'):
-            try:
-                config.load_kube_config()
-            except OSError:
-                config.load_kube_config(config_file='/home/%s/.kube/config-slug' % (pwd.getpwuid(getuid()).pw_name))
+            # try:
+            #     config.load_kube_config()
+            # except OSError:
+            #     config.load_kube_config(config_file='/home/%s/.kube/config-slug' % (pwd.getpwuid(getuid()).pw_name))
+            pass
         else:
             config.load_incluster_config()
 
