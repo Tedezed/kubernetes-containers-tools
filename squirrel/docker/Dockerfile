@@ -2,7 +2,8 @@
 FROM debian:stretch-slim
 MAINTAINER Juan Manuel Torres <juanmanuel.torres@aventurabinaria.es>
 
-ENV MODE="cronjob" # controller
+# Modes: controller or cronjob
+ENV MODE="cronjob"
 
 RUN apt-get update \
 	&& apt-get install -y --no-install-recommends \

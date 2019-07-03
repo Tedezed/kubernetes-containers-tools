@@ -6,7 +6,8 @@ LOCAL_KEY="local"
 if [[ "$1" == "drop-all" ]]
 then
 	rm -rf $SQUIRREL_USER_DIR
-else
+elif [[ "$1" == "init" ]]
+then
 	if [ ! -d "$SQUIRREL_USER_DIR" ]; then
 		mkdir -p $SQUIRREL_USER_DIR
 	 	bash -c "cd $SQUIRREL_USER_DIR \
@@ -29,9 +30,7 @@ else
 		cd $OLD_DIR
 		ls $SQUIRREL_USER_DIR
 	fi
-fi
-
-if [[ "$1" == "version" ]]
+elif [[ "$1" == "version" ]]
 then
     echo "v0.1"
     exit 0
@@ -39,11 +38,11 @@ elif [[ "$1" == "nuts" ]]
 then
 	if [ -z "$2" ]
 	then
-		NAMESPACE="default"
+		kubectl get nt --all-namespaces -o custom-columns=NAMESPACE:metadata.namespace,NAME:metadata.name,EMAIL:.data.email,SERVICE:.data.squirrel_service,CREATION:.metadata.creationTimestamp
 	else
 		NAMESPACE=$2
+		kubectl get nt -n $NAMESPACE -o custom-columns=NAME:metadata.name,EMAIL:.data.email,SERVICE:.data.squirrel_service,CREATION:.metadata.creationTimestamp
 	fi
-   	kubectl get nuts -n $NAMESPACE -o custom-columns=NAME:metadata.name,EMAIL:.data.email,SERVICE:.data.squirrel_service,CREATION:.metadata.creationTimestamp
 elif [[ "$1" == "decrypt" ]]
 then
 	if [ -z "$2" ]
@@ -58,10 +57,18 @@ then
 	else
 		NUT_NAMESPACE=$3
 	fi
-	NUT_JSON=$(kubectl get nut $NUT_NAME -n $NUT_NAMESPACE -o json)
+	NUT_JSON=$(kubectl get nt $NUT_NAME -n $NUT_NAMESPACE -o json)
 	NUT=$(echo $NUT_JSON | jq '.data.nut' | cut -d '"' -f 2)
 	echo $NUT | base64 --decode
-	python3 $SQUIRREL_USER_DIR/squirrel/docker/squirrel/main.py mode="decrypt-text" encrypted-string="$NUT"
+	if [ -z "$NUT_JSON" ] || [ -z "$NUT" ]
+	then
+		echo "[ERROR] Empty internal variables NUT_JSON or NUT"
+		exit 1
+	else
+		python3 $SQUIRREL_USER_DIR/squirrel/docker/squirrel/main.py mode="decrypt-text" encrypted-string="$NUT"
+	fi
+else
+	echo "Commands: nuts, decrypt, version, init, drop-all"
 fi
 
 exit 0

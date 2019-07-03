@@ -33,6 +33,8 @@ class app_update_pass():
     	# https://passlib.readthedocs.io/en/stable/
     	# https://docs.python.org/2/library/hashlib.html
         try:
+            #print(base64.b64decode(self.squirrel_user + '=' * (-len(self.squirrel_user) % 4)).decode())
+            #print(base64.b64decode(self.squirrel_pass + '=' * (-len(self.squirrel_pass) % 4)).decode())
             connection = psycopg2.connect(user = base64.b64decode(self.squirrel_user + '=' * (-len(self.squirrel_user) % 4)).decode(),
                                           password = base64.b64decode(self.squirrel_pass + '=' * (-len(self.squirrel_pass) % 4)).decode(),
                                           host = "%s.%s.svc.cluster.local" % (self.squirrel_service, self.squirrel_namespace),
