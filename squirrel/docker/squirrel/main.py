@@ -83,8 +83,8 @@ def main():
         ct = controller(squirrel)
         ct.daemon_controller()
     elif squirrel.dic_argv.get("mode", False) == "cronjob":
-        nm.rotation_secrets()
         nm.rotation()
+        nm.rotation_secrets()
     elif squirrel.dic_argv.get("mode", False) == "client-create-key":
         key_pass = getpass()
         key_file = squirrel.dic_argv.get("key-file", False)
