@@ -113,7 +113,7 @@ class nuts_manager():
         for s in secrets.items:
             if s.metadata.annotations:
                 for a in s.metadata.annotations:
-                    if a == "squirrel" and s.metadata.annotations[a] == "true":
+                    if a == "squirrel_rotation_secret" and s.metadata.annotations[a] == "true":
                         squirrel_length_random = s.metadata.annotations.get("squirrel_length_random", self.squirrel_length_random)
                         if s.metadata.annotations.get("squirrel_rotation_data", False):
                             s.kind = 'Secret'
@@ -122,7 +122,7 @@ class nuts_manager():
                             squirrel_rotation_data = squirrel_rotation_data.replace(" ", "")
                             squirrel_rotation_data = squirrel_rotation_data.split(",")
                             for d in squirrel_rotation_data:
-                                print(d)
+                                #print(d)
                                 new_pass = self.randomStringDigits(squirrel_length_random)
                                 new_pass_base64 = base64.b64encode(new_pass.encode()).decode()
                                 new_pass_base64 = new_pass_base64 + '=' * (-len(new_pass_base64) % 4)
@@ -137,7 +137,8 @@ class nuts_manager():
                             try:
                                 api_response = self.squirrel.v1.patch_namespaced_secret(secret.metadata.name, \
                                     secret.metadata.namespace, secret)
-                                print("[INFO] %s" % api_response)
+                                #print("[INFO] %s" % api_response)
+                                print("[INFO] Secret update with name %s and namespace %s" % (secret.metadata.name, secret.metadata.namespace))
                             except ApiException as e:
                                 print("Exception when calling CoreV1Api->patch_namespaced_secret: %s\n" % e)
 
@@ -149,7 +150,7 @@ class nuts_manager():
         for s in secrets.items:
             if s.metadata.annotations:
                 for a in s.metadata.annotations:
-                    if a == "squirrel" and s.metadata.annotations[a] == "true":
+                    if a == "squirrel_rotation_app" and s.metadata.annotations[a] == "true":
                         squirrel_user_key = s.metadata.annotations.get("squirrel_username_key", False)
                         squirrel_pass_key = s.metadata.annotations.get("squirrel_password_key", False)
                         squirrel_user = s.data.get(squirrel_user_key, False)
@@ -175,7 +176,6 @@ class nuts_manager():
                                     if (permissions[0] == squirrel_namespace and \
                                       permissions[1] == squirrel_service) or \
                                       (permissions[0] == '*' and permissions[1] == '*'):
-                                        permissions_fail = False
                                         nut_email = nc["data"]["email"]
                                         print("[INFO] Create nut for %s" % nut_email)
 
@@ -232,8 +232,9 @@ class nuts_manager():
                                                             squirrel_type_backend,
                                                             s.metadata.annotations,
                                                             random_pass)
-                                        aup.conditional_app()
-                                if permissions_fail:
+                                        status = aup.conditional_app()
+                                        permissions_fail = False
+                                if permissions_fail or status:
                                     print("[INFO] No have permissions in %s, namespace %s" % (squirrel_service, squirrel_namespace))
                                 else:
                                     print("[INFO] Permissions in %s, namespace %s" % (squirrel_service, squirrel_namespace))

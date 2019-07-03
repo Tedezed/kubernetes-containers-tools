@@ -1,6 +1,38 @@
 kubectl create sa squirrel -n default
-kubectl create clusterrolebinding squirrel-admin-binding -n default \
-    --clusterrole cluster-admin \
+
+kubectl delete clusterrole squirrel
+cat <<EOF | kubectl create -f -
+kind: ClusterRole
+apiVersion: rbac.authorization.k8s.io/v1 
+metadata:
+  name: squirrel
+rules:
+- apiGroups: ["tree.squirrel.local"] 
+  resources: ["nutcrackers"] 
+  verbs: ["get", "list", "watch"]
+- apiGroups: ["tree.squirrel.local"] 
+  resources: ["nuts"] 
+  verbs: ["*"]
+- apiGroups: [""] 
+  resources: ["secrets"] 
+  verbs:
+  - update
+  - patch
+  - list
+  - get
+- apiGroups:
+  - ""
+  resources:
+  - endpoints
+  - services
+  verbs:
+  - list
+  - watch
+EOF
+
+kubectl delete clusterrolebinding squirrel
+kubectl create clusterrolebinding squirrel -n default \
+    --clusterrole squirrel \
     --serviceaccount default:squirrel
 
 kubectl delete secret secrets-demo12 -n demo12
@@ -11,8 +43,9 @@ metadata:
   name: secrets-demo12
   namespace: demo12
   annotations:
-    squirrel: "true"
-    squirrel_rotation_data: "pass, masterpass"
+    squirrel_rotation_secret: "true"
+    squirrel_rotation_app: "true"
+    squirrel_rotation_data: "password, masterpass"
     squirrel_service: "pg-demo12"
     squirrel_username_key: "user"
     squirrel_password_key: "pass"
@@ -27,7 +60,6 @@ data:
   pass: b2Rvbw==
   masterpass: b2Rvbw==
 EOF
-
 
 cat <<EOF | kubectl create -f -
 apiVersion: extensions/v1beta1
@@ -69,9 +101,23 @@ data:
   email: "juanmanuel.torres@aventurabinaria.es"
   keypub: $(cat $HOME/.squirrel/local.pub | base64 -w0)
 permissions:
-  - demo12/pg-demo12
-  - demo11/pg-demo11
-  - demo10/pg-demo10
+  - "demo12/pg-demo12"
+  - "demo11/pg-demo11"
+  - "demo10/pg-demo10"
+EOF
+
+kubectl delete nutcrackers juanmanuel.torres
+cat <<EOF | kubectl create -f -
+apiVersion: "tree.squirrel.local/v1"
+kind: Nutcrackers
+metadata:
+  name: juanmanuel.torres
+type: Opaque
+data:
+  email: "juanmanuel.torres@aventurabinaria.es"
+  keypub: $(cat $HOME/.squirrel/local.pub | base64 -w0)
+permissions:
+  - "*/*"
 EOF
 
 python3 main.py mode="import-key" key-file="local.pub"

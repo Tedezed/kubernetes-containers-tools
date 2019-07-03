@@ -40,7 +40,7 @@ class app_update_pass():
                                           port = self.secret_annotations.get("custom_database_port", "5432"))
             cursor = connection.cursor()
             # Print PostgreSQL Connection properties
-            print ( connection.get_dsn_parameters(),"\n")
+            print(connection.get_dsn_parameters(),"\n")
             # Print PostgreSQL version
             cursor.execute("SELECT version();")
             record = cursor.fetchone()
@@ -57,9 +57,11 @@ class app_update_pass():
                 print(count, "Record Updated successfully ")
             else:
                 raise Exception("[ERROR] Annotations custom_database_id not found in secret")
+                return True
            
         except (Exception, psycopg2.Error) as error:
             print ("Error while connecting to PostgreSQL: ", error)
+            return True
         finally:
             #closing database connection.
                 if 'connection' in locals():
@@ -67,3 +69,4 @@ class app_update_pass():
                         cursor.close()
                         connection.close()
                         print("PostgreSQL connection is closed")
+                        return False

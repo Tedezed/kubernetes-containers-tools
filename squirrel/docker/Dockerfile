@@ -2,9 +2,7 @@
 FROM debian:stretch-slim
 MAINTAINER Juan Manuel Torres <juanmanuel.torres@aventurabinaria.es>
 
-ENV MODE="controller"
-
-#RUN sleep 999999999
+ENV MODE="cronjob" # controller
 
 RUN apt-get update \
 	&& apt-get install -y --no-install-recommends \

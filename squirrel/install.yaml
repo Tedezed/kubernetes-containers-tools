@@ -1,0 +1,93 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: squirrel
+  namespace: kube-system
+---
+kind: ClusterRole
+apiVersion: rbac.authorization.k8s.io/v1 
+metadata:
+  name: squirrel
+rules:
+- apiGroups: ["tree.squirrel.local"] 
+  resources: ["nutcrackers"] 
+  verbs: ["get", "list", "watch"]
+- apiGroups: ["tree.squirrel.local"] 
+  resources: ["nuts"] 
+  verbs: ["*"]
+- apiGroups: [""] 
+  resources: ["secrets"] 
+  verbs:
+  - update
+  - patch
+  - list
+  - get
+- apiGroups:
+  - ""
+  resources:
+  - endpoints
+  - services
+  verbs:
+  - list
+  - watch
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: squirrel
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: squirrel
+subjects:
+- kind: ServiceAccount
+  name: squirrel
+  namespace: kube-system
+---
+apiVersion: apiextensions.k8s.io/v1beta1
+kind: CustomResourceDefinition
+metadata:
+  name: nutcrackers.tree.squirrel.local
+spec:
+  group: tree.squirrel.local
+  version: v1
+  scope: Namespaced
+  names:
+    plural: nutcrackers
+    singular: nutcracker
+    kind: Nutcrackers
+    shortNames:
+      - nc
+---
+apiVersion: apiextensions.k8s.io/v1beta1
+kind: CustomResourceDefinition
+metadata:
+  name: nuts.tree.squirrel.local
+spec:
+  group: tree.squirrel.local
+  version: v1
+  scope: Namespaced
+  names:
+    plural: nuts
+    singular: nut
+    kind: Nuts
+    shortNames:
+      - nt
+---
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  name: squirrel
+  namespace: kube-system
+spec:
+  schedule: "0 * * * *"
+  concurrencyPolicy: "Forbid"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          serviceAccountName: squirrel
+          containers:
+          - name: squirrel
+            image: tedezed/squirrel:latest
+          restartPolicy: OnFailure
