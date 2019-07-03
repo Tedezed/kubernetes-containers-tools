@@ -39,11 +39,15 @@ class nuts_manager():
             passphrase=password)
         key = self.squirrel.gpg.gen_key(input_data)
         print("Key: ", key)
-        self.exportKey(keyfile, str(key.fingerprint))
+        self.exportKey(keyfile, str(key.fingerprint), password)
 
-    def exportKey(self, keyfile, key):
-        ascii_armored_public_keys = self.squirrel.gpg.export_keys(key)
-        ascii_armored_private_keys = self.squirrel.gpg.export_keys(key, secret=True)
+    def exportKey(self, keyfile, key, password=None):
+        try:
+            ascii_armored_public_keys = self.squirrel.gpg.export_keys(key)
+            ascii_armored_private_keys = self.squirrel.gpg.export_keys(key, secret=True)
+        except:
+            ascii_armored_public_keys = self.squirrel.gpg.export_keys(key)
+            ascii_armored_private_keys = self.squirrel.gpg.export_keys(key, passphrase=password, secret=True)
         with open("%s.pub" % keyfile, 'w') as f:
             f.write(ascii_armored_public_keys)
         with open("%s.key" % keyfile, 'w') as f:
