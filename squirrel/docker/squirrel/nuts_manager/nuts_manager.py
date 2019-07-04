@@ -4,7 +4,7 @@
 # https://www.saltycrane.com/blog/2011/10/python-gnupg-gpg-example/
 # https://github.com/kubernetes-client/python/blob/master/kubernetes/docs/ApiextensionsV1beta1Api.md
 
-import gnupg, random, string, re, json, base64, hashlib, copy, re
+import gnupg, random, string, re, json, base64, hashlib, copy, re, pyperclip
 from kubernetes import client, config
 from kubernetes.client.rest import ApiException
 from os import path, getlogin, system, getuid, environ
@@ -85,7 +85,8 @@ class nuts_manager():
         print('dencryptText status: ', decrypted_data.status)
         #print('dencryptText stderr: ', decrypted_data.stderr)
         #print('dencryptText decrypted string: ', decrypted_data.data)
-        return str(decrypted_data.data)
+        pyperclip.copy(decrypted_data.data.decode())
+        return "[INFO] Password copied to the clipboard"
 
     def away(self):
         public_keys = self.squirrel.gpg.list_keys()

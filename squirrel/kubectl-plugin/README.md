@@ -3,8 +3,8 @@
 ## Dependencies
 
 ```
-sudo apt-get install jq python3-gnupg
-pip3 install --user kubernetes
+sudo apt-get install jq python3-gnupg xclip
+pip3 install --user kubernetes pyperclip
 ```
 
 ## Install
