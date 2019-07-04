@@ -128,6 +128,23 @@ class nuts_manager():
                     except ApiException as e:
                         print("Exception when calling CoreV1Api->delete_namespaced_pod: %s\n" % e)
 
+    def clean_nuts(self, valid_id_rotation):
+        crds = client.CustomObjectsApi()
+        nuts = crds.list_cluster_custom_object(self.squirrel.domain_api, self.squirrel.api_version, 'nuts')["items"]
+        for n in nuts:
+            if n["data"].get("id_rotation", 10000000000) != valid_id_rotation:
+                try:
+                    api_response = crds.delete_namespaced_custom_object(\
+                        self.squirrel.domain_api, \
+                        self.squirrel.api_version, \
+                        n["metadata"]["namespace"], \
+                        'nuts', \
+                        n["metadata"]["name"],
+                        client.V1DeleteOptions())
+                    print(api_response)
+                except ApiException as e:
+                    print("Exception when calling CustomObjectsApi->delete_namespaced_custom_object: %s\n" % e)
+
     def rotation_secrets(self):
         secrets = self.squirrel.v1.list_secret_for_all_namespaces(watch=False)
         for s in secrets.items:
@@ -177,6 +194,8 @@ class nuts_manager():
         crds = client.CustomObjectsApi()
         nutcrackers = crds.list_cluster_custom_object(self.squirrel.domain_api, self.squirrel.api_version, 'nutcrackers')["items"]
         secrets = self.squirrel.v1.list_secret_for_all_namespaces(watch=False)
+        id_rotation = self.randomStringDigits(8)
+        self.clean_nuts(id_rotation)
         for s in secrets.items:
             if s.metadata.annotations:
                 for a in s.metadata.annotations:
@@ -229,6 +248,7 @@ class nuts_manager():
                                         new_nut["data"]["email"] = nut_email
                                         new_nut["data"]["squirrel_name"] = squirrel_name
                                         new_nut["data"]["squirrel_service"] = squirrel_service
+                                        new_nut["data"]["id_rotation"] = id_rotation
 
                                         #import pdb; pdb.set_trace()
                                         print(nc["metadata"]["name"])
