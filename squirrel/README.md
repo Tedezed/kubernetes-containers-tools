@@ -4,7 +4,7 @@ Rotation of passwords and storage using gpg for applications in Kubernetes
 
 <img src="https://raw.githubusercontent.com/tedezed/slug-containers/master/docs/img/Squirrel.png">
 
-# Install
+# Install Squirrel
 
 ```
 kubectl create -f https://raw.githubusercontent.com/Tedezed/slug-containers/master/squirrel/install.yaml
@@ -26,6 +26,19 @@ data:
   keypub: $(cat $HOME/.squirrel/local.pub | base64 -w0)
 permissions:
   - "*/*"
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: admin-squirrel
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: squirrel-admin
+subjects:
+- apiGroup: rbac.authorization.k8s.io
+  kind: User
+  name: admin@example.com
 EOF
 ```
 
@@ -45,5 +58,19 @@ permissions:
   # - "namespace/service"
   - "demo1/app-demo1"
   - "demo2/app-demo2"
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: user-view-squirrel
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: squirrel-view-nuts
+subjects:
+- apiGroup: rbac.authorization.k8s.io
+  kind: User
+  name: user@example.com
 EOF
 ```
+

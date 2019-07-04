@@ -20,5 +20,9 @@ sudo cp ./kubectl-squirrel /usr/local/bin
 Need input email and password for create local keys 
 ```
 kubectl squirrel init
+...
+Email: [Enter email for gpg keys]
+Password: [Enter password for gpg keys]
 ```
+
 

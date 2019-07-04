@@ -7,6 +7,33 @@ metadata:
 kind: ClusterRole
 apiVersion: rbac.authorization.k8s.io/v1 
 metadata:
+  name: squirrel-view-nuts
+rules:
+- apiGroups: ["tree.squirrel.local"] 
+  resources: ["nuts"] 
+  verbs: ["get", "list", "watch"]
+---
+kind: ClusterRole
+apiVersion: rbac.authorization.k8s.io/v1 
+metadata:
+  name: squirrel-view-nutcrackers
+rules:
+- apiGroups: ["tree.squirrel.local"] 
+  resources: ["nutcrackers"] 
+  verbs: ["get", "list", "watch"]
+---
+kind: ClusterRole
+apiVersion: rbac.authorization.k8s.io/v1 
+metadata:
+  name: squirrel-admin
+rules:
+- apiGroups: ["tree.squirrel.local"] 
+  resources: ["nutcrackers", "nuts"] 
+  verbs: ["*"]
+---
+kind: ClusterRole
+apiVersion: rbac.authorization.k8s.io/v1 
+metadata:
   name: squirrel
 rules:
 - apiGroups: ["tree.squirrel.local"] 
@@ -86,7 +113,16 @@ metadata:
   name: squirrel
   namespace: kube-system
 spec:
-  schedule: "0 * * * *"
+  ## Rotation every year (01/01/*)
+  #schedule: "0 0 1 * *"
+  ## Rotation every month (01/*/*)
+  #schedule: "0 0 1 * *"
+  ## Rotation every week (Sunday)
+  #schedule: "0 0 * * 0"
+  ## Rotation every day (0:00)
+  schedule: "0 0 * * *"
+  ## Rotation every hour (**:00)
+  #schedule: "0 * * * *"
   concurrencyPolicy: "Forbid"
   jobTemplate:
     spec:
