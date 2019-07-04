@@ -84,13 +84,15 @@ def main():
         ct = controller(squirrel)
         ct.daemon_controller()
     elif squirrel.dic_argv.get("mode", False) == "cronjob":
+        print("[INFO] Exec rotation credentils for apps")
         nm.rotation()
+        print("[INFO] Exec rotation secrets")
         nm.rotation_secrets()
     elif squirrel.dic_argv.get("mode", False) == "client-create-key":
         key_pass = getpass()
         key_file = squirrel.dic_argv.get("key-file", False)
         email = squirrel.dic_argv.get("email", False)
-        bits = squirrel.dic_argv.get("bits", 1024)
+        bits = squirrel.dic_argv.get("bits", 4096)
         if email and key_file:
             nm.createKey(
                 key_file,

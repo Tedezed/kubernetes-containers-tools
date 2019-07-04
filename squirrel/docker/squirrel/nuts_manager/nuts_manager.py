@@ -4,7 +4,7 @@
 # https://www.saltycrane.com/blog/2011/10/python-gnupg-gpg-example/
 # https://github.com/kubernetes-client/python/blob/master/kubernetes/docs/ApiextensionsV1beta1Api.md
 
-import gnupg, random, string, re, json, base64, hashlib, copy
+import gnupg, random, string, re, json, base64, hashlib, copy, re
 from kubernetes import client, config
 from kubernetes.client.rest import ApiException
 from os import path, getlogin, system, getuid, environ
@@ -112,6 +112,22 @@ class nuts_manager():
             print("[ERROR] %s" % e)
         return input_dict
 
+    def string_to_list_format(self, text):
+        text = text.replace(" ", "")
+        text = text.split(",")
+        return text
+
+    def delete_pods(self, text_delete_pods, namespace):
+        pods = self.squirrel.v1.list_namespaced_pod(namespace)
+        for p in pods.items:
+            for d in self.string_to_list_format(text_delete_pods):
+                if bool(re.search(d, p.metadata.name)):
+                    try: 
+                        api_response = self.squirrel.v1.delete_namespaced_pod(p.metadata.name, namespace)
+                        print("[INFO] Delete pod %s" % p.metadata.name)
+                    except ApiException as e:
+                        print("Exception when calling CoreV1Api->delete_namespaced_pod: %s\n" % e)
+
     def rotation_secrets(self):
         secrets = self.squirrel.v1.list_secret_for_all_namespaces(watch=False)
         for s in secrets.items:
@@ -122,27 +138,37 @@ class nuts_manager():
                         if s.metadata.annotations.get("squirrel_rotation_data", False):
                             s.kind = 'Secret'
                             secret = copy.deepcopy(s)
-                            squirrel_rotation_data = s.metadata.annotations["squirrel_rotation_data"]
-                            squirrel_rotation_data = squirrel_rotation_data.replace(" ", "")
-                            squirrel_rotation_data = squirrel_rotation_data.split(",")
+                            squirrel_rotation_data = self.string_to_list_format(s.metadata.annotations["squirrel_rotation_data"])
                             for d in squirrel_rotation_data:
-                                #print(d)
                                 new_pass = self.randomStringDigits(squirrel_length_random)
                                 new_pass_base64 = base64.b64encode(new_pass.encode()).decode()
-                                new_pass_base64 = new_pass_base64 + '=' * (-len(new_pass_base64) % 4)
+                                #new_pass_base64 = new_pass_base64 + '=' * (-len(new_pass_base64) % 4)
                                 secret.data[d] = new_pass_base64
-                            #old_secret = s.to_dict()
-                            #old_secret = json.dumps(self.clean_dict(old_secret))
-                            #new_secret = secret.to_dict()
-                            #new_secret = json.dumps(self.clean_dict(new_secret))
-                            #print(old_secret)
-                            #print(new_secret)
-                            #print(type(client.V1Secret()))
                             try:
                                 api_response = self.squirrel.v1.patch_namespaced_secret(secret.metadata.name, \
                                     secret.metadata.namespace, secret)
-                                #print("[INFO] %s" % api_response)
                                 print("[INFO] Secret update with name %s and namespace %s" % (secret.metadata.name, secret.metadata.namespace))
+                                if s.metadata.annotations.get("squirrel_delete_pods", False):
+                                    if s.metadata.annotations.get("squirrel_service", False) and \
+                                      s.metadata.annotations.get("squirrel_type_frontend", False) and \
+                                      s.metadata.annotations.get("squirrel_type_backend", False):
+                                        squirrel_user_key = s.metadata.annotations.get("squirrel_username_key", False)
+                                        squirrel_pass_key = s.metadata.annotations.get("squirrel_password_key", False)
+                                        squirrel_user = s.data.get(squirrel_user_key, False)
+                                        squirrel_pass = s.data.get(squirrel_pass_key, False)
+                                        new_pass_decode = base64.b64decode(secret.data.get(\
+                                            squirrel_pass_key, False) + '=' * (-len(secret.data.get(squirrel_pass_key, False)) % 4)).decode()
+                                        aup = app_update_pass(s.metadata.annotations.get("squirrel_service", False),
+                                                              secret.metadata.namespace,
+                                                              squirrel_user,
+                                                              squirrel_pass,
+                                                              s.metadata.annotations.get("squirrel_type_frontend", False),
+                                                              s.metadata.annotations.get("squirrel_type_backend", False),
+                                                              s.metadata.annotations,
+                                                              "update_secret",
+                                                              new_pass_decode)
+                                        aup.conditional_app()
+                                    self.delete_pods(s.metadata.annotations["squirrel_delete_pods"], secret.metadata.namespace)
                             except ApiException as e:
                                 print("Exception when calling CoreV1Api->patch_namespaced_secret: %s\n" % e)
 
@@ -171,6 +197,7 @@ class nuts_manager():
                           squirrel_type_backend and squirrel_user and squirrel_pass:
                             print("[INFO] Process %s, namespace %s" % (squirrel_name, squirrel_namespace))
                             random_pass = self.randomStringDigits(squirrel_length_random)
+                            create_nut = False
                             for nc in nutcrackers:
                                 permissions_fail = True
                                 for p in nc["permissions"]:
@@ -227,55 +254,25 @@ class nuts_manager():
                                             print("Nut %s for %s" % (secret_text, nut_email))
                                         except ApiException as e:
                                             print("Exception when calling CustomObjectsApi->create_namespaced_custom_object: %s\n" % e)
-
-                                        # End
-                                        aup = app_update_pass(squirrel_service, \
-                                                            squirrel_namespace, \
-                                                            squirrel_user, \
-                                                            squirrel_pass, \
-                                                            squirrel_type_frontend, \
-                                                            squirrel_type_backend,
-                                                            s.metadata.annotations,
-                                                            random_pass)
-                                        status = aup.conditional_app()
                                         permissions_fail = False
-                                if permissions_fail or status:
+                                if permissions_fail:
                                     print("[INFO] No have permissions in %s, namespace %s" % (squirrel_service, squirrel_namespace))
                                 else:
                                     print("[INFO] Permissions in %s, namespace %s" % (squirrel_service, squirrel_namespace))
+                                    create_nut = True
+                            if create_nut:
+                                aup = app_update_pass(squirrel_service,
+                                                      squirrel_namespace,
+                                                      squirrel_user,
+                                                      squirrel_pass,
+                                                      squirrel_type_frontend,
+                                                      squirrel_type_backend,
+                                                      s.metadata.annotations,
+                                                      "update_app_password",
+                                                      random_pass)
+                                aup.conditional_app()
+                            else:
+                                print("[INFO] Not found nutcrackers for secret %s" % (s.metadata.name,
+                                                                                      s.metadata.namespace))
                         else:
                             print("[ERROR] in %s, namespace %s" % (squirrel_name, squirrel_namespace))
-        exit()
-        #squirrel.createKey('mykeyfile', 'juanmanuel.torres@aventurabinaria.es', '1234567890')
-        squirrel.importKey('mykeyfile.pub')
-        print(squirrel.listKey)
-        secret_text = squirrel.encryptText('juanmanuel.torres@aventurabinaria.es', squirrel.randomStringDigits(22))
-        print(secret_text)
-        print(squirrel.dencryptText('1234567890', secret_text))
-
-    # def rotation(self):
-    #     squirrel = sqrl()
-    #     #squirrel.createKey('mykeyfile', 'juanmanuel.torres@aventurabinaria.es', '1234567890')
-    #     squirrel.importKey('mykeyfile.pub')
-    #     print(squirrel.listKey)
-    #     secret_text = squirrel.encryptText('juanmanuel.torres@aventurabinaria.es', squirrel.randomStringDigits(22))
-    #     print(secret_text)
-    #     print(squirrel.dencryptText('1234567890', secret_text))
-
-# def old():
-#     squirrel = sqrl()
-#     #squirrel.createNut('mykeyfile', 'juanmanuel.torres@aventurabinaria.es', '1234567890')
-#     squirrel.importNut('mykeyfile.pub')
-#     print(squirrel.listNuts)
-#     secret_text = squirrel.encryptText('juanmanuel.torres@aventurabinaria.es', squirrel.randomStringDigits(22))
-#     print(secret_text)
-#     print(squirrel.dencryptText('1234567890', secret_text))
-
-
-# def main():
-#     squirrel = sqrl()
-#     squirrel.away()
-
-# if __name__ == '__main__':
-#     # Start
-#     main()

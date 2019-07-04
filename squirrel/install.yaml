@@ -16,6 +16,12 @@ rules:
   resources: ["nuts"] 
   verbs: ["*"]
 - apiGroups: [""] 
+  resources: ["pods"] 
+  verbs:
+  - delete
+  - list
+  - get
+- apiGroups: [""] 
   resources: ["secrets"] 
   verbs:
   - update

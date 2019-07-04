@@ -19,7 +19,7 @@ then
 	  		&& echo squirrel/ >> .git/info/sparse-checkout \
 	  		&& git read-tree -mu HEAD"
 		read -r -p 'Email: ' USER_EMAIL
-		echo "{'email': '$USER_EMAIL', 'local_key': '$LOCAL_KEY'}" > $SQUIRREL_USER_DIR/config
+		echo "\""{"email": "$USER_EMAIL", "local_key": "$LOCAL_KEY"}"\"" > $SQUIRREL_USER_DIR/config
 		OLD_DIR=$(pwd)
 		cd $SQUIRREL_USER_DIR \
 		&& python3 $SQUIRREL_USER_DIR/squirrel/docker/squirrel/main.py \
