@@ -89,20 +89,27 @@ def main():
         print("[INFO] Exec rotation secrets")
         nm.rotation_secrets()
     elif squirrel.dic_argv.get("mode", False) == "client-create-key":
-        key_pass = getpass()
-        key_file = squirrel.dic_argv.get("key-file", False)
-        email = squirrel.dic_argv.get("email", False)
-        bits = squirrel.dic_argv.get("bits", 4096)
-        if email and key_file:
-            nm.createKey(
-                key_file,
-                email,
-                key_pass,
-                bits,
-                "RSA"
-            )
-        else:
-            print("Use: mode='client-create-key' key-file='local.pub' email='admin@example.com'")
+        pass_not_ok = True
+        while pass_not_ok:
+            key_pass = getpass("Password: ")
+            key_pass_copy = getpass("Enter the password again: ")
+            if key_pass == key_pass_copy:
+                pass_not_ok = False
+                key_file = squirrel.dic_argv.get("key-file", False)
+                email = squirrel.dic_argv.get("email", False)
+                bits = squirrel.dic_argv.get("bits", 4096)
+                if email and key_file:
+                    nm.createKey(
+                        key_file,
+                        email,
+                        key_pass,
+                        bits,
+                        "RSA"
+                    )
+                else:
+                    print("Use: mode='client-create-key' key-file='local.pub' email='admin@example.com'")
+            else:
+                print("Passwords do not match...")
     elif squirrel.dic_argv.get("mode", False) == "import-key":
         key_file = squirrel.dic_argv.get("key-file", False)
         if key_file:
