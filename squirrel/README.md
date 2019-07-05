@@ -74,4 +74,7 @@ subjects:
 EOF
 ```
 
-kubectl create job --from=
+Run Job if you need rotation now:
+```
+kubectl create job --from=cronjob/squirrel -n kube-system squirrel-rotation-now
+```

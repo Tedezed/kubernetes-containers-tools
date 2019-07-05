@@ -19,7 +19,7 @@ For Bash
 ```
 echo '
 alias squirrel="/usr/local/bin/kubectl-squirrel"
-source /usr/local/bin/kubectl-squirrel
+source /usr/local/bin/kubectl-squirrel complete
 ' >> $HOME/.bashrc
 ```
 

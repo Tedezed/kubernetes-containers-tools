@@ -105,10 +105,10 @@ then
 		&& git reset --hard origin/master \
 		&& git pull \
 		&& sudo cp squirrel/kubectl-plugin/kubectl-squirrel /usr/local/bin/kubectl-squirrel
-elif [[ "$1" == "help" ]]
+elif [[ "$1" == "complete" ]]
 then
-	echo "Commands: nuts, decrypt, version, init, drop-all, update"
-else
 	export _kubectl_squirrel
 	complete -F _kubectl_squirrel squirrel
+else
+	echo "Commands: nuts, decrypt, version, init, drop-all, update"
 fi
