@@ -1,7 +1,38 @@
-#!/bin/bash
+#/bin/bash
 
 SQUIRREL_USER_DIR="$HOME/.squirrel"
 LOCAL_KEY="local"
+EMAIL=$(cat $SQUIRREL_USER_DIR/config | jq ".email" | tr -d '"')
+
+#COMPLETION_SQUIRREL="DEBUG"
+
+_kubectl_squirrel()
+{
+  # Debug
+  if [ "$COMPLETION_SQUIRREL" = "DEBUG" ]; then
+  	echo ""
+  	echo "Com: $COMP_WORDS ${COMP_WORDS[1]} ${COMP_WORDS[2]} ${#COMP_WORDS[@]}"
+  	echo ""
+  fi
+
+  # Level 1
+  if [ "${#COMP_WORDS[@]}" = "2" ]; then
+  	COMPREPLY=($(compgen -W "nuts decrypt version init drop-all" "${COMP_WORDS[1]}"))
+  fi
+
+  # Level 2
+  if [ "${#COMP_WORDS[@]}" = "3" ] && [ "${COMP_WORDS[1]}" = "decrypt" ]; then
+    NUTS=$(kubectl get nt --all-namespaces -o custom-columns=NAME:metadata.name,EMAIL:.data.email | grep "$EMAIL" | awk '{ print $1 }')
+    COMPREPLY=($(compgen -W "$NUTS" "${COMP_WORDS[2]}"))
+  fi
+
+  # Level 3
+  if [ "${#COMP_WORDS[@]}" = "4" ] && [ "${COMP_WORDS[1]}" = "decrypt" ]; then
+    NUTS=$(kubectl get nt --all-namespaces -o custom-columns=NAME:metadata.name,EMAIL:.data.email | grep "$EMAIL" | awk '{ print $1 }')
+    NAMESPACE=$(kubectl get nt --all-namespaces -o custom-columns=NAMESPACE:metadata.namespace,NAME:metadata.name,EMAIL:.data.email | grep "$EMAIL" | grep "${COMP_WORDS[2]}" | awk '{ print $1 }')
+    COMPREPLY=($(compgen -W "$NAMESPACE" "${COMP_WORDS[3]}"))
+  fi
+}
 
 if [[ "$1" == "drop-all" ]]
 then
@@ -36,7 +67,6 @@ then
     exit 0
 elif [[ "$1" == "nuts" ]]
 then
-	EMAIL=$(cat $SQUIRREL_USER_DIR/config | jq ".email" | tr -d '"')
 	if [ -z "$2" ]
 	then
 		kubectl get nt --all-namespaces -o custom-columns=NAMESPACE:metadata.namespace,NAME:metadata.name,EMAIL:.data.email,SERVICE:.data.squirrel_service,CREATION:.metadata.creationTimestamp | grep "NAME\|$EMAIL"
@@ -68,8 +98,10 @@ then
 	else
 		python3 $SQUIRREL_USER_DIR/squirrel/docker/squirrel/main.py mode="decrypt-text" encrypted-string="$NUT"
 	fi
-else
+elif [[ "$1" == "help" ]]
+then
 	echo "Commands: nuts, decrypt, version, init, drop-all"
+else
+	export _kubectl_squirrel
+	complete -F _kubectl_squirrel squirrel
 fi
-
-exit 0
