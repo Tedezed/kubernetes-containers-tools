@@ -6,8 +6,6 @@ EMAIL=$(cat $SQUIRREL_USER_DIR/config | jq ".email" | tr -d '"')
 
 #COMPLETION_SQUIRREL="DEBUG"
 
-echo $@
-
 _kubectl_squirrel()
 {
   # Debug
@@ -109,8 +107,15 @@ then
 		&& sudo cp squirrel/kubectl-plugin/kubectl-squirrel /usr/local/bin/kubectl-squirrel
 elif [[ "$1" == "complete" ]]
 then
-	export _kubectl_squirrel
-	complete -F _kubectl_squirrel squirrel
+	if [[ "$0" == "/bin/bash" ]] || [[ "$0" == "bash" ]]
+	then
+		export _kubectl_squirrel
+		complete -F _kubectl_squirrel squirrel
+	#elif [[ "$0" == "zsh" ]]
+	#then
+		#export _kubectl_squirrel
+		#compdef _kubectl_squirrel squirrel
+	fi
 else
 	echo "Commands: nuts, decrypt, version, init, drop-all, update"
 fi
