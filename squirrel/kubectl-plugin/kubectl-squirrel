@@ -17,7 +17,7 @@ _kubectl_squirrel()
 
   # Level 1
   if [ "${#COMP_WORDS[@]}" = "2" ]; then
-  	COMPREPLY=($(compgen -W "nuts decrypt version init drop-all" "${COMP_WORDS[1]}"))
+  	COMPREPLY=($(compgen -W "nuts decrypt version update init drop-all" "${COMP_WORDS[1]}"))
   fi
 
   # Level 2
@@ -98,9 +98,16 @@ then
 	else
 		python3 $SQUIRREL_USER_DIR/squirrel/docker/squirrel/main.py mode="decrypt-text" encrypted-string="$NUT"
 	fi
+elif [[ "$1" == "update" ]]
+then
+	cd $SQUIRREL_USER_DIR \
+		&& git fetch --all \
+		&& git reset --hard origin/master \
+		&& git pull \
+		&& sudo cp squirrel/kubectl-plugin/kubectl-squirrel /usr/local/bin/kubectl-squirrel
 elif [[ "$1" == "help" ]]
 then
-	echo "Commands: nuts, decrypt, version, init, drop-all"
+	echo "Commands: nuts, decrypt, version, init, drop-all, update"
 else
 	export _kubectl_squirrel
 	complete -F _kubectl_squirrel squirrel

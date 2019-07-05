@@ -3,7 +3,7 @@
 ## Dependencies
 
 ```
-sudo apt-get install jq python3-gnupg xclip
+sudo apt-get install sudo jq python3-gnupg xclip
 pip3 install --user kubernetes pyperclip
 ```
 
@@ -13,10 +13,21 @@ pip3 install --user kubernetes pyperclip
 curl -SL https://raw.githubusercontent.com/Tedezed/slug-containers/master/squirrel/kubectl-plugin/kubectl-squirrel -o kubectl-squirrel
 chmod +x ./kubectl-squirrel
 sudo cp ./kubectl-squirrel /usr/local/bin
+```
+
+For Bash
+```
 echo '
 alias squirrel="/usr/local/bin/kubectl-squirrel"
 source /usr/local/bin/kubectl-squirrel
 ' >> $HOME/.bashrc
+```
+
+For ZSH
+```
+echo '
+squirrel() { bash -c "/usr/local/bin/kubectl-squirrel $@" }
+' >> $HOME/.zshrc
 ```
 
 ## Use
