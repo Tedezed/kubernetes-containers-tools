@@ -27,6 +27,8 @@ squirrel init
 ...
 Email: [Enter email for gpg keys]
 Password: [Enter password for gpg keys]
+
+Keys in $HOME/.squirrel/local.pub
 ```
 
 

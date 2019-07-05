@@ -74,3 +74,4 @@ subjects:
 EOF
 ```
 
+kubectl create job --from=

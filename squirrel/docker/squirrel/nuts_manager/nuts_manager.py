@@ -89,7 +89,7 @@ class nuts_manager():
         #pyperclip.copy(decrypted_data.data.decode())
         #return "[INFO] Password copied to the clipboard"
         #
-        return "Nut: " % decrypted_data.data.decode()
+        return "Content of the Nut: %s" % decrypted_data.data.decode()
 
     def away(self):
         public_keys = self.squirrel.gpg.list_keys()
