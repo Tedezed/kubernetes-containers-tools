@@ -26,7 +26,7 @@ source /usr/local/bin/kubectl-squirrel complete
 For ZSH
 ```
 echo '
-squirrel() { bash -c "/usr/local/bin/kubectl-squirrel $@" }
+squirrel() { PARAMETERS=$@; bash -c "/usr/local/bin/kubectl-squirrel $PARAMETERS" }
 ' >> $HOME/.zshrc
 ```
 

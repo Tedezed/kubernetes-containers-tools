@@ -6,6 +6,8 @@ EMAIL=$(cat $SQUIRREL_USER_DIR/config | jq ".email" | tr -d '"')
 
 #COMPLETION_SQUIRREL="DEBUG"
 
+echo $@
+
 _kubectl_squirrel()
 {
   # Debug
