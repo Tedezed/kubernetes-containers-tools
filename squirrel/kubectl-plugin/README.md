@@ -1,4 +1,4 @@
-# Kubectl Plugin
+# Squirrel command
 
 ## Dependencies
 
@@ -13,8 +13,10 @@ pip3 install --user kubernetes pyperclip
 curl -SL https://raw.githubusercontent.com/Tedezed/slug-containers/master/squirrel/kubectl-plugin/kubectl-squirrel -o kubectl-squirrel
 chmod +x ./kubectl-squirrel
 sudo cp ./kubectl-squirrel /usr/local/bin
-echo 'alias squirrel="/usr/local/bin/kubectl-squirrel"
-source /usr/local/bin/kubectl-squirrel' >> $HOME/.bashrc
+echo '
+alias squirrel="/usr/local/bin/kubectl-squirrel"
+source /usr/local/bin/kubectl-squirrel
+' >> $HOME/.bashrc
 ```
 
 ## Use
