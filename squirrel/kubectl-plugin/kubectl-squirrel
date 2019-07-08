@@ -17,7 +17,7 @@ _kubectl_squirrel()
 
   # Level 1
   if [ "${#COMP_WORDS[@]}" = "2" ]; then
-  	COMPREPLY=($(compgen -W "nuts decrypt version update init drop-all" "${COMP_WORDS[1]}"))
+  	COMPREPLY=($(compgen -W "nuts decrypt version update init" "${COMP_WORDS[1]}"))
   fi
 
   # Level 2

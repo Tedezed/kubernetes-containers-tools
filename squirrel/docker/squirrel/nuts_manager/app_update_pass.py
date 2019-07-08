@@ -46,6 +46,7 @@ class app_update_pass():
                            postgres_port,
                            name_database,
                            list_querys):
+        dic_query = {}
         try:
             connection = psycopg2.connect(user = name_username,
                                           password = user_password,
@@ -56,32 +57,47 @@ class app_update_pass():
             #record = cursor.fetchone()
             for query in list_querys:
                 cursor.execute(query)
+                try:
+                    dic_query[query] = cursor.fetchall()
+                except Exception as e:
+                    print("[WARNING] fetchall: %s" % e)
             connection.commit()
             print("[INFO] %s successfully" % cursor.rowcount)
         except (Exception, psycopg2.Error) as error:
-            print ("Error while connecting to PostgreSQL: ", error)
-            return False
+            print("[ERROR] while connecting to PostgreSQL: ", error)
         finally:
             if 'connection' in locals():
                 if(connection):
                     cursor.close()
                     connection.close()
                     print("PostgreSQL connection is closed")
-            return True
+            return dic_query
 
     def odoo_postgresv2(self):
+        system_databases = ["postgres", "template1", "template0"]
         try:
-            print("[INFO] Postgres update password")
+            print("[INFO] Postgres update user Odoo password")
             database = self.secret_annotations.get("custom_database_name", "odoo")
             port = self.secret_annotations.get("custom_database_port", "5432")
             id_update_pass = self.secret_annotations.get("custom_database_id", False)
             if id_update_pass:
-                pass_hash = pbkdf2_sha512.hash(self.random_pass)
-                update_query = ["UPDATE res_users set password='%s' WHERE id=%s;" \
-                    % (pass_hash, id_update_pass)]
-                self.postgres_execution(self.squirrel_user, self.squirrel_pass, \
-                    self.host, port, database, update_query)
-        except Exception as e:
+                query = ["SELECT datname FROM pg_catalog.pg_database;"]
+                list_databases = self.postgres_execution(self.squirrel_user, self.squirrel_pass, \
+                    self.host, port, "postgres", query)
+                databases = database.replace(" ", "")
+                databases = databases.split(",")
+                for d_name in databases:
+                    for d in list_databases[query[0]]:
+                        if d[0] not in system_databases:
+                            if d[0] == d_name or d_name == "*":
+                                print(d[0])
+                                pass_hash = pbkdf2_sha512.hash(self.random_pass)
+                                update_query = ["UPDATE res_users set password='%s' WHERE id=%s;" \
+                                    % (pass_hash, id_update_pass)]
+                                self.postgres_execution(self.squirrel_user, self.squirrel_pass, \
+                                    self.host, port, d[0], update_query)
+                                print("[INFO] Successful update in database %s" % d[0])
+        except Exception as error:
             print("[ERROR] %s" % error)
 
 
