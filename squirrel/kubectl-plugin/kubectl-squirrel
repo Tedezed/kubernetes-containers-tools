@@ -119,3 +119,4 @@ then
 else
 	echo "Commands: nuts, decrypt, version, init, drop-all, update"
 fi
+
