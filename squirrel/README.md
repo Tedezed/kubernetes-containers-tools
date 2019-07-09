@@ -76,5 +76,6 @@ EOF
 
 Run Job if you need rotation now:
 ```
+kubectl delete job -n kube-system squirrel-rotation-now
 kubectl create job --from=cronjob/squirrel -n kube-system squirrel-rotation-now
 ```

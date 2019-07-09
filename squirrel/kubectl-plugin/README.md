@@ -4,7 +4,7 @@
 
 ```
 sudo apt-get install sudo jq python3-gnupg xclip
-pip3 install --user kubernetes pyperclip
+pip3 install --user kubernetes pyperclip psycopg2
 ```
 
 ## Install
@@ -32,7 +32,7 @@ squirrel() { PARAMETERS=$@; bash -c "/usr/local/bin/kubectl-squirrel $PARAMETERS
 
 ## Use
 
-Need input email and password for create local keys 
+Need input email and password for create local keys (Before close terminal)
 ```
 squirrel init
 ...
