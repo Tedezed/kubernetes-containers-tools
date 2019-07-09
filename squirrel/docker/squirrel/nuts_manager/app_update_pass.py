@@ -60,23 +60,23 @@ class app_update_pass():
                 try:
                     dic_query[query] = cursor.fetchall()
                 except Exception as e:
-                    print("[WARNING] fetchall: %s" % e)
+                    print("(postgres_execution)[WARNING] fetchall: %s" % e)
             connection.commit()
-            print("[INFO] %s successfully" % cursor.rowcount)
+            print("(postgres_execution)[INFO] %s successfully" % cursor.rowcount)
         except (Exception, psycopg2.Error) as error:
-            print("[ERROR] while connecting to PostgreSQL: ", error)
+            print("(postgres_execution)[ERROR] while connecting to PostgreSQL: ", error)
         finally:
             if 'connection' in locals():
                 if(connection):
                     cursor.close()
                     connection.close()
-                    print("PostgreSQL connection is closed")
+                    print("(postgres_execution)[INFO] PostgreSQL connection is closed")
             return dic_query
 
     def odoo_postgresv2(self):
         system_databases = ["postgres", "template1", "template0"]
         try:
-            print("[INFO] Postgres update user Odoo password")
+            print("(odoo_postgresv2)[INFO](init) Postgres update user Odoo password")
             database = self.secret_annotations.get("custom_database_name", "odoo")
             port = self.secret_annotations.get("custom_database_port", "5432")
             id_update_pass = self.secret_annotations.get("custom_database_id", False)
@@ -90,20 +90,40 @@ class app_update_pass():
                     for d in list_databases[query[0]]:
                         if d[0] not in system_databases:
                             if d[0] == d_name or d_name == "*":
-                                print(d[0])
-                                pass_hash = pbkdf2_sha512.hash(self.random_pass)
-                                update_query = ["UPDATE res_users set password='%s' WHERE id=%s;" \
-                                    % (pass_hash, id_update_pass)]
-                                self.postgres_execution(self.squirrel_user, self.squirrel_pass, \
-                                    self.host, port, d[0], update_query)
-                                print("[INFO] Successful update in database %s" % d[0])
+                                print("(odoo_postgresv2)[INFO] Processing database %s" % d[0])
+                                query_version_odoo = ["SELECT latest_version FROM ir_module_module WHERE name = 'base';"]
+                                version_odoo = self.postgres_execution(self.squirrel_user, self.squirrel_pass, \
+                                    self.host, port, d[0], query_version_odoo)
+                                valid_odoo_version = True
+                                if version_odoo:
+                                    output_version = int(version_odoo[query_version_odoo[0]][0][0].split(".")[0])
+                                    pass_hash = pbkdf2_sha512.hash(self.random_pass)
+                                    if output_version >= 12:
+                                        update_query = ["UPDATE res_users set password='%s' WHERE id=%s;" \
+                                            % (pass_hash, id_update_pass)]
+                                    elif output_version < 12 and output_version > 7:
+                                        update_query = ["UPDATE res_users set password_crypt='%s' WHERE id=%s;" \
+                                            % (pass_hash, id_update_pass)]
+                                    elif output_version <= 7:
+                                        update_query = ["UPDATE res_users set password='%s' WHERE id=%s;" \
+                                            % (self.random_pass, id_update_pass)]
+                                    else:
+                                        valid_odoo_version = False
+                                    if valid_odoo_version:
+                                        self.postgres_execution(self.squirrel_user, self.squirrel_pass, \
+                                            self.host, port, d[0], update_query)
+                                        print("(odoo_postgresv2)[INFO] Successful update in database %s" % d[0])
+                                    else:
+                                        print("(odoo_postgresv2)[ERROR] Not valid Odoo version found")
+                                else:
+                                    print("(odoo_postgresv2)[ERROR] Not valid database Odoo")
         except Exception as error:
-            print("[ERROR] %s" % error)
+            print("(odoo_postgresv2)[ERROR] %s" % error)
 
 
     def postgres_password_update(self):
         try:
-            print("[INFO] Postgres update password for user %s" % self.squirrel_user)
+            print("(postgres_password_update)[INFO] Postgres update password for user %s" % self.squirrel_user)
             database = "postgres"
             port = self.secret_annotations.get("custom_database_port", "5432")
             alter_query = ["ALTER USER %s WITH PASSWORD '%s';" \
@@ -113,5 +133,5 @@ class app_update_pass():
             self.postgres_execution(self.squirrel_user, self.squirrel_pass, \
                 self.host, port, database, alter_query)
         except Exception as e:
-            print("[ERROR] %s" % error)
+            print("(postgres_password_update)[ERROR] %s" % error)
 
