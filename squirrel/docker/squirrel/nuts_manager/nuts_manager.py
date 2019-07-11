@@ -166,9 +166,10 @@ class nuts_manager():
                                 #new_pass_base64 = new_pass_base64 + '=' * (-len(new_pass_base64) % 4)
                                 secret.data[d] = new_pass_base64
                             try:
-                                api_response = self.squirrel.v1.patch_namespaced_secret(secret.metadata.name, \
-                                    secret.metadata.namespace, secret)
-                                print("[INFO] Secret update with name %s and namespace %s" % (secret.metadata.name, secret.metadata.namespace))
+                                if not self.squirrel.debug:
+                                    api_response = self.squirrel.v1.patch_namespaced_secret(secret.metadata.name, \
+                                        secret.metadata.namespace, secret)
+                                print("(rotation_secrets)[INFO] Secret update with name %s and namespace %s" % (secret.metadata.name, secret.metadata.namespace))
                                 if s.metadata.annotations.get("squirrel_delete_pods", False):
                                     if s.metadata.annotations.get("squirrel_service", False) and \
                                       s.metadata.annotations.get("squirrel_type_frontend", False) and \
@@ -187,11 +188,13 @@ class nuts_manager():
                                                               s.metadata.annotations.get("squirrel_type_backend", False),
                                                               s.metadata.annotations,
                                                               "update_secret",
-                                                              new_pass_decode)
+                                                              new_pass_decode,
+                                                              self.squirrel.debug)
                                         aup.conditional_app()
-                                    self.delete_pods(s.metadata.annotations["squirrel_delete_pods"], secret.metadata.namespace)
+                                    if not self.squirrel.debug:
+                                        self.delete_pods(s.metadata.annotations["squirrel_delete_pods"], secret.metadata.namespace)
                             except ApiException as e:
-                                print("Exception when calling CoreV1Api->patch_namespaced_secret: %s\n" % e)
+                                print("(rotation_secrets)Exception when calling CoreV1Api->patch_namespaced_secret: %s\n" % e)
 
     def rotation(self):
         #squirrel = sqrl()
@@ -199,7 +202,8 @@ class nuts_manager():
         nutcrackers = crds.list_cluster_custom_object(self.squirrel.domain_api, self.squirrel.api_version, 'nutcrackers')["items"]
         secrets = self.squirrel.v1.list_secret_for_all_namespaces(watch=False)
         id_rotation = self.randomStringDigits(8)
-        self.clean_nuts(id_rotation)
+        if not self.squirrel.debug:
+            self.clean_nuts(id_rotation)
         for s in secrets.items:
             if s.metadata.annotations:
                 for a in s.metadata.annotations:
@@ -218,7 +222,7 @@ class nuts_manager():
                         if squirrel_user_key and squirrel_pass_key and \
                           squirrel_service and squirrel_type_frontend and \
                           squirrel_type_backend and squirrel_user and squirrel_pass:
-                            print("[INFO] Process %s, namespace %s" % (squirrel_name, squirrel_namespace))
+                            print("(rotation)[INFO] Process %s, namespace %s" % (squirrel_name, squirrel_namespace))
                             random_pass = self.randomStringDigits(squirrel_length_random)
                             create_nut = False
                             for nc in nutcrackers:
@@ -232,7 +236,7 @@ class nuts_manager():
                                       (permissions[0] == '*' and permissions[1] == '*') or \
                                       (permissions[0] == squirrel_namespace and permissions[1] == '*'):
                                         nut_email = nc["data"]["email"]
-                                        print("[INFO] Create nut for %s" % nut_email)
+                                        print("(rotation)[INFO] Create nut for %s" % nut_email)
 
                                         nut_keypub = nc["data"]["keypub"]
                                         #nc["permissions"]
@@ -255,34 +259,37 @@ class nuts_manager():
                                         new_nut["data"]["id_rotation"] = id_rotation
 
                                         #import pdb; pdb.set_trace()
-                                        print(nc["metadata"]["name"])
-                                        try:
-                                            api_response = crds.delete_namespaced_custom_object(\
-                                                self.squirrel.domain_api, \
-                                                self.squirrel.api_version, \
-                                                squirrel_namespace, \
-                                                'nuts', \
-                                                md5_unique_name.hexdigest(),
-                                                client.V1DeleteOptions())
-                                            print(api_response)
-                                        except ApiException as e:
-                                            print("Exception when calling CustomObjectsApi->delete_namespaced_custom_object: %s\n" % e)
+                                        #print(nc["metadata"]["name"])
+                                        if not self.squirrel.debug:
+                                            try:
+                                                api_response = crds.delete_namespaced_custom_object(\
+                                                    self.squirrel.domain_api, \
+                                                    self.squirrel.api_version, \
+                                                    squirrel_namespace, \
+                                                    'nuts', \
+                                                    md5_unique_name.hexdigest(),
+                                                    client.V1DeleteOptions())
+                                                #print(api_response)
+                                            except ApiException as e:
+                                                print("(rotation)Exception when calling CustomObjectsApi->delete_namespaced_custom_object: %s\n" % e)
 
-                                        try:
-                                            api_response = crds.create_namespaced_custom_object(\
-                                                self.squirrel.domain_api, \
-                                                self.squirrel.api_version, \
-                                                squirrel_namespace, \
-                                                'nuts', \
-                                                new_nut)
-                                            print("Nut %s for %s" % (secret_text, nut_email))
-                                        except ApiException as e:
-                                            print("Exception when calling CustomObjectsApi->create_namespaced_custom_object: %s\n" % e)
-                                        permissions_fail = False
+                                            try:
+                                                api_response = crds.create_namespaced_custom_object(\
+                                                    self.squirrel.domain_api, \
+                                                    self.squirrel.api_version, \
+                                                    squirrel_namespace, \
+                                                    'nuts', \
+                                                    new_nut)
+                                                print("(rotation)Nut %s for %s" % (secret_text, nut_email))
+                                            except ApiException as e:
+                                                print("Exception when calling CustomObjectsApi->create_namespaced_custom_object: %s\n" % e)
+                                            permissions_fail = False
+                                        else:
+                                           permissions_fail = False 
                                 if permissions_fail:
-                                    print("[INFO] No have permissions in %s, namespace %s" % (squirrel_service, squirrel_namespace))
+                                    print("(rotation)[INFO] No have permissions in %s, namespace %s" % (squirrel_service, squirrel_namespace))
                                 else:
-                                    print("[INFO] Permissions in %s, namespace %s" % (squirrel_service, squirrel_namespace))
+                                    print("(rotation)[INFO] Permissions in %s, namespace %s" % (squirrel_service, squirrel_namespace))
                                     create_nut = True
                             if create_nut:
                                 aup = app_update_pass(squirrel_service,
@@ -293,10 +300,12 @@ class nuts_manager():
                                                       squirrel_type_backend,
                                                       s.metadata.annotations,
                                                       "update_app_password",
-                                                      random_pass)
+                                                      random_pass,
+                                                      self.squirrel.debug)
                                 aup.conditional_app()
                             else:
-                                print("[INFO] Not found nutcrackers for secret %s" % (s.metadata.name,
-                                                                                      s.metadata.namespace))
+                                if not self.squirrel.debug:
+                                    print("(rotation)[INFO] Not found nutcrackers for secret %s" % (s.metadata.name,
+                                                                                          s.metadata.namespace))
                         else:
-                            print("[ERROR] in %s, namespace %s" % (squirrel_name, squirrel_namespace))
+                            print("(rotation)[ERROR] in %s, namespace %s" % (squirrel_name, squirrel_namespace))

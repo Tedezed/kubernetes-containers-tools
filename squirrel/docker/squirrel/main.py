@@ -22,7 +22,10 @@ class sqrl():
     len_password = 22
     nut_list = []
     nuts = {}
-    debug = False
+    if environ["DEBUG"] == "True":
+        debug = True
+    else:
+        debug = False
 
     # Controller
     domain_api = "tree.squirrel.local"

@@ -3,7 +3,8 @@ FROM debian:stretch-slim
 MAINTAINER Juan Manuel Torres <juanmanuel.torres@aventurabinaria.es>
 
 # Modes: controller or cronjob
-ENV MODE="cronjob"
+ENV MODE="cronjob" \
+	DEBUG="False"
 
 RUN apt-get update \
 	&& apt-get install -y --no-install-recommends \
