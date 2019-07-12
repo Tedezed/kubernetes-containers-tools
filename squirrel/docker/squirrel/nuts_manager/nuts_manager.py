@@ -56,7 +56,7 @@ class nuts_manager():
     def importKey(self, keyfile, key_data=False):
         if keyfile:
             key_data = open(keyfile).read()
-        print(key_data)
+        #print(key_data)
         import_result = self.squirrel.gpg.import_keys(key_data)
         print("[INFO] Import result %s" % import_result.results)
 
@@ -73,9 +73,9 @@ class nuts_manager():
 
     def dencryptText(self, password, encrypted_string, mode=False):
         if mode == "base64":
-            print("Mode input base64")
-            print(encrypted_string)
-            print(base64.b64decode(encrypted_string + '=' * (-len(encrypted_string) % 4)).decode())
+            #print("Mode input base64")
+            #print(encrypted_string)
+            #print(base64.b64decode(encrypted_string + '=' * (-len(encrypted_string) % 4)).decode())
             decrypted_data = self.squirrel.gpg.decrypt(\
                 str(base64.b64decode(encrypted_string + '=' * (-len(encrypted_string) % 4)).decode()),\
                 passphrase=password)
