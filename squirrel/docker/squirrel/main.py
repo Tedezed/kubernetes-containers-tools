@@ -22,9 +22,12 @@ class sqrl():
     len_password = 22
     nut_list = []
     nuts = {}
-    if environ["DEBUG"] == "True":
-        debug = True
-    else:
+    try:
+        if environ["DEBUG"] == "True":
+            debug = True
+        else:
+            debug = False
+    except:
         debug = False
 
     # Controller

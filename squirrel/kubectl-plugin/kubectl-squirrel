@@ -90,7 +90,7 @@ then
 	fi
 	NUT_JSON=$(kubectl get nt $NUT_NAME -n $NUT_NAMESPACE -o json)
 	NUT=$(echo $NUT_JSON | jq '.data.nut' | cut -d '"' -f 2)
-	echo $NUT | base64 --decode
+	#echo $NUT | base64 --decode
 	if [ -z "$NUT_JSON" ] || [ -z "$NUT" ]
 	then
 		echo "[ERROR] Empty internal variables NUT_JSON or NUT"
