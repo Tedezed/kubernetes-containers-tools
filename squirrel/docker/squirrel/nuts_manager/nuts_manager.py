@@ -12,9 +12,6 @@ from sys import argv
 
 from .app_update_pass import *
 
-import gnupg._parsers
-gnupg._parsers.Verify.TRUST_LEVELS["ENCRYPTION_COMPLIANCE_MODE"] = 23
-
 class nuts_manager():
 
     def __init__(self, squirrel):
