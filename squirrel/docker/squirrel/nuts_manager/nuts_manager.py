@@ -32,14 +32,15 @@ class nuts_manager():
 
     def createKey(self, keyfile, email, password, keylen=1024, keytype='RSA'):
         print("Be patient...")
+        pass_str = str(password)
         input_data = self.squirrel.gpg.gen_key_input(
             key_type=keytype,
             key_length=keylen,
             name_email=email,
-            passphrase=password)
+            passphrase=pass_str)
         key = self.squirrel.gpg.gen_key(input_data)
         print("Key: ", key)
-        self.exportKey(keyfile, str(key.fingerprint), password)
+        self.exportKey(keyfile, str(key.fingerprint), pass_str)
 
     def exportKey(self, keyfile, key, password=None):
         try:
