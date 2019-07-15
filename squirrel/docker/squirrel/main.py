@@ -13,6 +13,7 @@ import base64
 from controller.controller import *
 from nuts_manager.nuts_manager import *
 
+import gnupg._parsers
 gnupg._parsers.Verify.TRUST_LEVELS["ENCRYPTION_COMPLIANCE_MODE"] = 23
 
 class sqrl():
