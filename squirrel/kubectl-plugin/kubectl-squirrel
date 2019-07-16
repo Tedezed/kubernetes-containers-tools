@@ -43,7 +43,7 @@ then
 		mkdir -p $SQUIRREL_USER_DIR
 	 	bash -c "cd $SQUIRREL_USER_DIR \
 	  		&& git init \
-	  		&& git remote add origin https://github.com/Tedezed/slug-containers.git \
+	  		&& git remote add origin https://github.com/Tedezed/kubernetes-containers-tools.git \
 	  		&& git fetch --depth=1 \
 	  		&& git checkout master \
 	  		&& git config core.sparseCheckout true \
