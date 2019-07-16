@@ -10,7 +10,7 @@ pip3 install --user kubernetes pyperclip psycopg2
 ## Install
 
 ```
-curl -SL https://raw.githubusercontent.com/Tedezed/slug-containers/master/squirrel/kubectl-plugin/kubectl-squirrel -o kubectl-squirrel
+curl -SL https://raw.githubusercontent.com/Tedezed/kubernetes-containers-tools/master/squirrel/kubectl-plugin/kubectl-squirrel -o kubectl-squirrel
 chmod +x ./kubectl-squirrel
 sudo cp ./kubectl-squirrel /usr/local/bin
 ```

@@ -12,5 +12,5 @@ Image `tedezed/slug-statefulset-autoscaler:latest`
 - [ ] Autoreduce StatefulSet crunchy-containers
 
 * [Example of usage](https://gist.github.com/Tedezed/29b2efe5aab0beb1809d5fbb82745b47)
-* [Examples for Kubernetes](https://github.com/Tedezed/slug-containers/tree/master/statefulset_autoscaler/kube)
-* [Docker image build](https://github.com/Tedezed/slug-containers/tree/master/statefulset_autoscaler/docker)
+* [Examples for Kubernetes](https://github.com/Tedezed/kubernetes-containers-tools/tree/master/statefulset_autoscaler/kube)
+* [Docker image build](https://github.com/Tedezed/kubernetes-containers-tools/tree/master/statefulset_autoscaler/docker)

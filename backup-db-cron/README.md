@@ -234,7 +234,7 @@ spec:
 ```
 
 You can also use google disks and create snapshots with labels with MODE 4 or 5.
-Cron: https://github.com/Tedezed/slug-containers/blob/master/backup-db-cron/docker/slug-backup-db-cron/start
+Cron: https://github.com/Tedezed/kubernetes-containers-tools/blob/master/backup-db-cron/docker/slug-backup-db-cron/start
 
 Add label `backup`:
 ```

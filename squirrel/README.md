@@ -2,12 +2,12 @@
 
 Rotation of passwords and storage using gpg for applications in Kubernetes
 
-<img src="https://raw.githubusercontent.com/tedezed/slug-containers/master/docs/img/Squirrel.png">
+<img src="https://raw.githubusercontent.com/tedezed/kubernetes-containers-tools/master/docs/img/Squirrel.png">
 
 # Install Squirrel
 
 ```
-kubectl create -f https://raw.githubusercontent.com/Tedezed/slug-containers/master/squirrel/install.yaml
+kubectl create -f https://raw.githubusercontent.com/Tedezed/kubernetes-containers-tools/master/squirrel/install.yaml
 ```
 
 ## Create Nutcrackers
