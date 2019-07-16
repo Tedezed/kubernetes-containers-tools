@@ -1,5 +1,5 @@
 # > Kubernetes Containers Tools
-old kubernetes-containers-tools
+Old repo: slug-containers
 
 Containers of the project:
 
