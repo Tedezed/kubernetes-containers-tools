@@ -59,8 +59,8 @@ function startGame() {
 
 var limitCode = 10
 var code = []
-//var konami = [38,38]
-var konami = [38,38,40,40,37,39,37,39,66,65]
+//var secret = [38,38]
+var secret = [38,38,40,40,37,39,37,39,66,65]
 var notActivate = true
 
 $("body").keydown(function(e){
@@ -69,9 +69,9 @@ $("body").keydown(function(e){
     code.splice(0, 1)
   }
   //console.log(code)
-  //console.log(konami)
+  //console.log(secret)
   //console.log(code.length)
-  if ( arraysEqual(code, konami) && notActivate ) {
+  if ( arraysEqual(code, secret) && notActivate ) {
     notActivate = false
     console.log(notActivate)
     $("body").append('<button onmousedown="accelerate(-0.2)" onmouseup="accelerate(0.05)">ACCELERATE</button>');
