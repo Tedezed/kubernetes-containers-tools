@@ -4,7 +4,7 @@
 # https://www.saltycrane.com/blog/2011/10/python-gnupg-gpg-example/
 # https://github.com/kubernetes-client/python/blob/master/kubernetes/docs/ApiextensionsV1beta1Api.md
 
-import gnupg, random, string, re, json, base64, hashlib, copy, re, pyperclip
+import gnupg, random, string, re, json, base64, hashlib, copy, re, pyperclip, time
 from kubernetes import client, config
 from kubernetes.client.rest import ApiException
 from os import path, getlogin, system, getuid, environ
@@ -194,6 +194,7 @@ class nuts_manager():
                                         aup.conditional_app()
                                     if not self.squirrel.debug:
                                         self.delete_pods(s.metadata.annotations["squirrel_delete_pods"], secret.metadata.namespace)
+                                        time.sleep(30)
                             except ApiException as e:
                                 print("(rotation_secrets)Exception when calling CoreV1Api->patch_namespaced_secret: %s\n" % e)
 

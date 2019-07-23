@@ -137,19 +137,22 @@ class kube_init:
         server.ehlo()
         server.starttls()
         server.ehlo()
-        server.login(email_user, email_password)
-
-        msg = MIMEText(body, "html")
-        msg['Subject'] = subject
-        msg['From'] = email_user
-        msg['To'] = ', '.join(send_to)
-
         try:
-            for s in send_to:
-                server.sendmail(email_user, s, msg.as_string())
-            print '[INFO] Email sent!'
+            server.login(email_user, email_password)
+
+            msg = MIMEText(body, "html")
+            msg['Subject'] = subject
+            msg['From'] = email_user
+            msg['To'] = ', '.join(send_to)
+
+            try:
+                for s in send_to:
+                    server.sendmail(email_user, s, msg.as_string())
+                print '[INFO] Email sent!'
+            except Exception as e:  
+                print '[ERROR] Email: %s' % (e)
         except Exception as e:  
-            print '[ERROR] Email: %s' % (e)
+                print '[ERROR] %s' % (e)
 
     def check(self, name_conf, conf_mode):
         ret = self.v1.list_config_map_for_all_namespaces(watch=False)
@@ -263,6 +266,7 @@ class kube_init:
                 print error
                 logging.error(error)
                 raise ValueError(error)
+                self.send_mail("[ERROR SLUG-BACKUP] %s %s" % (db["name_svc"], host), error)
 
         except Exception as e:
             key = False
@@ -271,6 +275,7 @@ class kube_init:
             print e
             logging.error(error)
             logging.error(e)
+            self.send_mail("[ERROR SLUG-BACKUP] %s" % (db["name_svc"]), error)
 
         if key:
             logging.info('[INFO] [%s] Connect to %s ' % (now_datetime, db["name_svc"]))
@@ -298,17 +303,19 @@ class kube_init:
                                        (db["POSTGRES_USER"], str(db["POSTGRES_PASSWORD"].encode('utf-8')), host, db["port"], str(r[0]), \
                                         ruta_backup, str(r[0]), now_datetime.strftime("%Y-%m-%d"), self.id_generator())
                     elif db["type"] == "mysql":
-                        dump_command = 'mysqldump  -u %s -p%s -h %s -P %s --databases %s > %s/%s___%s___%s.dump' % \
+                        dump_command = 'mysqldump -u %s -p%s -h %s -P %s --databases %s > %s/%s___%s___%s.dump' % \
                                        (db["MYSQL_USER"], str(db["MYSQL_PASSWORD"].encode('utf-8')), host, db["port"], str(r[0]), \
                                         ruta_backup, str(r[0]), now_datetime.strftime("%Y-%m-%d"), self.id_generator())
 
                     # try:
+                    logging.warning("Command: %s" % dump_command)
                     var = direct_output = subprocess.call(str(dump_command), shell=True)
                     if var == 0:
                         print "[INFO] [%s] Backup %s..." % (now_datetime, r[0])
                         logging.warning("[INFO] [%s] Backup %s..." % (now_datetime, r[0]))
                     else:
                         logging.error("[ERROR] [%s] in backup %s" % (now_datetime, r[0]))
+                        self.send_mail("[ERROR SLUG-BACKUP] %s" % str(r[0]), ruta_backup)
 
                     self.drop_dir_datetime(now_datetime, ruta_backup)
 

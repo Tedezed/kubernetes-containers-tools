@@ -31,7 +31,8 @@ RUN apt-get install -y --no-install-recommends \
     libmariadbclient-dev \
     libprotobuf-dev \
     protobuf-compiler \
-    mysql-client
+    default-mysql-client \
+    default-mysql-client-core
 
 RUN apt-get install -y \
     build-essential \
@@ -39,9 +40,8 @@ RUN apt-get install -y \
     libtool \
     pkg-config \
     python-opengl \
-    python-imaging \
+    python-pil \
     python-pyrex \
-    python-pyside.qtopengl \
     idle-python2.7 \
     qt4-dev-tools \
     qt4-designer \
@@ -56,9 +56,11 @@ RUN apt-get install -y \
     python-qt4-gl \
     libgle3 \
     python-dev \
-    python-setuptools
+    python-setuptools \
+    libpq-dev
 
 RUN pip install --upgrade setuptools wheel \
+    && pip install psycopg2-binary \
     && pip install kubernetes deepdiff psycopg2 mysql-connector \
     && pip install google-api-python-client setuptools
 RUN pip install google-auth google-auth-httplib2 psycopg2-binary psutil
@@ -71,7 +73,6 @@ RUN apt-get remove --purge -y \
     python-opengl \
     python-imaging \
     python-pyrex \
-    python-pyside.qtopengl \
     idle-python2.7 \
     qt4-dev-tools \
     qt4-designer \
