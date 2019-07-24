@@ -1,0 +1,26 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  annotations:
+    cronjob.kubernetes.io/instantiate: manual
+  labels:
+    job-name: squirrel-rotation-now
+  name: squirrel-rotation-now
+  namespace: kube-system
+spec:
+  backoffLimit: 6
+  completions: 1
+  parallelism: 1
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        job-name: squirrel-rotation-now
+    spec:
+      containers:
+      - image: tedezed/squirrel:latest
+        imagePullPolicy: Always
+        name: squirrel
+        env:
+        - name: MODE
+          value: rotation-apps

@@ -79,3 +79,15 @@ Run Job if you need rotation now:
 kubectl delete job -n kube-system squirrel-rotation-now
 kubectl create job --from=cronjob/squirrel -n kube-system squirrel-rotation-now
 ```
+
+Rotation now only for Apps:
+```
+kubectl delete job -n kube-system squirrel-rotation-now
+kubectl create job --from=cronjob/squirrel -n kube-system squirrel-rotation-now
+```
+
+Rotation now only for Secrets:
+```
+kubectl delete job -n kube-system squirrel-rotation-now
+kubectl create job --from=cronjob/squirrel -n kube-system squirrel-rotation-now
+```

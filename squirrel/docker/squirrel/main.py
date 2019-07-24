@@ -89,11 +89,19 @@ def main():
     if squirrel.dic_argv.get("mode", False) == "controller":
         ct = controller(squirrel)
         ct.daemon_controller()
-    elif squirrel.dic_argv.get("mode", False) == "cronjob":
-        print("[INFO] Exec rotation credentils for apps")
-        nm.rotation()
-        print("[INFO] Exec rotation secrets")
-        nm.rotation_secrets()
+    elif squirrel.dic_argv.get("mode", False) == "cronjob" \
+      or squirrel.dic_argv.get("mode", False) == "rotation-apps" \
+      or squirrel.dic_argv.get("mode", False) == "rotation-secrets":
+
+        if squirrel.dic_argv.get("mode", False) == "cronjob" \
+          or squirrel.dic_argv.get("mode", False) == "rotation-apps":
+            print("[INFO] Exec rotation credentils for apps")
+            nm.rotation()
+        if squirrel.dic_argv.get("mode", False) == "cronjob" \
+          or squirrel.dic_argv.get("mode", False) == "rotation-secrets"::
+            print("[INFO] Exec rotation secrets")
+            nm.rotation_secrets()
+
     elif squirrel.dic_argv.get("mode", False) == "client-create-key":
         pass_not_ok = True
         while pass_not_ok:
