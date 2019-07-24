@@ -1,5 +1,5 @@
-# > Kubernetes Containers Tools 🛠️
-Old repo: slug-containers
+# Kubernetes Containers Tools 🛠️
+Old name of repository: slug-containers
 
 Containers of the project:
 
