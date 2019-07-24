@@ -98,7 +98,7 @@ def main():
             print("[INFO] Exec rotation credentils for apps")
             nm.rotation()
         if squirrel.dic_argv.get("mode", False) == "cronjob" \
-          or squirrel.dic_argv.get("mode", False) == "rotation-secrets"::
+          or squirrel.dic_argv.get("mode", False) == "rotation-secrets":
             print("[INFO] Exec rotation secrets")
             nm.rotation_secrets()
 
