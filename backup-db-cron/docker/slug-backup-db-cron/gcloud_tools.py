@@ -1,3 +1,6 @@
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
+
 class gcloud_tools:
 
     def __init__(self):

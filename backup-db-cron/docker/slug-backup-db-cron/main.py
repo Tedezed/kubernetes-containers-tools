@@ -23,6 +23,7 @@ from datetime import datetime, timedelta
 from psutil import disk_usage
 
 from gcloud_tools import *
+from squirrel_integration import *
 
 class kube_init:
     ruta_exec=path.dirname(path.realpath(__file__))
@@ -71,6 +72,9 @@ class kube_init:
 
         # Log
         logging.basicConfig(filename='%s/%s/kube-backup.log' % (self.ruta_exec, self.directory_backups), level=logging.INFO)
+
+        # Squirrel integration
+        self.sqin = squirrel_integration(self)
 
     def id_generator(self, size=6, chars=string.ascii_uppercase + string.digits):
         return ''.join(random.choice(chars) for _ in range(size))
@@ -337,9 +341,28 @@ class kube_init:
         else:
             print "[INFO] Not found snapshot that are on or out the erase date: %s" % drop_datetime
 
+    def fusion_list_dbs(self, list_db1, list_db2):
+        # list_db2 prevails over list_db1
+        list_end = []
+        if list_db1:
+            for db1 in list_db1:
+                found_in_list_db2 = False
+                for db2 in list_db2:
+                    if db1["name_svc"] == db2["name_svc"] and db2["namespace"] == db2["namespace"]:
+                        found_in_list_db2 = True
+                if found_in_list_db2:
+                    list_end.append(db2)
+                else:
+                    list_end.append(db1)
+            return list_end
+        else:
+            return list_db2
+
     def start_kube_backup(self):
+        list_db_secrets = self.sqin.get_secrets()
         now_datetime = datetime.now()
-        list_db = self.get_configmap(self.name_configmap_backup, self.dic_argv["conf_mode"])
+        list_db_configmap = self.get_configmap(self.name_configmap_backup, self.dic_argv["conf_mode"])
+        list_db = self.fusion_list_dbs(list_db_configmap, list_db_secrets)
         for db in list_db:
             #print db
             self.bakup_sql(db, now_datetime)
@@ -413,7 +436,6 @@ def main():
     if dic_argv.get("mode", False) == "backup":
         if kluster.check(kluster.name_configmap_backup, dic_argv["conf_mode"]):
             kluster.start_kube_backup()
-
     elif dic_argv.get("mode", False) == "snapshot":
         if kluster.check(kluster.name_configmap_snapshot, dic_argv["conf_mode"]):
             kluster.snapshot()
