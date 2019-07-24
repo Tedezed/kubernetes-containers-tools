@@ -80,13 +80,13 @@ kubectl delete job -n kube-system squirrel-rotation-now
 kubectl create job --from=cronjob/squirrel -n kube-system squirrel-rotation-now
 ```
 
-Rotation now only for Apps:
+Rotation now only for apps:
 ```
 kubectl delete job -n kube-system squirrel-rotation-now
 kubectl create -f https://raw.githubusercontent.com/Tedezed/kubernetes-containers-tools/master/squirrel/kubernetes/squirrel-job-rotation-apps.yaml
 ```
 
-Rotation now only for Secrets:
+Rotation now only for secrets:
 ```
 kubectl delete job -n kube-system squirrel-rotation-now
 kubectl create -f https://raw.githubusercontent.com/Tedezed/kubernetes-containers-tools/master/squirrel/kubernetes/squirrel-job-rotation-secrets.yaml
