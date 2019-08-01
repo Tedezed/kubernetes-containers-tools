@@ -93,7 +93,7 @@ RUN apt-get remove --purge -y \
 
 ENV DAYS_TO_DROP=15 \
     DAYS_TO_DROP_SNAPSHOT=3 \
-    TIME="10 12 * * *"
+    TIME="10 0 * * *"
 
 # Mode 0 > DEBUG
 # Mode 1 > Backup

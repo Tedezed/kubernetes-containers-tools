@@ -107,7 +107,7 @@ class kube_init:
             self.send_mail("[SLUG-BACKUP] Status %s" % status, status_disk)
 
     def send_mail(self, subject, body):
-        send_to = ["%s" % (environ['EMAIL_SEND_TO'])]
+        send_to = environ['EMAIL_SEND_TO'].split(",")
         email_mode = environ['EMAIL_MODE']
         email_server = environ['EMAIL_SERVER']
         email_port = environ['EMAIL_PORT']

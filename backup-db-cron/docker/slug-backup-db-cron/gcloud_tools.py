@@ -1,6 +1,8 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
+import googleapiclient.discovery
+
 class gcloud_tools:
 
     def __init__(self):

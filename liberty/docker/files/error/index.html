@@ -50,13 +50,6 @@ function arraysEqual(a, b) {
   return true;
 }
 
-function startG() {
-  myGPiece = new component(30, 30, "red", 10, 120);
-  myGPiece.gravity = 0.05;
-  myScore = new component("30px", "Consolas", "black", 280, 40, "text");
-  myGArea.start();
-}
-
 var limitCode = 10
 var code = []
 //var secret = [38,38]
@@ -74,7 +67,7 @@ $("body").keydown(function(e){
   if ( arraysEqual(code, secret) && notActivate ) {
     notActivate = false
     console.log(notActivate)
-    $("body").append('<button onmousedown="accelerate(-0.2)" onmouseup="accelerate(0.05)">ACCELERATE</button>');
+    $("body").append('<button onmousedown="accelerate(-0.4)" onmouseup="accelerate(0.3)">ACCELERATE</button>');
     startG()
   }
 });
@@ -86,7 +79,7 @@ var myScore;
 
 function startG() {
     myGPiece = new component(30, 30, "red", 10, 120);
-    myGPiece.gravity = 0.05;
+    myGPiece.gravity = 0.3;
     myScore = new component("30px", "Consolas", "black", 280, 40, "text");
     myGArea.start();
 }

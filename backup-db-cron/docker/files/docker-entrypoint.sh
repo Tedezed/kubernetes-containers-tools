@@ -17,6 +17,8 @@ printenv | grep -v "TIME" | sed 's/^\(.*\)$/export \1/g' > /root/project_env
 chmod +x /root/project_env
 
 echo "$TIME /bin/bash /slug-backup-db-cron/start >> /slug-backup-db-cron/backups/cron.log 2>&1" > /etc/crontab
+echo "0 0 15 * * echo '' > /slug-backup-db-cron/backups/cron.log" >> /etc/crontab
+echo "0 0 15 * * echo '' >/slug-backup-db-cron/backups/kube-backup.log" >> /etc/crontab
 crontab /etc/crontab
 
 # Start
