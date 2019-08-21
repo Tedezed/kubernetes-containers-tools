@@ -217,6 +217,21 @@ class kube_init:
                 list_disk.append(dic_data)
             return list_disk
 
+    def safe_list_get(self, l, idx, default):
+      try:
+        return l[idx]
+      except IndexError:
+        return default
+
+    def get_selector_from_service(self, name, namespace = ""):
+        services = self.v1.list_service_for_all_namespaces(watch=False)
+        list_svc = []
+        for s in services.items:
+            if s.metadata.name == name and s.metadata.namespace == namespace:
+                try:
+                    return s.spec.selector
+                except:
+                    return {'not-found': 'true'}
 
     def get_svc_ip(self, name_svc, namespace_svc):
         ret = self.v1.list_service_for_all_namespaces(watch=False)
@@ -225,12 +240,46 @@ class kube_init:
              and i.metadata.namespace.replace(" ", "") == namespace_svc.replace(" ", ""):
                 return i.spec.cluster_ip
 
+    def get_ip_from_pod(self, svc_labels, namespace):
+        pod = self.v1.list_pod_for_all_namespaces(watch=False)
+        # Only for pods
+        list_ip_pod = []
+        for p in pod.items:
+            if p.metadata.namespace == namespace:
+                key_search = None
+                if svc_labels == p.metadata.labels:
+                    key_search = True
+                else:
+                    for key in svc_labels.keys():
+                        if svc_labels.get(key, 'False_dic1') == p.metadata.labels.get(key, 'False_dic2') \
+                          and (key_search or key_search == None):
+                            key_search = True
+                        else:
+                            key_search = False
+                if key_search:
+                    list_ip_pod.append(p.status.pod_ip)
+        return list_ip_pod
+
     def bakup_sql(self, db, now_datetime):
         try:
             if not path.exists('/.dockerenv'):
                 host = db["name_svc"]
             else:
-                host = self.get_svc_ip(db["name_svc"], db["namespace"])
+                try:
+                    # Try IP from Pod
+                    ip_error = "169.254.1.10"
+                    svc_labels = self.get_selector_from_service(db["name_svc"], db["namespace"])
+                    svc_ip_list = self.get_ip_from_pod(svc_labels, db["namespace"])
+                    #host = safe_list_get(svc_ip_list,0,ip_error)
+                    host = svc_ip_list[0]
+                except Exception as e:
+                    error = '[Error] Not get IP from Pod, try get IP from SVC'
+                    print error
+                    logging.error(error)
+
+                    # Try IP from SVC
+                    host = self.get_svc_ip(db["name_svc"], db["namespace"])
+
 
             print '[START] Service: %s, Host: %s' % (db["name_svc"], host)
 
