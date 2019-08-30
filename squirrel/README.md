@@ -15,6 +15,7 @@ kubectl create -f https://raw.githubusercontent.com/Tedezed/kubernetes-container
 Example Admin:
 ```
 kubectl delete nutcrackers admin
+kubectl delete clusterrolebinding admin-squirrel
 cat <<EOF | kubectl create -f -
 apiVersion: "tree.squirrel.local/v1"
 kind: Nutcrackers

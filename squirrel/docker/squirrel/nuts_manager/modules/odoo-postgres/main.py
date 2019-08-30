@@ -1,55 +1,31 @@
-import psycopg2, base64, sys, os, ast, importlib
+import psycopg2, base64, sys, os, ast, importlib, socket
 from passlib.hash import pbkdf2_sha512
 
-class app_update_pass():
+class squirrel_module():
 
-    def __init__(self,
-                squirrel_service,
-                squirrel_namespace,
-                squirrel_user,
-                squirrel_pass,
-                squirrel_type_frontend,
-                squirrel_type_backend,
-                secret_annotations,
-                mode,
-                random_pass,
-                squirrel_nuts_manager,
-                debug):
+    def __init__(self, squirrel):
+        self.squirrel = squirrel
+        name = "Odoo/Postgres Squirrel Module"
+        self.squirrel_service = squirrel.squirrel_service
+        self.squirrel_namespace = squirrel.squirrel_namespace
+        self.squirrel_user = squirrel.squirrel_user
+        self.squirrel_pass = squirrel.squirrel_pass
+        self.secret_annotations = squirrel.secret_annotations
+        self.random_pass = squirrel.random_pass
+        self.host = squirrel.host
+        self.debug_mode = squirrel.debug_mode
 
-        app_pass_version="v0.1"
-        self.squirrel_mode = mode
-        self.squirrel_service = squirrel_service
-        self.squirrel_namespace = squirrel_namespace
-        self.squirrel_user = base64.b64decode(\
-            squirrel_user + '=' * (-len(squirrel_user) % 4)).decode()
-        self.squirrel_pass = base64.b64decode(\
-            squirrel_pass + '=' * (-len(squirrel_pass) % 4)).decode()
-        self.squirrel_type_frontend = squirrel_type_frontend
-        self.squirrel_type_backend = squirrel_type_backend
-        self.secret_annotations = secret_annotations
-        self.random_pass = random_pass
-        self.host = "%s.%s.svc.cluster.local" % \
-          (squirrel_service, squirrel_namespace)
-        self.squirrel_nuts_manager = squirrel_nuts_manager
-        self.debug_mode = debug
-
-    def conditional_app(self):
-        if self.squirrel_type_frontend == "odoo" \
-          and self.squirrel_type_backend == "postgres" \
-          and self.squirrel_mode == "update_app_password":
-              self.odoo_postgresv2()
-        elif self.squirrel_type_frontend == "odoo" \
-          and self.squirrel_type_backend == "postgres" \
-          and self.squirrel_mode == "update_secret":
-              self.postgres_password_update()
-
-    def postgres_execution(self, 
+    def postgres_execution(self,
                            name_username,
                            user_password,
                            postgres_host,
                            postgres_port,
                            name_database,
                            list_querys):
+
+        print("[INFO] Postgres - Host: %s" % (postgres_host))
+        #ip_host = socket.gethostbyname(postgres_host)
+        #print("[INFO Postgres - IP: %s]" % (ip_host))
         dic_query = {}
         try:
             connection = psycopg2.connect(user = name_username,
@@ -77,7 +53,7 @@ class app_update_pass():
                     print("(postgres_execution)[INFO] PostgreSQL connection is closed")
             return dic_query
 
-    def odoo_postgresv2(self):
+    def update_app(self):
         system_databases = ["postgres", "template1", "template0"]
         try:
             print("(odoo_postgresv2)[INFO](init) Postgres update user Odoo password")
@@ -126,7 +102,7 @@ class app_update_pass():
             print("(odoo_postgresv2)[ERROR] %s, file: %s. line: %s" % (e, fname, exc_tb.tb_lineno))
 
 
-    def postgres_password_update(self):
+    def update_secret(self):
         try:
             print("(postgres_password_update)[INFO] Postgres update password for user %s" % self.squirrel_user)
             database = "postgres"

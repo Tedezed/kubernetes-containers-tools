@@ -1,0 +1,1 @@
+# Module Odoo/Postgres Squirrel Kubernetes

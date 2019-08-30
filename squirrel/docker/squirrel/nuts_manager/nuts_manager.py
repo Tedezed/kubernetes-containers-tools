@@ -10,7 +10,8 @@ from kubernetes.client.rest import ApiException
 from os import path, getlogin, system, getuid, environ
 from sys import argv
 
-from .app_update_pass import *
+#from .app_update_pass import *
+from .control_module import *
 
 class nuts_manager():
 
@@ -190,6 +191,7 @@ class nuts_manager():
                                                               s.metadata.annotations,
                                                               "update_secret",
                                                               new_pass_decode,
+                                                              self.squirrel.squirrel_nuts_manager,
                                                               self.squirrel.debug)
                                         aup.conditional_app()
                                     if not self.squirrel.debug:
@@ -303,6 +305,7 @@ class nuts_manager():
                                                       s.metadata.annotations,
                                                       "update_app_password",
                                                       random_pass,
+                                                      self.squirrel.squirrel_nuts_manager,
                                                       self.squirrel.debug)
                                 aup.conditional_app()
                             else:

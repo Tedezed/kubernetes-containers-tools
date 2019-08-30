@@ -19,6 +19,7 @@ class sqrl():
     ruta_exec = path.dirname(path.realpath(__file__))
     squirrel_away = "%s/away" % ruta_exec
     squirrel_controller = "%s/controller" % ruta_exec
+    squirrel_nuts_manager = "%s/nuts_manager" % ruta_exec
     len_password = 22
     nut_list = []
     nuts = {}
