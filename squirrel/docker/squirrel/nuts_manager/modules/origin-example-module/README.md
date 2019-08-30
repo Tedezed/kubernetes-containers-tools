@@ -2,13 +2,13 @@
 
 ### Files
 
-`__init__.py`
+1. `__init__.py`
 ```
 from . import main
 ```
 
 
-`__manifest__.py`
+2. `__manifest__.py`
 ```
 {
 "name": "Module Example Wordpess Mysql",
@@ -23,11 +23,20 @@ from . import main
 ```
 
 
-`main.py`
+3. `main.py`
 ```
 class squirrel_module():
 
-    def __init__(self):
+    def __init__(self, squirrel):
+        self.squirrel = squirrel
+        self.squirrel_service = squirrel.squirrel_service
+        self.squirrel_namespace = squirrel.squirrel_namespace
+        self.squirrel_user = squirrel.squirrel_user
+        self.squirrel_pass = squirrel.squirrel_pass
+        self.secret_annotations = squirrel.secret_annotations
+        self.random_pass = squirrel.random_pass
+        self.host = squirrel.host
+        self.debug_mode = squirrel.debug_mode
         test = "OK WP Example module"
         print(test)
 
