@@ -92,3 +92,7 @@ Rotation now only for secrets:
 kubectl delete job -n kube-system squirrel-rotation-now
 kubectl create -f https://raw.githubusercontent.com/Tedezed/kubernetes-containers-tools/master/squirrel/kubernetes/squirrel-job-rotation-secrets.yaml
 ```
+
+## Create custom modules for your application
+
+- [Example module](https://github.com/Tedezed/kubernetes-containers-tools/tree/master/squirrel/docker/squirrel/nuts_manager/modules/origin-example-module)
