@@ -12,3 +12,4 @@ Containers of the project:
 * [emailing](https://github.com/Tedezed/kubernetes-containers-tools/tree/master/emailing) - Emailing Gateway for cluster of Kubernetes in Google Cloud.
 * [slug-phpbb](https://github.com/Tedezed/kubernetes-containers-tools/tree/master/phpbb) - Container phpbb.
 * [slug-dynamic-loadbalancer](https://github.com/Tedezed/kubernetes-containers-tools/tree/master/dynamic_loadbalancer) - Loadbalancer in test for statefulset.
+* [squirrel](https://github.com/Tedezed/kubernetes-containers-tools/tree/master/squirrel) - Kubernetes secrets and apps passwords rotation.
