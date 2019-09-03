@@ -1,6 +1,6 @@
 # Squirrel
 
-Rotation of passwords and storage using gpg for applications in Kubernetes
+Kubernetes secret and apps passwords rotation, storage the application credentials using GPG.
 
 <img src="https://raw.githubusercontent.com/tedezed/kubernetes-containers-tools/master/docs/img/Squirrel.png">
 
