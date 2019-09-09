@@ -100,6 +100,8 @@ class squirrel_module():
             exc_type, exc_obj, exc_tb = sys.exc_info()
             fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
             print("(odoo_postgresv2)[ERROR] %s, file: %s. line: %s" % (e, fname, exc_tb.tb_lineno))
+            return False
+        return True
 
 
     def update_secret(self):
@@ -116,4 +118,6 @@ class squirrel_module():
                     self.host, port, database, alter_query)
         except Exception as e:
             print("(postgres_password_update)[ERROR] %s" % error)
+            return False
+        return True
 

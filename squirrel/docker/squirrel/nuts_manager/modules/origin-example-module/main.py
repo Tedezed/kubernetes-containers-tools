@@ -15,6 +15,9 @@ class squirrel_module():
 
     def update_app(self):
         print("update app")
+        # if is OK
+        return True
 
     def update_secret(self):
         print("update secret")
+        return True
