@@ -67,7 +67,10 @@ $("body").keydown(function(e){
   if ( arraysEqual(code, secret) && notActivate ) {
     notActivate = false
     console.log(notActivate)
-    $("body").append('<button onmousedown="accelerate(-0.4)" onmouseup="accelerate(0.3)">ACCELERATE</button>');
+    document.body.innerHTML = '';
+    https://youtu.be/hsSK9Cs1oVU?t=29
+    $("body").append('<div><button onmousedown="accelerate(-0.4)" onmouseup="accelerate(0.3)">ACCELERATE</button></div>');
+    $("body").append('<iframe id="yt-frame" width="891" height="501" src="https://www.youtube.com/embed/hsSK9Cs1oVU?autoplay=1&mute=0&enablejsapi=1"> </iframe>');
     startG()
   }
 });
