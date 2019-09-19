@@ -187,63 +187,64 @@ class get_methods:
                 ing = self.extv1beta1.list_ingress_for_all_namespaces(watch=False)
                 list_ing = []
                 for i in ing.items:
-                    if i.metadata.annotations.get('kubernetes.io/ingress.class', False) == environ['NAME_LIBERTY']:
-                        # system('echo "[INFO] Found mode in ingress %s"' % (i.metadata.name))
+                    if i.metadata.annotations:
+                        if i.metadata.annotations.get('kubernetes.io/ingress.class', False) == environ['NAME_LIBERTY']:
+                            # system('echo "[INFO] Found mode in ingress %s"' % (i.metadata.name))
 
-                        # Modos
-                        #found_tls_acme = False
-                        if i.metadata.annotations.get('ingress-liberty/mode', False) == 'ssl':
+                            # Modos
+                            #found_tls_acme = False
+                            if i.metadata.annotations.get('ingress-liberty/mode', False) == 'ssl':
 
-                            list_hosts = self.get_hosts(i)
+                                list_hosts = self.get_hosts(i)
 
-                            if i.metadata.annotations.get('ingress-liberty/backend', False):
-                                backend = i.metadata.annotations.get('ingress-liberty/backend', False)
+                                if i.metadata.annotations.get('ingress-liberty/backend', False):
+                                    backend = i.metadata.annotations.get('ingress-liberty/backend', False)
 
-                            if i.metadata.annotations.get('ingress-liberty/ssl-secret', False) \
-                                    and i.metadata.annotations.get('ingress-liberty/ssl-namespace', False):
+                                if i.metadata.annotations.get('ingress-liberty/ssl-secret', False) \
+                                        and i.metadata.annotations.get('ingress-liberty/ssl-namespace', False):
 
-                                ing_name_secret = i.metadata.annotations.get('ingress-liberty/ssl-secret', False)
-                                ing_namespace_secret = i.metadata.annotations.get('ingress-liberty/ssl-namespace', False)
+                                    ing_name_secret = i.metadata.annotations.get('ingress-liberty/ssl-secret', False)
+                                    ing_namespace_secret = i.metadata.annotations.get('ingress-liberty/ssl-namespace', False)
 
-                                list_certs = self.dic_get_secret(ing_name_secret, ing_namespace_secret)
+                                    list_certs = self.dic_get_secret(ing_name_secret, ing_namespace_secret)
 
-                            else:
-                                system('echo "[WARNING] Not found cert SSL in ingress %s"' % (i.metadata.name))
+                                else:
+                                    system('echo "[WARNING] Not found cert SSL in ingress %s"' % (i.metadata.name))
 
-                            dic_ing = {'name_ing': i.metadata.name, 'ing_namespace_secret': ing_namespace_secret,
-                                       'ing_name_secret': ing_name_secret, 'list_hosts': list_hosts, 'mode': 'ssl',
-                                       'dic_certs': list_certs, 'backend': backend, 'patch': self.ruta_exec}
-                            list_ing.append(dic_ing)
+                                dic_ing = {'name_ing': i.metadata.name, 'ing_namespace_secret': ing_namespace_secret,
+                                           'ing_name_secret': ing_name_secret, 'list_hosts': list_hosts, 'mode': 'ssl',
+                                           'dic_certs': list_certs, 'backend': backend, 'patch': self.ruta_exec}
+                                list_ing.append(dic_ing)
 
-                        elif i.metadata.annotations.get('ingress-liberty/mode', False) == 'tcp':
-                            list_hosts = self.get_hosts(i)
-                            port = i.metadata.annotations.get('ingress-liberty/tcp-port', False)
-                            dic_ing = {'name_ing': i.metadata.name, 'list_hosts': list_hosts, 'mode': 'tcp', 'port': port,
-                                       'patch': self.ruta_exec}
-                            list_ing.append(dic_ing)
+                            elif i.metadata.annotations.get('ingress-liberty/mode', False) == 'tcp':
+                                list_hosts = self.get_hosts(i)
+                                port = i.metadata.annotations.get('ingress-liberty/tcp-port', False)
+                                dic_ing = {'name_ing': i.metadata.name, 'list_hosts': list_hosts, 'mode': 'tcp', 'port': port,
+                                           'patch': self.ruta_exec}
+                                list_ing.append(dic_ing)
 
-                        elif i.metadata.annotations.get('ingress-liberty/mode', False) == 'tls-acme' \
-                            and i.metadata.annotations.get('kubernetes.io/tls-acme', False) == 'true':
+                            elif i.metadata.annotations.get('ingress-liberty/mode', False) == 'tls-acme' \
+                                and i.metadata.annotations.get('kubernetes.io/tls-acme', False) == 'true':
 
-                            found_tls_acme = True
-                            list_hosts = self.get_hosts(i)
+                                found_tls_acme = True
+                                list_hosts = self.get_hosts(i)
 
-                            if i.metadata.annotations.get('ingress-liberty/backend', False):
-                                backend = i.metadata.annotations.get('ingress-liberty/backend', False)
+                                if i.metadata.annotations.get('ingress-liberty/backend', False):
+                                    backend = i.metadata.annotations.get('ingress-liberty/backend', False)
 
-                            list_certs=[]
-                            for secret in i.spec.tls:
-                                dic_certs={}
-                                dic_certs[secret.secret_name] = self.dic_get_secret(secret.secret_name, i.metadata.namespace)
-                                dic_certs["secret_name"] = secret.secret_name
-                                dic_certs["hosts"] = secret.hosts
-                                list_certs.append(dic_certs)
+                                list_certs=[]
+                                for secret in i.spec.tls:
+                                    dic_certs={}
+                                    dic_certs[secret.secret_name] = self.dic_get_secret(secret.secret_name, i.metadata.namespace)
+                                    dic_certs["secret_name"] = secret.secret_name
+                                    dic_certs["hosts"] = secret.hosts
+                                    list_certs.append(dic_certs)
 
-                            dic_ing = {'name_ing': i.metadata.name, 'ing_namespace_secret': i.metadata.namespace,
-                                       'list_hosts': list_hosts, 'mode': 'tls-acme',
-                                       'dic_certs': list_certs, 'backend': backend, 'patch': self.ruta_exec,
-                                       'name_cert_generator': environ['SVC_CERT_GENERATOR'], 'namespace_cert_generator': environ['NAMESPACE_CERT_GENERATOR']}
-                            list_ing.append(dic_ing)
+                                dic_ing = {'name_ing': i.metadata.name, 'ing_namespace_secret': i.metadata.namespace,
+                                           'list_hosts': list_hosts, 'mode': 'tls-acme',
+                                           'dic_certs': list_certs, 'backend': backend, 'patch': self.ruta_exec,
+                                           'name_cert_generator': environ['SVC_CERT_GENERATOR'], 'namespace_cert_generator': environ['NAMESPACE_CERT_GENERATOR']}
+                                list_ing.append(dic_ing)
 
                 freeze_list_ing = list(list_ing)
                 ddiff = DeepDiff(freeze_list_ing, old_list_ing)

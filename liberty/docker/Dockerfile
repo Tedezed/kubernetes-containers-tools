@@ -140,7 +140,7 @@ ENV NAME_LIBERTY="liberty" \
 ADD files/ /files
 RUN mkdir -p /files/liberty-ingress/default-cert/ \
   && mkdir -p /files/liberty-ingress/certs/ \
-  && openssl dhparam -out /files/liberty-ingress/dhparam.pem 1024 \
+  && openssl dhparam -out /files/liberty-ingress/dhparam.pem 4096 \
   && cp -R /files/error/ /var/www/error \
   && cp /files/docker-entrypoint.sh /usr/local/bin/ \
   && chmod +rx /usr/local/bin/docker-entrypoint.sh \

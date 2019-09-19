@@ -68,8 +68,8 @@ $("body").keydown(function(e){
     notActivate = false
     console.log(notActivate)
     document.body.innerHTML = '';
-    https://youtu.be/hsSK9Cs1oVU?t=29
-    $("body").append('<div><button onmousedown="accelerate(-0.4)" onmouseup="accelerate(0.3)">ACCELERATE</button></div>');
+    $("body").append('<div><button onmousedown="accelerate(-0.4)" onmouseup="accelerate(0.3)">UP</button></div>');
+    $("body").append('<div><button onmousedown="restart()" >RESTART</button></div>');
     $("body").append('<iframe id="yt-frame" width="891" height="501" src="https://www.youtube.com/embed/hsSK9Cs1oVU?autoplay=1&mute=0&enablejsapi=1"> </iframe>');
     startG()
   }
@@ -80,10 +80,17 @@ var myGPiece;
 var myObstacles = [];
 var myScore;
 
+function restart() {
+    myGArea.stop();
+    myGArea.clear();
+    startG();
+}
+
 function startG() {
     myGPiece = new component(30, 30, "red", 10, 120);
-    myGPiece.gravity = 0.3;
+    myGPiece.gravity = 0.4;
     myScore = new component("30px", "Consolas", "black", 280, 40, "text");
+    myObstacles = [];
     myGArea.start();
 }
 
@@ -99,6 +106,9 @@ var myGArea = {
         },
     clear : function() {
         this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
+    },
+    stop : function() {
+        clearInterval(this.interval);
     }
 }
 
@@ -134,6 +144,10 @@ function component(width, height, color, x, y, type) {
         var rockbottom = myGArea.canvas.height - this.height;
         if (this.y > rockbottom) {
             this.y = rockbottom;
+            this.gravitySpeed = 0;
+        }
+        if (this.y <= 0) {
+            this.y = 0.1;
             this.gravitySpeed = 0;
         }
     }
