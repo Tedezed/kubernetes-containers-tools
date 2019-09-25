@@ -21,7 +21,7 @@ class gcloud_tools:
         return result.get('items', None)
 
     def disk_to_snapshot(self, project, zone, disk_name, snapshot_name):
-        body = {"name": snapshot_name}
+        body = {"name": snapshot_name, "storageLocations": [zone[:-2]]}
         return self.compute.disks().createSnapshot(project=project, zone=zone,
                                               disk=disk_name, body=body).execute()
 
