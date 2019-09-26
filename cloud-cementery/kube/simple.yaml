@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: cloud-cementery
+  namespace: default
+spec:
+  containers:
+  - name: cloud-cementery
+    image: tedezed/cloud-cementery:latest
+    command:
+      - sleep
+      - "infinity"
