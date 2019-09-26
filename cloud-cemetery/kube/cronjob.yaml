@@ -1,0 +1,22 @@
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  name: cloud-cementery
+  namespace: kube-system
+spec:
+  schedule: "10 0 * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          restartPolicy: OnFailure
+          containers:
+          - name: squirrel
+            image: tedezed/cloud-cementery:latest
+            volumeMounts:
+              - name: cloud-cementery
+                mountPath: /sa
+          volumes:
+            - name: cloud-cementery
+              secret:
+                secretName: cloud-cementery
