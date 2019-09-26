@@ -17,3 +17,8 @@ data:
   $(cat /XXXXXX/gcloud-project4.json | jq .project_id | tr -d '"'): $(cat /XXXXXX/gcloud-project4.json | base64 -w0)
 EOF
 ```
+
+Create cronjob Kubernetes
+```
+kubectl create -f ../kube/cronjob.yaml
+```
