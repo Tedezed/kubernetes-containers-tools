@@ -23,7 +23,7 @@ Create cronjob Kubernetes
 kubectl create -f ../kube/cronjob.yaml
 ```
 
-# Send Snapshots to cementery
+# Send disks or snapshots to cementery
 
 This command create a snapshot and delete your disks. In the new snaposhot will add one label with `funeral-home=true` or `cementery=true`, this label and date of creation, is use with the cron to delete snapshot in the future.
 The advantages of passing a disk to snapshot are: reduced cost, it only occupies the space used.
