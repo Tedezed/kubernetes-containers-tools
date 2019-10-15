@@ -38,8 +38,8 @@ Annotation `ingress-liberty/backend-entity: pod` for session affinity.
 
 ## Start/Stop namespace like Heroku using ingress
 
-Add the next annotations to ingress: `ingress-liberty/start-stop: "true"`
-You can exclude a deploy or an rc so that it is not affected in the namespace, using the annotation: `ingress-liberty/start-stop: "false"`
+- Add the next annotations to ingress: `ingress-liberty/start-stop: "true"`
+- You can exclude a deploy or an rc so that it is not affected in the namespace, using the annotation: `ingress-liberty/start-stop: "false"`
 
 #### Deploy Ingress Liberty and filebeat
 
