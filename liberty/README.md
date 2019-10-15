@@ -49,7 +49,7 @@ Env variables Liberty:
   | ------------- |
   | ------------- |
   | | Container | |                                     -------------------
-  | | Filebeat  |---- POST Ingest logs ---------------> |   ELK Stack     |
+  | | Filebeat  | --> POST Ingest logs ---------------> |   ELK Stack     |
   | ------------- |    /var/log/nginx/access.log        | - Logstash      |
   -----------------    /var/log/nginx/custom_error.log  | - ElasticSearch |
                                                         -------------------
