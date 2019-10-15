@@ -12,6 +12,7 @@ server {
         error_page 502 https://$host:$server_port$request_uri;
 
         location / {
+                access_log /var/log/nginx/custom_error.log json;
                 try_files $uri $uri/ =404;
         }
 
@@ -122,6 +123,7 @@ server {
       error_page 502 /index.html;
       location = /index.html {
         root  /files/error;
+        access_log /var/log/nginx/custom_error.log json;
       }
 
     # Backends modes #

@@ -17,8 +17,9 @@ from time import sleep
 
 from nginx_brainslug import *
 from get_methods import *
+from elk_brainslug import *
 
-class kube_init(nginx_brainslug, get_methods):
+class kube_init(nginx_brainslug, get_methods, elk_brainslug):
     
     ruta_exec = path.dirname(path.realpath(__file__))
     v1 = None
@@ -67,8 +68,18 @@ class kube_init(nginx_brainslug, get_methods):
             print(text)
 
 def main():
-    kluster = kube_init()
-    kluster.get_ingress()
+    if environ['ELK'] == 'true':
+        kluster = kube_init()
+        elkb = elk_brainslug(kluster)
+        if environ['ELK_MODE'] == 'start':
+            while True:
+                elkb.start_ingress()
+                sleep(int(environ['TIME_QUERY']))
+        else:
+            elkb.stop_ingress()
+    else:
+        kluster = kube_init()
+        kluster.get_ingress()
 
 if __name__ == '__main__':
     # Start

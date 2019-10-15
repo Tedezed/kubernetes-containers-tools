@@ -32,13 +32,13 @@ Add in your `.bash_profile`
 ```
 function gcloud_cold_disk () {
 	# gcloud compute disks snapshot disk-test --zone europe-west1-b --snapshot-names snapshot-disk-test --storage-location=europe-west1
-	gcloud compute disks snapshot $1 --zone $2 --snapshot-names $1 --storage-location=$3
+	gcloud compute disks snapshot $1 --zone $2 --snapshot-names cold-$1 --storage-location=$3
 	gcloud compute disks delete $1 --zone $2
 }
 
 function gcloud_kill_disk () {
 	# gcloud compute disks snapshot disk-test --zone europe-west1-b --snapshot-names snapshot-disk-test --storage-location=europe-west1
-	gcloud compute disks snapshot dead-$1 --zone $2 --snapshot-names $1 --storage-location=$3 --labels funeral-home=true
+	gcloud compute disks snapshot $1 --zone $2 --snapshot-names dead-$1 --storage-location=$3 --labels funeral-home=true
 	gcloud compute disks delete $1 --zone $2
 }
 ```

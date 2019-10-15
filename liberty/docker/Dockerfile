@@ -119,7 +119,7 @@ RUN mkdir /etc/nginx/geoip \
     && gunzip GeoLite2-City.tar.gz \
     && chown www-data -R /etc/nginx/geoip
 
-RUN pip install kubernetes deepdiff \
+RUN pip install kubernetes deepdiff elasticsearch \
     && rm -rf /etc/nginx/conf.d/default.conf \
     && ls /etc/nginx/ -lia \
     && apt-get update \
@@ -129,6 +129,12 @@ RUN pip install kubernetes deepdiff \
 ENV NAME_LIBERTY="liberty" \
     TIMEOUT="60m" \
     MODE="production" \
+    ELK="false" \
+    ELK_MODE="stop" \
+    ELK_LIBERTY_NAMES="liberty1 liberty2" \
+    ELK_HOST="localhost" \
+    ELK_PORT="9200" \
+    ELK_PREFIX="filebeat" \
     SECRET_USER="admin" \
     SECRET_PASSWD="admin1234567890" \
     SUPPORT_EMAIL="soporte@guadaltech.es" \
@@ -140,8 +146,8 @@ ENV NAME_LIBERTY="liberty" \
 ADD files/ /files
 RUN mkdir -p /files/liberty-ingress/default-cert/ \
   && mkdir -p /files/liberty-ingress/certs/ \
-  && openssl dhparam -out /files/liberty-ingress/dhparam.pem 4096 \
-  && cp -R /files/error/ /var/www/error \
+  && openssl dhparam -out /files/liberty-ingress/dhparam.pem 1024
+RUN cp -R /files/error/ /var/www/error \
   && cp /files/docker-entrypoint.sh /usr/local/bin/ \
   && chmod +rx /usr/local/bin/docker-entrypoint.sh \
   && mkdir /etc/nginx/others \

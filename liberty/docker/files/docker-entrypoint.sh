@@ -37,10 +37,16 @@ fi
 
 echo "Exec rsyslog..."
 service rsyslog start
-echo "Exec Liberty..."
-exec python /files/liberty-ingress/main.py time_query=$TIME_QUERY &
-echo "Exec Nginx..."
-exec nginx -c /etc/nginx/nginx.conf
+
+if [ "$ELK" == "false" ]; then
+	echo "Exec Liberty..."
+	exec python /files/liberty-ingress/main.py time_query=$TIME_QUERY &
+	echo "Exec Nginx..."
+	exec nginx -c /etc/nginx/nginx.conf
+else
+	echo "Exec Liberty..."
+	exec python /files/liberty-ingress/main.py
+fi
 
 echo "Bye Nginx-Liberty"
 exit 1
