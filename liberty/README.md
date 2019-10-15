@@ -4,15 +4,6 @@ Alternative Kubernetes ingress with easy customization with Python and jinja tem
 
 Image `tedezed/liberty-dynamic-ingress`
 
-## Kube-Lego
-
-Add to deployment of kube-lego:
-
-```
-LEGO_SUPPORTED_INGRESS_PROVIDER="nginx,liberty"
-LEGO_SUPPORTED_INGRESS_CLASS="nginx,liberty"
-```
-
 ## Backend modes
 
 All backend use sticky session Nginx.
@@ -105,3 +96,12 @@ Functioning:
   |---------------|
 ```
 
+
+## Kube-Lego
+
+Add to deployment of kube-lego:
+
+```
+LEGO_SUPPORTED_INGRESS_PROVIDER="nginx,liberty"
+LEGO_SUPPORTED_INGRESS_CLASS="nginx,liberty"
+```
