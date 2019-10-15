@@ -1,5 +1,7 @@
 # Liberty Ingress
 
+Alternative Kubernetes ingress with easy customization with Python and jinja templates
+
 Image `tedezed/liberty-dynamic-ingress`
 
 ## Kube-Lego
