@@ -1,0 +1,26 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  annotations:
+    cronjob.kubernetes.io/instantiate: manual
+  labels:
+    job-name: liberty-elk-stop-now
+  name: liberty-elk-stop-now
+  namespace: kube-system
+spec:
+  template:
+    spec:
+      restartPolicy: OnFailure
+      containers:
+      - name: liberty-elk-stop
+        image: tedezed/liberty-dynamic-ingress:latest
+        imagePullPolicy: Always
+        env:
+        - name: ELK
+          value: "true"
+        - name: ELK_MODE
+          value: "stop"
+        - name: ELK_HOST
+          value: "elasticsearch-client.namespace.svc.cluster.local"
+        - name: ELK_LIBERTY_NAMES
+          value: "liberty2 liberty1"

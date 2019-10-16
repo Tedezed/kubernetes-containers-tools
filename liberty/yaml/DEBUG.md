@@ -98,6 +98,8 @@ Get content under index: `curl -H 'Content-Type: application/json' -X GET https:
 ---
 
 export ELK='true'
+export ELK_LIBERTY_NAMES='liberty'
+export ELK_MODE='start'
 export ELK_HOST='elastic-stack-elasticsearch-client.elastic-stack.svc.cluster.local'
 
 python /files/liberty-ingress/main.py

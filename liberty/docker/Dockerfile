@@ -135,18 +135,20 @@ ENV NAME_LIBERTY="liberty" \
     ELK_HOST="localhost" \
     ELK_PORT="9200" \
     ELK_PREFIX="filebeat" \
+    ELK_DAYS=3 \
     SECRET_USER="admin" \
     SECRET_PASSWD="admin1234567890" \
     SUPPORT_EMAIL="soporte@guadaltech.es" \
     TEAM_NAME="Support Team" \
     NAMESPACE_CERT_GENERATOR="default" \
     SVC_CERT_GENERATOR="kube-lego-nginx" \
-    SVC_CERT_GENERATOR_PORT="8080"
+    SVC_CERT_GENERATOR_PORT="8080" \
+    NUMBITS=2048
 
 ADD files/ /files
 RUN mkdir -p /files/liberty-ingress/default-cert/ \
   && mkdir -p /files/liberty-ingress/certs/ \
-  && openssl dhparam -out /files/liberty-ingress/dhparam.pem 1024
+  && openssl dhparam -out /files/liberty-ingress/dhparam.pem $NUMBITS
 RUN cp -R /files/error/ /var/www/error \
   && cp /files/docker-entrypoint.sh /usr/local/bin/ \
   && chmod +rx /usr/local/bin/docker-entrypoint.sh \

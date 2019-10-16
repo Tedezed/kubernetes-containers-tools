@@ -22,8 +22,10 @@ class elk_brainslug():
         self.prefix=environ['ELK_PREFIX']
         self.today = datetime.date.today()
         self.yesterday = self.today - datetime.timedelta(days=1)
+        self.drop_date = self.today - datetime.timedelta(days=int(environ['ELK_DAYS']))
         self.index_today="%s-%s" % (self.prefix, self.today.strftime('%Y.%m.%d'))
         self.index_yesterday="%s-%s" % (self.prefix, self.yesterday.strftime('%Y.%m.%d'))
+        self.drop_index="%s-%s" % (self.prefix, self.drop_date.strftime('%Y.%m.%d'))
 
     def str_in_list(self, input_str, input_list):
         for i in input_list:
@@ -44,6 +46,7 @@ class elk_brainslug():
           }
         }
         res = self.es.search(index=index, body=body)
+        system("echo 'Query %s %s Score: %s'" % (ingress_host, file_log, res["hits"]["max_score"]))
         if res["hits"]["max_score"]:
             return True
         else:
@@ -68,9 +71,14 @@ class elk_brainslug():
     # https://github.com/kubernetes-client/python/blob/master/kubernetes/docs/AppsV1beta1Api.md
     # http://docs.clipper.ai/en/v0.3.0/_modules/clipper_admin/kubernetes/kubernetes_container_manager.html
     def replicas_all_namespace(self, replicas, namespace):
-        print "[INFO] (replicas_all_namespace) namespace: " + namespace
+        system('echo "[INFO] (replicas_all_namespace) namespace: %s"' % namespace)
 
         body={
+            'metadata': {
+                'annotations': {
+                    'ingress-liberty/last-start-stop': self.today.strftime('%Y.%m.%d')
+                }
+            },
             'spec': {
                 'replicas': replicas,
                     }
@@ -84,26 +92,39 @@ class elk_brainslug():
         deploy = self.kluster.extv1beta1.list_namespaced_deployment(namespace, watch=False)
         for d in deploy.items:
             start_stop=True
-            if (start_mode and int(i.spec.replicas) == 0) or not start_mode:
-                if i.metadata.annotations:
-                    if i.metadata.annotations.get('ingress-liberty/start-stop', False) == "false":
+            if ((start_mode and int(d.spec.replicas) == 0) or not start_mode):
+                if d.metadata.annotations:
+                    if d.metadata.annotations.get('ingress-liberty/start-stop', False) == "false" \
+                      or d.metadata.annotations.get('ingress-liberty/last-start-stop', self.today.strftime('%Y.%m.%d')) == self.today.strftime('%Y.%m.%d'):
                         start_stop=False
                 if start_stop:
-                    print "[INFO] Scale to %s deploy: %s" % (replicas, d.metadata.name)
-                    self.kluster.extv1beta1.patch_namespaced_deployment_scale(d.metadata.name, namespace, body)
+                    system('echo "[INFO] Scale to %s deploy: %s"' % (replicas, d.metadata.name))
+                    self.kluster.extv1beta1.patch_namespaced_deployment(d.metadata.name, namespace, body)
+                else:
+                    system('echo "[INFO] start_stop FALSE"')
+            else:
+                system('echo "[INFO] Deploy in %s without changes"' % namespace)
 
         rc = self.kluster.v1.list_namespaced_replication_controller(namespace, watch=False)
         for r in rc.items:
             start_stop=True
-            if (start_mode and int(i.spec.replicas) == 0) or not start_mode:
-                if i.metadata.annotations:
-                    if i.metadata.annotations.get('ingress-liberty/start-stop', False) == "false":
+            if ((start_mode and int(r.spec.replicas) == 0) or not start_mode):
+                if r.metadata.annotations:
+                    if r.metadata.annotations.get('ingress-liberty/start-stop', False) == "false" \
+                      or r.metadata.annotations.get('ingress-liberty/last-start-stop', self.today.strftime('%Y.%m.%d')) == self.today.strftime('%Y.%m.%d'):
                         start_stop=False
                 if start_stop:
-                    print "[INFO] Scale to %s rc: %s" % (replicas, r.metadata.name)
-                    self.kluster.v1.patch_namespaced_replication_controller_scale(r.metadata.name, namespace, body)
+                    system('echo "[INFO] Scale to %s rc: %s"' % (replicas, r.metadata.name))
+                    self.kluster.v1.patch_namespaced_replication_controller(r.metadata.name, namespace, body)
+                else:
+                    system('echo "[INFO] start_stop FALSE"')
+            else:
+                system('echo "[INFO] RC in %s without changes"' % namespace)
 
     def stop_ingress(self):
+        system('echo "[INFO] ELK Liberty Mode stop"')
+        system('echo "Drop index: %s"' % self.drop_index)
+        self.es.indices.delete(index=self.drop_index , ignore=[400, 404])
         list_ing = self.list_ingress()
         for i in list_ing:
             to_stop=True
@@ -114,11 +135,12 @@ class elk_brainslug():
                 self.replicas_all_namespace(0, i.metadata.namespace)
 
     def start_ingress(self):
+        system('echo "[INFO] ELK Liberty Mode start"')
         list_ing = self.list_ingress()
         for i in list_ing:
-            to_stop=True
+            to_start=False
             for r in i.spec.rules:
                 if self.query_elk_ingress(self.index_today, r.host, "/var/log/nginx/custom_error.log"):
-                    to_stop=False
-            if to_stop:
+                    to_start=True
+            if to_start:
                 self.replicas_all_namespace(1, i.metadata.namespace)

@@ -11,7 +11,7 @@ spec:
         spec:
           restartPolicy: OnFailure
           containers:
-          - name: squirrel
+          - name: cementery
             image: tedezed/cloud-cementery:latest
             volumeMounts:
               - name: cloud-cementery

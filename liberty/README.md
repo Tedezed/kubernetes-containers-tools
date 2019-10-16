@@ -62,6 +62,7 @@ Env variables:
 - ELK_MODE="start"
 - TIME_QUERY="35"
 - ELK_HOST="elasticsearch-client.namespace.svc.cluster.local"
+- ELK_LIBERTY_NAMES="liberty-test-1 liberty-test-2"
 
 Functioning:
 - If the ingress was visited but returned an error 502 (usually because it is stopped) it tries to start
@@ -82,6 +83,7 @@ Env variables:
 - ELK="true"
 - ELK_MODE="stop"
 - ELK_HOST="elasticsearch-client.namespace.svc.cluster.local"
+- ELK_LIBERTY_NAMES="liberty-test-1 liberty-test-2"
 
 Functioning:
 - If the ingress was not visited yesterday it stops
