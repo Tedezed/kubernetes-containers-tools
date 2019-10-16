@@ -133,6 +133,8 @@ class elk_brainslug():
                     to_stop=False
             if to_stop:
                 self.replicas_all_namespace(0, i.metadata.namespace)
+            else:
+                system('echo "[INFO] (Query) %s %s without changes"' % (i.metadata.name, i.metadata.namespace))
 
     def start_ingress(self):
         system('echo "[INFO] ELK Liberty Mode start"')
@@ -144,3 +146,5 @@ class elk_brainslug():
                     to_start=True
             if to_start:
                 self.replicas_all_namespace(1, i.metadata.namespace)
+            else:
+                system('echo "[INFO] (Query) %s %s without changes"' % (i.metadata.name, i.metadata.namespace))
