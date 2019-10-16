@@ -39,8 +39,8 @@ class elk_brainslug():
           "query": {
             "bool": {
               "must": [
-                { "match": { "ingress": ingress_host }},
-                { "match": { "source": file_log }}
+                { "match_phrase": { "ingress": ingress_host }},
+                { "match_phrase": { "source": file_log }}
               ]
             }
           }
@@ -72,22 +72,26 @@ class elk_brainslug():
     # http://docs.clipper.ai/en/v0.3.0/_modules/clipper_admin/kubernetes/kubernetes_container_manager.html
     def replicas_all_namespace(self, replicas, namespace):
         system('echo "[INFO] (replicas_all_namespace) namespace: %s"' % namespace)
-
-        body={
-            'metadata': {
-                'annotations': {
-                    'ingress-liberty/last-start-stop': self.today.strftime('%Y.%m.%d')
-                }
-            },
-            'spec': {
-                'replicas': replicas,
-                    }
-        }
-
+        
         if replicas > 0:
             start_mode=True
+            body={
+                'metadata': {
+                    'annotations': {
+                        'ingress-liberty/last-start-stop': self.today.strftime('%Y.%m.%d')
+                    }
+                },
+                'spec': {
+                    'replicas': replicas,
+                        }
+            }
         else:
             start_mode= False
+            body={
+                'spec': {
+                    'replicas': replicas,
+                        }
+            }
 
         deploy = self.kluster.extv1beta1.list_namespaced_deployment(namespace, watch=False)
         for d in deploy.items:
