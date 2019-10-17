@@ -36,6 +36,10 @@ Annotation `ingress-liberty/backend-entity: pod` for session affinity.
 
 #### Deploy Ingress Liberty and filebeat
 
+Operation Diagram
+<img src="https://raw.githubusercontent.com/Tedezed/kubernetes-containers-tools/master/tools/images/liberty_start-stop.png">
+
+
 Env variables Liberty:
 - ELK="false"
 
