@@ -73,7 +73,7 @@ if (userLang == "es-ES") {
           success: function() {  
                if (jQuery('meta[content=loading]').length==1) {
                   // Call myself
-                  setTimeout(function(){reload_loading()},3000);
+                  setTimeout(function(){reload_loading()},4000);
 
                   // Cont for error
                   if (window.n==400) {
@@ -91,7 +91,7 @@ if (userLang == "es-ES") {
             },
             error: function(XMLHttpRequest, textStatus, errorThrown) {
                 // Reload
-                setTimeout(function(){window.location.reload()},6000);
+                setTimeout(function(){window.location.reload()},7000);
           }
         })
     }
