@@ -8,8 +8,8 @@ Image `tedezed/liberty-dynamic-ingress`
 
 All backend use sticky session Nginx.
 
-**Default**: IP backend from service.
-
+**Service**: IP backend from service.
+Annotation `ingress-liberty/backend-entity: service`
 ```
 -----------------       ----------------       -------
 | Liberty/Nginx | ----> | Service (IP) | ----> | Pod |

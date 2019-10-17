@@ -1,4 +1,7 @@
 
+################# Liberty System #################
+
+# Error 502
 server {
         listen 80 default;
         listen 443 default ssl;
@@ -26,6 +29,26 @@ server {
         #deny all;
         #}
 }
+
+# Error 502 and Loading
+server {
+        listen 3502;
+        server_name _;
+
+        ssl_certificate /files/liberty-ingress/certs/kube-system_liberty-tls/tls.crt;
+        ssl_certificate_key /files/liberty-ingress/certs/kube-system_liberty-tls/tls.key;
+        
+        root /files/loading;
+
+        error_page 502 https://$host:$server_port$request_uri;
+
+        location / {
+                access_log /var/log/nginx/custom_error.log json;
+                try_files $uri $uri/ =404;
+        }
+}
+
+################# Liberty ingress template #################
 
 {% for ing in list_ing recursive %}
   {% for host in ing['list_hosts'] recursive %}

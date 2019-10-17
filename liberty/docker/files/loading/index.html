@@ -1,0 +1,104 @@
+<html>
+<head>
+<meta content="loading">
+<!-- By: https://github.com/Tedezed -->
+<title>Loading</title>
+<style>
+  body { text-align: center; padding: 5%; }
+  h1 { font-size: 50px; }
+  body { font: 20px Helvetica, sans-serif; color: #333; }
+  article { display: block; text-align: center; width: 50%; margin: 0 auto; }
+  a { color: #dc8100; text-decoration: none; }
+  a:hover { color: #333; text-decoration: none; }
+
+  .loader {
+      border: 9px solid #f3f3f3; /* Light grey */
+      border-top: 9px solid #dc8100; /* Color */
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      animation: spin 2s linear infinite;
+      /* Center */
+      position: relative;
+      margin-left:calc(50% - 25px);
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+</style>
+<body>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+<script type="text/javascript">
+
+var lines_en = '<article id="article_loading">\
+    <h1>Loading system</h1>\
+    <div>\
+        <p>The charging process may take a little.</p>\
+        <div class="loader"></div>\
+    </div>\
+</article>'
+
+var lines_es = '<article id="article_loading">\
+    <h1>Cargando sistema</h1>\
+    <div>\
+        <p>El proceso de carga puede tardar un poco.</p>\
+        <div class="loader"></div>\
+    </div>\
+</article>'
+
+var error_loading_en = '<h1>Loading Error</h1>\
+        <div>\
+        <p>If the domain you are trying to access belongs to a test this will start in a few moments otherwise sorry for the   but we&rsquo;re performing some maintenance at the moment.</p>\
+    </div>'
+
+var error_loading_es = '<h1>Error al cargar</h1>\
+        <div>\
+        <p>Si al dominio que esta intentando acceder pertenece a un test este arrancara en unos instantes de lo contrario disculpe las molestias, estamos realizando algunas tareas de mantenimiento en este momento.</p>\
+    </div>'
+
+var userLang = navigator.language || navigator.userLanguage;
+// alert ("The language is: " + userLang);
+if (userLang == "es-ES") {
+    document.write(lines_es);
+} else {
+    document.write(lines_en);
+}
+</script>
+<script type="text/javascript">
+    function reload_loading(n) {
+        jQuery.ajax({
+          url: window.location.href,
+          success: function() {  
+               if (jQuery('meta[content=loading]').length==1) {
+                  // Call myself
+                  setTimeout(function(){reload_loading()},3000);
+
+                  // Cont for error
+                  if (window.n==400) {
+                    document.getElementById("article_loading").remove();
+                    let art1 = document.createElement('article');
+                    if (userLang == "es-ES") {
+                        art1.innerHTML = error_loading_es;
+                    } else {
+                        art1.innerHTML = error_loading_en;
+                    }
+                    document.body.append(art1);
+                  }
+                  window.n++;
+               }
+            },
+            error: function(XMLHttpRequest, textStatus, errorThrown) {
+                // Reload
+                setTimeout(function(){window.location.reload()},6000);
+          }
+        })
+    }
+    n = 0;
+    jQuery( document ).ready(function() {
+      reload_loading(n);
+    })
+</script>
+</body>
+</html>

@@ -26,7 +26,8 @@ class kube_init(nginx_brainslug, get_methods, elk_brainslug):
     extv1beta1 = None
     bash_bold = '\033[1m'
     bash_none = '\033[00m'
-    ip_error = "169.254.1.10"
+    #ip_error = "169.254.1.10"
+    ip_error = "127.0.0.1"
 
     system('nginx -v')
 

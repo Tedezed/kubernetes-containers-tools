@@ -55,6 +55,7 @@ RUN cd /usr/src/ \
 RUN cd /usr/src/nginx-1.10.3 \
     && curl -O https://bitbucket.org/nginx-goodies/nginx-sticky-module-ng/get/1.2.6.tar.gz \
     && tar -xzf 1.2.6.tar.gz
+#    && git clone https://github.com/Tedezed/nginx_upstream_check_module
 
 RUN mkdir /var/cache/nginx \
     && chown www-data /var/cache/nginx \
@@ -100,6 +101,7 @@ RUN mkdir /var/cache/nginx \
     --with-http_geoip_module \
     --with-http_v2_module \
     --add-module=nginx-goodies-nginx-sticky-module-ng-c78b7dd79d0d
+#    --add-module=nginx_upstream_check_module
 
 RUN cd /usr/src/nginx-1.10.3 \
     && ls \
@@ -143,7 +145,9 @@ ENV NAME_LIBERTY="liberty" \
     NAMESPACE_CERT_GENERATOR="default" \
     SVC_CERT_GENERATOR="kube-lego-nginx" \
     SVC_CERT_GENERATOR_PORT="8080" \
-    NUMBITS=2048
+    NUMBITS=2048 \
+    IP_ERROR="127.0.0.1" \
+    PORT_ERROR="3502"
 
 ADD files/ /files
 RUN mkdir -p /files/liberty-ingress/default-cert/ \

@@ -17,8 +17,8 @@ from time import sleep
 class get_methods:
 
     system('echo "Init get_methods..."')
-
-    def get_ip_from_service(self, name, namespace = "", ip_error = "169.254.1.10"):
+    
+    def get_ip_from_service(self, name, namespace = "", ip_error=environ['IP_ERROR']):
         services = self.v1.list_service_for_all_namespaces(watch=False)
         list_svc = []
         for s in services.items:
@@ -46,7 +46,7 @@ class get_methods:
                 except:
                     return {'not-found': 'true'}
 
-    def get_ip_from_pod(self, svc_labels, namespace, ip_error="169.254.1.10"):
+    def get_ip_from_pod(self, svc_labels, namespace, ip_error=environ['IP_ERROR']):
         pod = self.v1.list_pod_for_all_namespaces(watch=False)
         # Only for pods
         list_ip_pod = []
@@ -68,7 +68,7 @@ class get_methods:
             list_ip_pod.append(ip_error)
         return list_ip_pod
 
-    def get_ip_from_deployment(self, name, namespace, ip_error="169.254.1.10"):
+    def get_ip_from_deployment(self, name, namespace, ip_error=environ['IP_ERROR']):
         replica_set = self.extv1beta1.list_replica_set_for_all_namespaces(watch=False)
         owner_replicaset = None
         for rs in replica_set.items:
@@ -135,7 +135,7 @@ class get_methods:
             dic_cert['tls.key'] = '/files/liberty-ingress/certs/kube-system_liberty-tls/tls.key'
         return dic_cert
 
-    def get_hosts(self, i, ip_error = "169.254.1.10"):
+    def get_hosts(self, i, ip_error=environ['IP_ERROR'], port_error=environ['PORT_ERROR']):
         list_hosts = []
         client_ssl = "False"
         for host in i.spec.rules:
@@ -147,29 +147,32 @@ class get_methods:
                     svc_ip_list = self.get_ip_from_deployment(b.backend.service_name, i.metadata.namespace, ip_error)
                     svc_port = b.backend.service_port
                     for svc_ip in svc_ip_list:
-                        if svc_ip == None:
+                        if svc_ip == None or svc_ip == ip_error:
                             svc_ip = ip_error
+                            svc_port = port_error
                         list_backend.append({'service_ip': svc_ip, 'service_port': svc_port, 'backend-entity': 'deployment'})
             else:
                 type_backend = "all"
                 for b in host.http.paths:
-                    if i.metadata.annotations.get('ingress-liberty/backend-entity', False) == 'pod':
+                    if i.metadata.annotations.get('ingress-liberty/backend-entity', False) == 'service':
+                        svc_ip = self.get_ip_from_service(b.backend.service_name, i.metadata.namespace, ip_error)
+                        svc_port = b.backend.service_port
+                        #system('echo "IP ' + b.backend.service_name + ': ' + str(svc_ip) + '"')
+                        if svc_ip == None or svc_ip == ip_error:
+                            svc_ip = ip_error
+                            svc_port = port_error
+                        list_backend.append({'service_ip': svc_ip, 'service_port': svc_port})
+                    else:
                         #svc_ip = self.get_ip_from_pod(b.backend.service_name, i.metadata.namespace, ip_error)
                         svc_labels = self.get_selector_from_service(b.backend.service_name, i.metadata.namespace)
                         svc_ip_list = self.get_ip_from_pod(svc_labels, i.metadata.namespace, ip_error)
                         svc_port = b.backend.service_port
                         print svc_ip_list
                         for svc_ip in svc_ip_list:
-                            if svc_ip == None:
+                            if svc_ip == None or svc_ip == ip_error:
                                 svc_ip = ip_error
+                                svc_port = port_error
                             list_backend.append({'service_ip': svc_ip, 'service_port': svc_port, 'backend-entity': 'pod'})
-                    else:
-                        svc_ip = self.get_ip_from_service(b.backend.service_name, i.metadata.namespace, ip_error)
-                        svc_port = b.backend.service_port
-                        #system('echo "IP ' + b.backend.service_name + ': ' + str(svc_ip) + '"')
-                        if svc_ip == None:
-                            svc_ip = ip_error
-                        list_backend.append({'service_ip': svc_ip, 'service_port': svc_port})
             if i.metadata.annotations.get('ingress-liberty/ssl-client', False) == "True":
                 client_ssl = "True"
             list_hosts.append(
