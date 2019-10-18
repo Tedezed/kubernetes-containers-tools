@@ -35,7 +35,7 @@
 var lines_en = '<article id="article_loading">\
     <h1>Loading system</h1>\
     <div>\
-        <p>The charging process may take a little.</p>\
+        <p id=msg_loading>The charging process may take a little</p>\
         <div class="loader"></div>\
     </div>\
 </article>'
@@ -43,18 +43,18 @@ var lines_en = '<article id="article_loading">\
 var lines_es = '<article id="article_loading">\
     <h1>Cargando sistema</h1>\
     <div>\
-        <p>El proceso de carga puede tardar un poco.</p>\
+        <p id=msg_loading>El proceso de carga puede tardar un poco</p>\
         <div class="loader"></div>\
     </div>\
 </article>'
 
 var error_loading_en = '<h1>Loading Error</h1>\
-        <div>\
+    <div>\
         <p>If the domain you are trying to access belongs to a test this will start in a few moments otherwise sorry for the   but we&rsquo;re performing some maintenance at the moment.</p>\
     </div>'
 
 var error_loading_es = '<h1>Error al cargar</h1>\
-        <div>\
+    <div>\
         <p>Si al dominio que esta intentando acceder pertenece a un test este arrancara en unos instantes de lo contrario disculpe las molestias, estamos realizando algunas tareas de mantenimiento en este momento.</p>\
     </div>'
 
@@ -70,13 +70,14 @@ if (userLang == "es-ES") {
     function reload_loading(n) {
         jQuery.ajax({
           url: window.location.href,
-          success: function() {  
+          success: function() {
+               console.log(jQuery('meta[content=loading]'));  
                if (jQuery('meta[content=loading]').length==1) {
                   // Call myself
-                  setTimeout(function(){reload_loading()},3000);
+                  setTimeout(function(){reload_loading()},9000);
 
                   // Cont for error
-                  if (window.n==400) {
+                  if (window.n==222) {
                     // No error Loading
                     //setTimeout(function(){window.location.reload()},1000);
 
@@ -89,12 +90,12 @@ if (userLang == "es-ES") {
                         art1.innerHTML = error_loading_en;
                     }
                     document.body.append(art1);
-                  } else {
-                    // Reload
-                    setTimeout(function(){window.location.reload()}7000);
                   }
                   window.n++;
-               }
+              } else {
+                  // Reload
+                  setTimeout(function(){window.location.reload()},5000);
+              }
             },
             error: function(XMLHttpRequest, textStatus, errorThrown) {
                 // Reload

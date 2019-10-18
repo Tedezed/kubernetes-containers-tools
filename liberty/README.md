@@ -16,7 +16,7 @@ Annotation `ingress-liberty/backend-entity: service`
 -----------------       ----------------       -------
 ```
 
-**Pod**: IP backend from Pod, ignore service IP.
+**Pod** (default): IP backend from Pod, ignore service IP.
 Annotation `ingress-liberty/backend-entity: pod` for session affinity.
 ```
 -----------------       ------------
