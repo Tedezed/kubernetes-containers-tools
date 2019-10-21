@@ -70,6 +70,7 @@ if (userLang == "es-ES") {
     function reload_loading(n) {
         jQuery.ajax({
           url: window.location.href,
+          cache: false,
           success: function() {
                console.log(jQuery('meta[content=loading]'));  
                if (jQuery('meta[content=loading]').length==1) {
@@ -94,12 +95,14 @@ if (userLang == "es-ES") {
                   window.n++;
               } else {
                   // Reload
-                  setTimeout(function(){window.location.reload()},5000);
+                  console.log("Else content=loading is 0"); 
+                  setTimeout(function(){window.location.reload()},9000);
               }
             },
             error: function(XMLHttpRequest, textStatus, errorThrown) {
                 // Reload
-                setTimeout(function(){window.location.reload()},1000);
+                console.log("Error reload..."); 
+                setTimeout(function(){window.location.reload()},9000);
           }
         })
     }
