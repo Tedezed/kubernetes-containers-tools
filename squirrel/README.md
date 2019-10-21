@@ -6,9 +6,8 @@ Kubernetes secrets and apps passwords rotation, storage the application credenti
 
 # Install Squirrel
 
-Kubernetes server: `kubectl create -f https://raw.githubusercontent.com/Tedezed/kubernetes-containers-tools/master/squirrel/install.yaml`
-
-Local client: [Squirrel kubectl-plugin](https://github.com/Tedezed/kubernetes-containers-tools/tree/master/squirrel/kubectl-plugin)
+- Kubernetes server: `kubectl create -f https://raw.githubusercontent.com/Tedezed/kubernetes-containers-tools/master/squirrel/install.yaml`
+- Local client: [Squirrel kubectl-plugin](https://github.com/Tedezed/kubernetes-containers-tools/tree/master/squirrel/kubectl-plugin)
 
 ## Create custom modules for your application
 
