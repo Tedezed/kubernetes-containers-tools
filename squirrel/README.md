@@ -15,6 +15,11 @@ kubectl create -f https://raw.githubusercontent.com/Tedezed/kubernetes-container
 - [Example module](https://github.com/Tedezed/kubernetes-containers-tools/tree/master/squirrel/docker/squirrel/nuts_manager/modules/origin-example-module)
 
 
+## Client plugin
+
+- [Squirrel kubectl-plugin](https://github.com/Tedezed/kubernetes-containers-tools/tree/master/squirrel/kubectl-plugin)
+
+
 ## Create Nutcrackers
 
 Example Admin:
