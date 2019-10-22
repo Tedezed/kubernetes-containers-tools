@@ -98,8 +98,8 @@ class elk_brainslug():
             start_stop=True
             if ((start_mode and int(d.spec.replicas) == 0) or not start_mode):
                 if d.metadata.annotations:
-                    if d.metadata.annotations.get('ingress-liberty/start-stop', False) == "false" \
-                      or d.metadata.annotations.get('ingress-liberty/last-start-stop', today.strftime('%Y.%m.%d')) == today.strftime('%Y.%m.%d'):
+                    if d.metadata.annotations.get('ingress-liberty/start-stop', "true") == "false" \
+                      or d.metadata.annotations.get('ingress-liberty/last-start-stop', "1983.06.22") == today.strftime('%Y.%m.%d'):
                         start_stop=False
                 if start_stop:
                     system('echo "[INFO] Scale to %s deploy: %s"' % (replicas, d.metadata.name))
@@ -114,8 +114,9 @@ class elk_brainslug():
             start_stop=True
             if ((start_mode and int(r.spec.replicas) == 0) or not start_mode):
                 if r.metadata.annotations:
-                    if r.metadata.annotations.get('ingress-liberty/start-stop', False) == "false" \
-                      or r.metadata.annotations.get('ingress-liberty/last-start-stop', today.strftime('%Y.%m.%d')) == today.strftime('%Y.%m.%d'):
+                    # Ford Orion date: 1983.06.22
+                    if r.metadata.annotations.get('ingress-liberty/start-stop', "true") == "false" \
+                      or r.metadata.annotations.get('ingress-liberty/last-start-stop', "1983.06.22") == str(today.strftime('%Y.%m.%d')):
                         start_stop=False
                 if start_stop:
                     system('echo "[INFO] Scale to %s rc: %s"' % (replicas, r.metadata.name))
