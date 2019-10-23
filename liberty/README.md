@@ -10,24 +10,11 @@ All backend use sticky session Nginx.
 
 **Service**: IP backend from service.
 Annotation `ingress-liberty/backend-entity: service`
-```
------------------       ----------------       -------
-| Liberty/Nginx | ----> | Service (IP) | ----> | Pod |
------------------       ----------------       -------
-```
+<img src="https://raw.githubusercontent.com/Tedezed/kubernetes-containers-tools/master/tools/images/liberty-services-balancing.png">
 
 **Pod** (default): IP backend from Pod, ignore service IP.
 Annotation `ingress-liberty/backend-entity: pod` for session affinity.
-```
------------------       ------------
-| Liberty/Nginx | ----> | Pod (IP) |
------------------   |   ------------
-                    |
-                    |   ------------
-                    |-> | Pod (IP) |
-                        ------------
-```
-
+<img src="https://raw.githubusercontent.com/Tedezed/kubernetes-containers-tools/master/tools/images/liberty-pods-balancing.png">
 
 ## Start/Stop namespace like Heroku using ingress
 
@@ -39,25 +26,8 @@ Annotation `ingress-liberty/backend-entity: pod` for session affinity.
 Operation Diagram
 <img src="https://raw.githubusercontent.com/Tedezed/kubernetes-containers-tools/master/tools/images/liberty_start-stop.png">
 
-
 Env variables Liberty:
 - ELK="false"
-
-```
-  -----------------
-  |  Pod Liberty  |
-  |               |
-  | ------------- |
-  | | Container | |
-  | |  Liberty  | |
-  | ------------- |
-  | ------------- |
-  | | Container | |                                     -------------------
-  | | Filebeat  | --> POST Ingest logs ---------------> |   ELK Stack     |
-  | ------------- |    /var/log/nginx/access.log        | - Logstash      |
-  -----------------    /var/log/nginx/custom_error.log  | - ElasticSearch |
-                                                        -------------------
-```
 
 #### Deploy ELK Liberty mode start
 
@@ -70,16 +40,6 @@ Env variables:
 
 Functioning:
 - If the ingress was visited but returned an error 502 (usually because it is stopped) it tries to start
-```
-  -----------------
-  |  Pod Liberty  |
-  |               |
-  | ------------- |
-  | | Container | <---- GET today logs <--- [ ELK Stack ]
-  | |  Liberty  | |      query : {"ingress" : "host_domain_X"}
-  | ------------- |              {"source": "/var/log/nginx/custom_error.log"}
-  |---------------|
-```
 
 #### Cronjob [ 00 00 * * * ] ELK Liberty mode stop
 
@@ -91,17 +51,6 @@ Env variables:
 
 Functioning:
 - If the ingress was not visited yesterday it stops
-```
-  -----------------
-  |  Pod Liberty  |     - Started once a day
-  |               |
-  | ------------- |
-  | | Container | <---- GET yesterday logs <--- [ ELK Stack ]
-  | |  Liberty  | |      query : {"ingress" : "host_domain_X"}
-  | ------------- |              {"source": "/var/log/nginx/access.log"}
-  |---------------|
-```
-
 
 ## Kube-Lego
 
