@@ -10,10 +10,12 @@ All backend use sticky session Nginx.
 
 **Service**: IP backend from service.
 Annotation `ingress-liberty/backend-entity: service`
+
 <img src="https://raw.githubusercontent.com/Tedezed/kubernetes-containers-tools/master/tools/images/liberty-services-balancing.png">
 
 **Pod** (default): IP backend from Pod, ignore service IP.
 Annotation `ingress-liberty/backend-entity: pod` for session affinity.
+
 <img src="https://raw.githubusercontent.com/Tedezed/kubernetes-containers-tools/master/tools/images/liberty-pods-balancing.png">
 
 ## Start/Stop namespace like Heroku using ingress
@@ -24,6 +26,7 @@ Annotation `ingress-liberty/backend-entity: pod` for session affinity.
 #### Deploy Ingress Liberty and filebeat
 
 Operation Diagram
+
 <img src="https://raw.githubusercontent.com/Tedezed/kubernetes-containers-tools/master/tools/images/liberty_start-stop.png">
 
 Env variables Liberty:
