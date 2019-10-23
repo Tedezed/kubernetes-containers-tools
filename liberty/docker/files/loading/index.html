@@ -43,13 +43,13 @@ var dict_en = {
 </article>',
   "error_loading": '<h1>Loading Error</h1>\
     <div>\
-        <p>The process takes too long but the system may be loading and is available in a few moments otherwise you can contact the support service. Sorry for the inconvenience.</p>\
+        <p>&#10006; The process takes too long but the system may be loading and is available in a few moments otherwise you can contact the support service. Sorry for the inconvenience.</p>\
         <input type="button"  onclick="window.location.reload()" value="Reload">\
     </div>',
   "check_server": "Check state of server...",
   "check_server_not": "The server is loading, please be patient.",
   "time_average": "The charging process may take a little, please be patient.",
-  "ok_server": "The server is ready, reloading...",
+  "ok_server": "&#10004; The server is ready, reloading...",
 }
 
 var dict_es = {
@@ -62,13 +62,13 @@ var dict_es = {
 </article>',
   "error_loading": '<h1>Error al cargar</h1>\
     <div>\
-        <p>El proceso tardo demasiado pero puede que el sistema se encuentre cargando y este disponible en unos instantes de lo contrario puede ponerse en contacto con el servcicio de soporte. Disculpe las molestias.</p>\
+        <p>&#10006; El proceso tardo demasiado pero puede que el sistema se encuentre cargando y este disponible en unos instantes de lo contrario puede ponerse en contacto con el servcicio de soporte. Disculpe las molestias.</p>\
         <input type="button"  onclick="window.location.reload()" value="Recargar">\
     </div>',
   "check_server": "Verificando estado del servidor...",
   "check_server_not": "El servidor se encuentra cargando, sea paciente por favor.",
   "time_average": "El proceso de carga puede tardar un poco, sea paciente por favor.",
-  "ok_server": "El servidor se encuentra listo, recargando...",
+  "ok_server": "&#10004; El servidor se encuentra listo, recargando...",
 }
 
 var userLang = navigator.language || navigator.userLanguage;
@@ -126,6 +126,7 @@ if (userLang == "es-ES") {
                   // Reload
                   console.log("Else content=loading is 0"); 
                   replace_with_id_lang("ok_server", "msg_loading", "p");
+                  document.getElementsByClassName("loader")[0].style.animation = "spin 0.5s linear infinite";
                   setTimeout(function(){window.location.reload()},sleep_time * 1000);
               }
             },
@@ -133,6 +134,7 @@ if (userLang == "es-ES") {
                 // Reload
                 console.log("Error reload...");
                 replace_with_id_lang("ok_server", "msg_loading", "p");
+                document.getElementsByClassName("loader")[0].style.animation = "spin 0.5s linear infinite";
                 setTimeout(function(){window.location.reload()},sleep_time * 1000);
           }
         })

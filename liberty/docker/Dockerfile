@@ -129,6 +129,8 @@ RUN pip install kubernetes deepdiff elasticsearch \
     && rm -rf /var/lib/apt/lists/*
 
 ENV NAME_LIBERTY="liberty" \
+    DEFAULT_CERT="false" \
+    DEFAULT_CERT_NAMESPACE="false" \
     TIMEOUT="60m" \
     MODE="production" \
     ELK="false" \
