@@ -5,6 +5,8 @@
 - Problem with GCP (Port 25 is always blocked and cannot be used): https://cloud.google.com/compute/docs/tutorials/sending-mail/
 - Based on: https://github.com/bcoe/secure-smtpd
 
+###### Process of sending mail and internal verification of permissions
+
 <img src="https://raw.githubusercontent.com/Tedezed/kubernetes-containers-tools/master/docs/img/secure_email_working.png">
 
 ## Example usage
