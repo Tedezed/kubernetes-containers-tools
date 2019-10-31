@@ -5,46 +5,7 @@
 - Problem with GCP (Port 25 is always blocked and cannot be used): https://cloud.google.com/compute/docs/tutorials/sending-mail/
 - Based on: https://github.com/bcoe/secure-smtpd
 
-```
- ---------------------------------                         --------------------
-|  SendGrid, Mailgun and Mailjet  | -------Port: 25-----> | Destination Server |
- ---------------------------------                         --------------------
-          ^
-          | Port: 2525
-          |
-          |
-  ----------------- 
- | Cloud  Firewall | (Blocked egress port 25)
-  ----------------- 
-          ^
-          | Port: 2525
-          |
-          |
-          |
----------POD----------
-|                    |
-|  ---------------   |
-| |  Relay email  |  | // tcpdump -i eth0 'port 25'
-|  ---------------   |
-|       ^            |
-|       | Port: 25   |
-|  ----------------  |                            --------------
-| |  Secure email  | | <---- Port: 5432 -------> |  PostgreSQL  |
-|  ----------------  |                            --------------
-|                    |
----------------------
-          ^
-          | Port: 9000
-          |
-   ---------------
-  |  Client SMTP  |  
-   ---------------
-
-```
-
-##### Database design
-
-<img src="https://raw.githubusercontent.com/Tedezed/kubernetes-containers-tools/master/docs/img/secure_emailing.png">
+<img src="https://raw.githubusercontent.com/Tedezed/kubernetes-containers-tools/master/docs/img/secure_email_working.png">
 
 ## Example usage
 
@@ -143,3 +104,7 @@ Can not send email with address user@demo.com and user test1:
 ```
 python smtp_proxy_v2/test.py senmail localhost 9000 test1 passtest1 user@demo.com 'TEST-MAIL' 'DESTINATION_EMAIL@gmail.com' 'Hi! test-mail'
 ```
+
+## Database design
+
+<img src="https://raw.githubusercontent.com/Tedezed/kubernetes-containers-tools/master/docs/img/secure_emailing.png">
