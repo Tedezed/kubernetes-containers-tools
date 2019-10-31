@@ -42,6 +42,10 @@
 
 ```
 
+##### Database design
+
+<img src="https://raw.githubusercontent.com/Tedezed/kubernetes-containers-tools/master/docs/img/secure_emailing.png">
+
 ## Example usage
 
 Create user test1:
