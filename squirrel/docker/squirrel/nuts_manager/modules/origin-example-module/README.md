@@ -16,6 +16,7 @@ from . import main
 "version": "0.1",
 "frontend": "wordpress",
 "backend": "mysql",
+"check_app": True,
 "update_app_password": True,
 "update_secret": True,
 "executable": False,
@@ -39,7 +40,7 @@ class squirrel_module():
         self.debug_mode = squirrel.debug_mode
         test = "OK WP Example module"
         print(test)
-        
+
     def check_app(self):
         print("check app")
         # if is OK
