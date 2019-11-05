@@ -45,6 +45,7 @@ class squirrel_module():
             print("(postgres_execution)[INFO] %s successfully" % cursor.rowcount)
         except (Exception, psycopg2.Error) as error:
             print("(postgres_execution)[ERROR] while connecting to PostgreSQL: ", error)
+            return False
         finally:
             if 'connection' in locals():
                 if(connection):
@@ -52,6 +53,16 @@ class squirrel_module():
                     connection.close()
                     print("(postgres_execution)[INFO] PostgreSQL connection is closed")
             return dic_query
+
+    def check_app(self):
+        print("(odoo_postgresv2)[INFO](init) Check Postgres...")
+        port = self.secret_annotations.get("custom_database_port", "5432")
+        query = ["SELECT datname FROM pg_catalog.pg_database;"]
+        if self.postgres_execution(self.squirrel_user, self.squirrel_pass,
+                self.host, port, "postgres", query):
+            return True
+        else:
+            return False
 
     def update_app(self):
         system_databases = ["postgres", "template1", "template0"]

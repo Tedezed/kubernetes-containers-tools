@@ -13,6 +13,11 @@ class squirrel_module():
         test = "OK WP Example module"
         print(test)
 
+    def check_app(self):
+        print("check app")
+        # if is OK
+        return True
+
     def update_app(self):
         print("update app")
         # if is OK

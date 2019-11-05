@@ -41,6 +41,7 @@ class squirrel_module():
             print("(mysql_execution)[INFO] %s successfully" % cursor.rowcount)
         except (Exception, pymysql.Error) as error:
             print("(mysql_execution)[ERROR] while connecting to MySQL: ", error)
+            return False
         finally:
             if 'connection' in locals():
                 if(connection):
@@ -48,6 +49,11 @@ class squirrel_module():
                     connection.close()
                     print("(mysql_execution)[INFO] MySQL connection is closed")
             return dic_query
+
+    def check_app(self):
+        print("check app")
+        # if is OK
+        return True
 
     def update_app(self):
         print("update app")

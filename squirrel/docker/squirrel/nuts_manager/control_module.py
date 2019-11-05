@@ -68,7 +68,9 @@ class app_update_pass():
         return importmod.main.squirrel_module(self)
 
     def conditional_app(self):
+        result = {}
         for mod in self.modules:
+            result_module = {}
             # Load Manifest
             manifestmod = self.load_manifest(mod)
             if manifestmod:
@@ -79,13 +81,21 @@ class app_update_pass():
                         print("[INFO] Execute module '%s' for " % (manifestmod["name"]))
                         # Load Module
                         sm = self.load_module(mod)
+                        result_update_app = None
+                        result_update_secret = None
+                        result_check = None
                         if sm:
                             if self.squirrel_mode == "update_app_password" \
                               and manifestmod["update_app_password"]:
-                                sm.update_app()
+                                result_module["update_app_password"] = sm.update_app()
                             if self.squirrel_mode == "update_secret" \
                               and manifestmod["update_secret"]:
-                                sm.update_secret()
+                                result_module["update_secret"] = sm.update_secret()
+                            if self.squirrel_mode == "check_app" \
+                              and manifestmod["check_app"]:
+                                result_module["check_app"] = sm.check_app()
+                            result["%s/%s" % (self.squirrel_type_frontend, self.squirrel_type_backend)] = result_module
                         else:
                             print("[ERROR] Impossible to load the module: %s" % manifestmod["name"])
             manifestmod = False
+        return result

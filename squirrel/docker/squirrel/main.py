@@ -96,7 +96,7 @@ def main():
 
         if squirrel.dic_argv.get("mode", False) == "cronjob" \
           or squirrel.dic_argv.get("mode", False) == "rotation-apps":
-            print("[INFO] Exec rotation credentils for apps")
+            print("[INFO] Exec rotation credentials for apps")
             nm.rotation()
         if squirrel.dic_argv.get("mode", False) == "cronjob" \
           or squirrel.dic_argv.get("mode", False) == "rotation-secrets":
