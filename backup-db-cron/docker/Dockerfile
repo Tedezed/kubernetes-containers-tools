@@ -105,7 +105,9 @@ ENV MODE="1" \
     PROJECT="project-name-test" \
     ZONE="europe-west1-b" \
     EMAIL_MODE="OFF" \
-    PYTHONIOENCODING="UTF-8"
+    PYTHONIOENCODING="UTF-8" \
+    GCLOUD_DEFAULT_CREDENTIALS="True" \
+    GCLOUD_SA_FILE="/secrets/sa/sa-gcloud.json"
 
 ## ----- END ----- ##
 

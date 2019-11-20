@@ -241,3 +241,27 @@ Add label `backup`:
 gcloud compute disks update disk-1 --update-labels backup=true
 gcloud compute disks update disk-2 --update-labels backup=true
 ```
+
+#### GCLOUD CUSTOM SA 
+
+Variables:
+```
+GCLOUD_DEFAULT_CREDENTIALS="False"
+GCLOUD_SA_FILE="/sa-gcloud.json"
+```
+
+Create secret:
+```
+kubectl create secret generic backup-sa --from-file=sa-gcloud.json=xxxxxxxxxx.json -n kube-system
+```
+
+Edit your deploy:
+```
+  volumeMounts:
+  - name: backup-sa
+    mountPath: /secrets/sa/
+volumes:
+- name: backup-sa
+  secret:
+    secretName: backup-sa
+```
