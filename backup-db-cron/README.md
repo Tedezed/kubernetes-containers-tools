@@ -247,7 +247,7 @@ gcloud compute disks update disk-2 --update-labels backup=true
 Variables:
 ```
 GCLOUD_DEFAULT_CREDENTIALS="False"
-GCLOUD_SA_FILE="/sa-gcloud.json"
+GCLOUD_SA_FILE="/secrets/sa/sa-gcloud.json"
 ```
 
 Create secret:
