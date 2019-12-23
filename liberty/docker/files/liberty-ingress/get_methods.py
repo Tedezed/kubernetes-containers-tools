@@ -137,6 +137,15 @@ class get_methods:
             dic_cert['tls.key'] = '/files/liberty-ingress/certs/kube-system_liberty-tls/tls.key'
         return dic_cert
 
+    def proc_path(self, b):
+        if b.path == "/":
+            backend_path = ""
+        else:
+            backend_path = b.path
+        if backend_path is None:
+            backend_path = ""
+        return backend_path
+
     def get_hosts(self, i, pods, services, replica_sets, ip_error=environ['IP_ERROR'], port_error=environ['PORT_ERROR']):
         list_hosts = []
         client_ssl = "False"
@@ -148,32 +157,38 @@ class get_methods:
                 for b in host.http.paths:
                     svc_ip_list = self.get_ip_from_deployment(b.backend.service_name, i.metadata.namespace, pods, replica_sets, ip_error)
                     svc_port = b.backend.service_port
+                    backend_path = self.proc_path(b)
                     for svc_ip in svc_ip_list:
                         if svc_ip == None or svc_ip == ip_error:
                             svc_ip = ip_error
                             svc_port = port_error
-                        list_backend.append({'service_ip': svc_ip, 'service_port': svc_port, 'backend-entity': 'deployment'})
+                        list_backend.append({'service_ip': svc_ip, 'service_port': svc_port, 'backend-entity': 'deployment', 
+                            'backend_name': backend_path.replace("/", ""), 'backend_path': backend_path})
             else:
                 type_backend = "all"
                 for b in host.http.paths:
                     if i.metadata.annotations.get('ingress-liberty/backend-entity', False) == 'service':
                         svc_ip = self.get_ip_from_service(b.backend.service_name, services, i.metadata.namespace, ip_error)
                         svc_port = b.backend.service_port
+                        backend_path = self.proc_path(b)
                         #system('echo "IP ' + b.backend.service_name + ': ' + str(svc_ip) + '"')
                         if svc_ip == None or svc_ip == ip_error:
                             svc_ip = ip_error
                             svc_port = port_error
-                        list_backend.append({'service_ip': svc_ip, 'service_port': svc_port})
+                        list_backend.append({'service_ip': svc_ip, 'service_port': svc_port, 
+                            'backend_name': backend_path.replace("/", ""), 'backend_path': backend_path})
                     else:
                         #svc_ip = self.get_ip_from_pod(b.backend.service_name, i.metadata.namespace, pods, ip_error)
                         svc_labels = self.get_selector_from_service(b.backend.service_name, services, i.metadata.namespace)
                         svc_ip_list = self.get_ip_from_pod(svc_labels, i.metadata.namespace, pods, ip_error)
                         svc_port = b.backend.service_port
+                        backend_path = self.proc_path(b)
                         for svc_ip in svc_ip_list:
                             if svc_ip == None or svc_ip == ip_error:
                                 svc_ip = ip_error
                                 svc_port = port_error
-                            list_backend.append({'service_ip': svc_ip, 'service_port': svc_port, 'backend-entity': 'pod'})
+                            list_backend.append({'service_ip': svc_ip, 'service_port': svc_port, 'backend-entity': 'pod', 
+                                'backend_name': backend_path.replace("/", ""), 'backend_path': backend_path})
             if i.metadata.annotations.get('ingress-liberty/ssl-client', False) == "True":
                 client_ssl = "True"
             list_hosts.append(

@@ -92,7 +92,7 @@ server {
         add_header 'Referrer-Policy' 'strict-origin';
         add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;
 
-        location /{
+        location / {
           proxy_set_header   Host $host;
           proxy_set_header X-Real-IP $remote_addr;
           proxy_pass http://{{ host['name_upstream'] }};
@@ -150,18 +150,20 @@ server {
       }
 
     # Backends modes #
-
+    
     {% if '1'==ing['backend'] %}
 
       location ~* (^/.*(css|woff|otf|js|jpg|jpeg|gif|png|ico|cur|gz|svg|svgz|mp3|mp4|ogg|ogv)$|^/web/image.*) {
           proxy_pass http://{{ host['name_upstream'] }};
       }
 
+      
       location / {
           proxy_redirect     off;
           proxy_set_header   Host $host;
           proxy_set_header X-Real-IP $remote_addr;
           proxy_pass http://{{ host['name_upstream'] }};
+          #proxy_pass http://{{ host['name_upstream'] }};
       }
 
       location /longpolling/poll {
@@ -213,7 +215,7 @@ server {
     {% elif '2'==ing['backend'] %}
     # Simple backend https
 
-      location /{
+      location / {
           proxy_pass https://{{ host['name_upstream'] }};
         }
 
@@ -224,7 +226,7 @@ server {
     add_header Content-Security-Policy "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://ssl.google-analytics.com https://assets.zendesk.com https://connect.facebook.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://assets.zendesk.com; font-src 'self' https://themes.googleusercontent.com; frame-src https://assets.zendesk.com https://www.facebook.com https://s-static.ak.facebook.com https://tautt.zendesk.com; object-src 'none'";
 
 
-      location /{
+      location / {
         proxy_pass https://{{ host['name_upstream'] }};
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
@@ -238,7 +240,7 @@ server {
     #add_header Content-Security-Policy "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://ssl.google-analytics.com https://assets.zendesk.com https://connect.facebook.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://assets.zendesk.com; font-src 'self' https://themes.googleusercontent.com; frame-src https://assets.zendesk.com https://www.facebook.com https://s-static.ak.facebook.com https://tautt.zendesk.com; object-src 'none'";
 
 
-      location /{
+      location / {
         proxy_pass https://{{ host['name_upstream'] }};
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
@@ -250,7 +252,7 @@ server {
 
     add_header 'Referrer-Policy' 'origin-when-cross-origin';
 
-      location /{
+      location / {
         proxy_pass https://{{ host['name_upstream'] }};
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
@@ -260,7 +262,7 @@ server {
 
     {% else %}
     # All
-      location /{
+      location / {
         proxy_pass https://{{ host['name_upstream'] }};
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
