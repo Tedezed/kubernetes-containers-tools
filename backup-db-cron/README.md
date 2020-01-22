@@ -244,6 +244,17 @@ gcloud compute disks update disk-2 --update-labels backup=true
 
 #### GCLOUD CUSTOM SA 
 
+Custom role:
+```
+compute.disks.createSnapshot
+compute.disks.get
+compute.disks.list
+compute.snapshots.create
+compute.snapshots.delete
+compute.snapshots.get
+compute.snapshots.list
+```
+
 Variables:
 ```
 GCLOUD_DEFAULT_CREDENTIALS="False"
