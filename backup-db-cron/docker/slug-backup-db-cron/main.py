@@ -295,7 +295,7 @@ class kube_init:
                 error = '[Error] Not valid database type found'
                 print error
                 logging.error(error)
-                raise ValueError(error)
+                #raise ValueError(error)
                 self.send_mail("[ERROR SLUG-BACKUP] %s %s" % (db["name_svc"], host), error)
 
         except Exception as e:
@@ -397,6 +397,7 @@ class kube_init:
             for db1 in list_db1:
                 found_in_list_db2 = False
                 for db2 in list_db2:
+                    #print("%s %s %s %s" % (db1["name_svc"], db2["name_svc"], db2["namespace"], db2["namespace"]))
                     if db1["name_svc"] == db2["name_svc"] and db2["namespace"] == db2["namespace"]:
                         found_in_list_db2 = True
                 if found_in_list_db2:
@@ -407,11 +408,42 @@ class kube_init:
         else:
             return list_db2
 
+    def fusion_list_dbs_v2(self, list_db1, list_db2):
+        list_end = []
+        if list_db1:
+
+            # Add only equal and list1
+            for db1 in list_db1:
+                found_db1 = False
+                for db2 in list_db2:
+                    if db1["name_svc"] == db2["name_svc"] and db2["namespace"] == db2["namespace"]:
+                        list_end.append(db1)
+                        found_db1 = True
+                if not found_db1:
+                    list_end.append(db1)
+
+            # Add only in list2
+            for db2 in list_db2:
+                found_db2 = False
+                for db1 in list_db1:
+                    if db1["name_svc"] == db2["name_svc"] and db2["namespace"] == db2["namespace"]:
+                        found_db2 = True
+                if not found_db2:
+                    list_end.append(db2)
+
+            print "[INFO] (fusion_list_dbs_v2) Use list 1 and 2"
+            print list_end
+            return list_end
+        else:
+            print "[INFO] (fusion_list_dbs_v2) Only use list 2"
+            print list_db2
+            return list_db2
+
     def start_kube_backup(self):
         list_db_secrets = self.sqin.get_secrets()
         now_datetime = datetime.now()
         list_db_configmap = self.get_configmap(self.name_configmap_backup, self.dic_argv["conf_mode"])
-        list_db = self.fusion_list_dbs(list_db_configmap, list_db_secrets)
+        list_db = self.fusion_list_dbs_v2(list_db_configmap, list_db_secrets)
         for db in list_db:
             #print db
             self.bakup_sql(db, now_datetime)
@@ -487,10 +519,20 @@ def main():
             kluster.start_kube_backup()
     elif dic_argv.get("mode", False) == "snapshot":
         if kluster.check(kluster.name_configmap_snapshot, dic_argv["conf_mode"]):
-            kluster.snapshot()
-
+            try:
+                kluster.snapshot()
+            except Exception as error:
+                print "[ERROR] snapshot_label %s" % str(error)
+                logging.error(error)
+                kluster.send_mail("[ERROR SLUG-BACKUP] Mode %s" % ("snapshot"), str(error).replace("<","").replace(">",""))
+            
     elif dic_argv.get("mode", False) == "snapshot_label":
-        kluster.snapshot_filter_label()
+        try:
+            kluster.snapshot_filter_label()
+        except Exception as error:
+            print "[ERROR] snapshot_label %s" % str(error)
+            logging.error(error)
+            kluster.send_mail("[ERROR SLUG-BACKUP] Mode %s" % ("snapshot_label"), str(error).replace("<","").replace(">",""))
 
     else:
         print "[ERROR] Mode not found"
