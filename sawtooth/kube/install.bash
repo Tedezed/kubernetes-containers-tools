@@ -2,7 +2,7 @@ kubectl create namespace sawtooth
 
 for i in $(seq 0 1 3); do 
 
-gcloud compute disks create sawtooth-$i --size=5GB --zone=europe-west1-b
+gcloud compute disks create sawtooth-$i --size=10GB --zone=europe-west1-b
 cat <<EOF | kubectl apply -f -
 apiVersion: v1
 
@@ -19,7 +19,7 @@ items:
     accessModes:
     - ReadWriteMany
     capacity:
-      storage: 5Gi
+      storage: 10Gi
     gcePersistentDisk:
       fsType: ext4
       pdName: sawtooth-$i
@@ -38,7 +38,7 @@ items:
     - ReadWriteMany 
     resources:
        requests:
-         storage: 5Gi
+         storage: 10Gi
 
 - apiVersion: extensions/v1beta1
   kind: Deployment
@@ -58,9 +58,12 @@ items:
             image: hyperledger/sawtooth-devmode-engine-rust:1.1
             command:
               - bash
+            env:
+            - name: RUST_BACKTRACE
+              value: "1"
             args:
               - -c
-              - "devmode-engine-rust -C tcp://\$HOSTNAME:5050"
+              - "devmode-engine-rust -vv -C tcp://\$HOSTNAME:5050"
 
           - name: sawtooth-settings-tp
             image: hyperledger/sawtooth-settings-tp:1.1
@@ -155,7 +158,7 @@ items:
               - bash
             args:
               - -c
-              - "sawtooth-rest-api -C tcp://\$HOSTNAME:4004"
+              - "sawtooth-rest-api -vv -B 0.0.0.0:8008 -C tcp://\$HOSTNAME:4004"
 
           - name: sawtooth-shell
             image: hyperledger/sawtooth-shell:1.1

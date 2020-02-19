@@ -348,6 +348,8 @@ class kube_init:
                         self.send_mail("[ERROR SLUG-BACKUP] %s" % str(r[0]), ruta_backup)
 
                     self.drop_dir_datetime(now_datetime, ruta_backup)
+        else:
+            print "[INFO] key service False"
 
     def drop_dir_datetime(self, now_datetime, ruta_backup):
         drop_datetime = now_datetime - timedelta(days=int(self.dic_argv["subtract_days"]))
@@ -442,7 +444,11 @@ class kube_init:
     def start_kube_backup(self):
         list_db_secrets = self.sqin.get_secrets()
         now_datetime = datetime.now()
-        list_db_configmap = self.get_configmap(self.name_configmap_backup, self.dic_argv["conf_mode"])
+        try:
+            list_db_configmap = self.get_configmap(self.name_configmap_backup, self.dic_argv["conf_mode"])
+        except Exception as e:
+            print "[ERROR] %s" % e
+            list_db_configmap = []
         list_db = self.fusion_list_dbs_v2(list_db_configmap, list_db_secrets)
         for db in list_db:
             #print db
