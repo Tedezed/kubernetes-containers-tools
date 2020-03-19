@@ -123,7 +123,7 @@ class get_methods:
         dic_cert = {}
         system('echo "[INFO](dic_get_secret_namespaced) %s %s"' % (ing_name_secret, ing_namespace_secret))
         if ing_name_secret != environ['DEFAULT_CERT'] \
-          and ing_namespace_secret != environ['DEFAULT_CERT_NAMESPACE']:
+          or ing_namespace_secret != environ['DEFAULT_CERT_NAMESPACE']:
             #secrets = self.v1.list_namespaced_secret(ing_namespace_secret, watch=False)
             for s in secrets.items:
                 if s.metadata.namespace == ing_namespace_secret and s.metadata.name == ing_name_secret:

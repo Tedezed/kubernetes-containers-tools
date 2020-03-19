@@ -109,12 +109,15 @@ items:
               - -c
               - "mkdir -p /etc/sawtooth/keys && \
               if [ ! -e /etc/sawtooth/keys/validator.priv ]; then \
+                  echo '[INFO] Create validator key'; \
                   sawadm keygen; \
               fi && \
               if [ ! -e /root/.sawtooth/keys/key.priv ]; then \
+                  echo '[INFO] Create key'; \
                   sawtooth keygen key; \
               fi && \
               if [ ! -e /etc/sawtooth/config-genesis.batch ]; then \
+                echo '[INFO] Create config-genesis.batch'; \
                 sawset genesis -k /root/.sawtooth/keys/key.priv -o /etc/sawtooth/config-genesis.batch; \
               fi && \  
               if [ ! -e /etc/sawtooth/config.batch ]; then \
@@ -129,6 +132,7 @@ items:
                   echo '[INFO] Create genesis.batch'; \
                   sawadm genesis /etc/sawtooth/config-genesis.batch /etc/sawtooth/config.batch; \
               fi \
+              && echo '[INFO] Init sawtooth-validator' \
               && sawtooth-validator -vv \
                   --endpoint tcp://\$SAWTOOTH_0_SERVICE_HOST:8800 \
                   --bind component:tcp://eth0:4004 \
