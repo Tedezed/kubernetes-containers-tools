@@ -5,6 +5,11 @@
 - https://wiki.debian.org/DebianRepository/SetupWithReprepro
 - https://www.howtoforge.com/setting-up-an-apt-repository-with-reprepro-and-nginx-on-debian-wheezy
 
+### Install
+```
+kubectl create -f https://github.com/Tedezed/kubernetes-containers-tools/blob/master/apt-repository/kube/main.yaml
+```
+
 ### Clone packages
 
 One by one
