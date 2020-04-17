@@ -12,7 +12,7 @@ kubectl create -f https://github.com/Tedezed/kubernetes-containers-tools/blob/ma
 
 ### Clone and add new packages
 
-Clone One by one
+Clone one by one
 ```
 curl -SL http://ftp.us.debian.org/debian/pool/main/p/python3.7/python3.7_3.7.3-2+deb10u1_amd64.deb -o /usr/src/pagespeed/python3.7_3.7.3-2+deb10u1_amd64.deb
 ```
