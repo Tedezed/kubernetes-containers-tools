@@ -19,8 +19,8 @@ reprepro includedeb testing /usr/src/pagespeed/*.deb
 Custom for:
 ```
 URL="http://ftp.us.debian.org/debian/pool/main/p/python3.7/"
-for deb in $(curl $URL | grep -o 'href=".*.deb"'| cut -d '"' -f2 ); do
-	curl "$URL$deb -o /usr/src/pagespeed/$deb"
+for deb in $(curl $URL | grep -o 'href=".*.deb"' | grep "amd64" | cut -d '"' -f2 ); do
+	curl -SL $URL$deb -o /usr/src/pagespeed/$deb
 done
 ```
 
