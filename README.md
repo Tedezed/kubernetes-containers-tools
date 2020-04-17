@@ -13,3 +13,4 @@ Containers of the project:
 * [slug-phpbb](https://github.com/Tedezed/kubernetes-containers-tools/tree/master/phpbb) - Container phpbb.
 * [slug-dynamic-loadbalancer](https://github.com/Tedezed/kubernetes-containers-tools/tree/master/dynamic_loadbalancer) - Loadbalancer in test for statefulset.
 * [squirrel](https://github.com/Tedezed/kubernetes-containers-tools/tree/master/squirrel) - Kubernetes secrets and apps passwords rotation.
+* [apt-repository](https://github.com/Tedezed/kubernetes-containers-tools/tree/master/apt-repository) - Create your own apt repository.
