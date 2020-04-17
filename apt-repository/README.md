@@ -5,7 +5,7 @@
 - https://wiki.debian.org/DebianRepository/SetupWithReprepro
 - https://www.howtoforge.com/setting-up-an-apt-repository-with-reprepro-and-nginx-on-debian-wheezy
 
-### Add package
+### Clone packages
 
 One by one
 ```
