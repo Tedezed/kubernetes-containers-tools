@@ -25,6 +25,21 @@ for deb in $(curl $URL | grep -o 'href=".*.deb"' | grep "amd64" | cut -d '"' -f2
 done
 ```
 
+Clone all python for example:
+```
+URL="http://ftp.us.debian.org/debian/pool/main/p/"
+DEB_INCLUDE="amd64\|all"
+#GET="href=\"python.*\""
+GET="href=\"python[2-3]\..*\""
+for package in $(curl http://ftp.us.debian.org/debian/pool/main/p/ | grep -o "$GET" | cut -d '"' -f2 ); do
+	echo "[INFO] Package: $(echo $package | cut -d '/' -f1)"
+	for deb in $(curl $URL$package | grep -o 'href=".*.deb"' | grep "$DEB_INCLUDE" | cut -d '"' -f2 ); do
+		echo "[INFO] Deb: $deb"
+		curl -SL $URL$package$deb -o /usr/src/pagespeed/$deb
+	done
+done
+```
+
 Add new packages:
 ```
 export GPG_TTY=$(tty)
