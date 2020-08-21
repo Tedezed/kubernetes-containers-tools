@@ -26,6 +26,7 @@ echo $ADD_HOST >> /etc/hosts
 rm -rf /etc/nginx/sites-enabled/default
 
 echo "Configure nginx..."
+sed -i "s/CUSTOM_CAPTCHA_SECRET/$CUSTOM_CAPTCHA_SECRET/g" /etc/nginx/nginx.conf
 sed -i "s/SUPPORT_EMAIL/$SUPPORT_EMAIL/g" /files/error/index.html
 sed -i "s/TEAM_NAME/$TEAM_NAME/g" /files/error/index.html
 
@@ -37,6 +38,13 @@ fi
 
 echo "Exec rsyslog..."
 service rsyslog start
+
+export SYSTEM_SEED=$(((RANDOM<<32)|RANDOM))$(((RANDOM<<22)|RANDOM))
+export SYSTEM_SEED_SUPPORT=$(((RANDOM<<32)|RANDOM))
+
+if [ "$MODE" == "debug" ]; then
+	sleep 3600
+fi 
 
 if [ "$ELK" == "false" ]; then
 	echo "Exec Liberty..."

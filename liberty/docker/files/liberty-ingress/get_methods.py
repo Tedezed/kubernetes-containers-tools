@@ -6,7 +6,7 @@
 # Mail: juanmanuel.torres@aventurabinaria.es
 
 from kubernetes import client, config
-import pwd, traceback, pprint
+import pwd, traceback, pprint, random, string, md5
 from os import path, getlogin, system, getuid, environ
 from sys import argv
 from base64 import b64decode
@@ -17,6 +17,19 @@ from time import sleep
 class get_methods:
 
     system('echo "Init get_methods..."')
+
+    #https://pynative.com/python-generate-random-string/
+    def get_random_alphaNumeric_string(self, seed, stringLength=12):
+        random.seed(environ['SYSTEM_SEED_SUPPORT'] + \
+            md5.new(seed + environ['CUSTOM_CAPTCHA_SECRET'] + environ['SYSTEM_SEED']).hexdigest())
+        lettersAndDigits = string.ascii_lowercase + string.digits
+        return ''.join((random.choice(lettersAndDigits) for i in range(stringLength)))
+
+    def randomStringwithDigitsAndSymbols(self, seed, stringLength=12):
+        random.seed(environ['SYSTEM_SEED_SUPPORT'] + \
+            md5.new(seed + environ['CUSTOM_CAPTCHA_SECRET'] + environ['SYSTEM_SEED']).hexdigest())
+        password_characters = string.ascii_letters + string.digits + "!%()*+,-./:<>?@[]^_"
+        return ''.join(random.choice(password_characters) for i in range(stringLength))
     
     def get_ip_from_service(self, name, services, namespace = "", ip_error=environ['IP_ERROR']):
         #services = self.v1.list_service_for_all_namespaces(watch=False)
@@ -193,7 +206,9 @@ class get_methods:
                 client_ssl = "True"
             list_hosts.append(
                 {'host_name': host.host, 'name_upstream': host.host.replace(".", "-"), 'type_backend':type_backend,\
-                 'backends': list_backend, 'client_ssl': client_ssl, 'timeout': environ['TIMEOUT']})
+                 'backends': list_backend, 'client_ssl': client_ssl, 'timeout': environ['TIMEOUT'],\
+                 'captcha_secret':  environ['CUSTOM_CAPTCHA_SECRET'] + self.get_random_alphaNumeric_string(host.host, 10) + self.get_random_alphaNumeric_string(host.host, 22),\
+                 'auth_mutant': self.get_random_alphaNumeric_string(host.host, 12), 'captcha_length': random.randint(6, 8)})
         return list_hosts
 
     def get_ingress(self):

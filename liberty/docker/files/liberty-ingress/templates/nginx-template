@@ -115,10 +115,10 @@ server {
 
       server_name {{ host['host_name'] }};
 
-      ssl on;
+      #ssl on;
       ssl_dhparam {{ ing['patch'] }}/dhparam.pem;
       ssl_session_timeout {{ host['timeout'] }};
-      ssl_protocols TLSv1 TLSv1.1 TLSv1.2;
+      ssl_protocols TLSv1.2;
 
       ssl_prefer_server_ciphers on;
 
@@ -143,8 +143,107 @@ server {
       add_header X-Content-Type-Options nosniff;
       add_header X-XSS-Protection "1; mode=block";
 
+      ### Custom captcha conf ###
+      # Custom captcha
+      #captcha_case on;
+      #captcha_expire 3600;
+      #captcha_height 60;
+      #captcha_width 170;
+      #captcha_length 4;
+      #captcha_size 30;
+      captcha_charset abcdefghkmnprstuvwxyzABCDEFGHKMNPRSTUVWXYZ23456789@#&%+*;
+      #captcha_csrf csrf;
+      captcha_font /usr/local/share/fonts/NimbusSans-Regular.ttf;
+      #captcha_name Captcha;
+      captcha_length {{ host['captcha_length'] }};
+      captcha_secret {{ host['captcha_secret'] }};
+      #
+      more_clear_input_headers Authorization;
+      #auth_request /auth_mutant_{{ host['auth_mutant'] }};
+      #location =/auth_mutant_{{ host['auth_mutant'] }} {
+      auth_request /auth;
+      location =/auth {
+            internal;
+            subrequest_access_phase on;
+            auth_request off;
+            set_decode_base64 $auth_decode $cookie_auth;
+            set_decrypt_session $auth_decrypt $auth_decode;
+            if ($auth_decrypt = "") { 
+                return 401 UNAUTHORIZED;
+            }
+            more_set_input_headers "Authorization: Basic $auth_decrypt";
+            auth_basic_user_file /etc/nginx/.htpasswd;
+            auth_basic Auth;
+            echo -n OK;
+      }
+
+      location =/captcha {
+            auth_request off;
+            captcha;
+      }
+
+      location = /favicon.ico {
+            auth_request off;
+            alias /etc/nginx/html/static/favicon.ico;
+      }
+
+      #   return 303 /login_{{ host['auth_mutant'] }}?request_uri=$request_uri_escape;
+      #   location =/login_{{ host['auth_mutant'] }} {
+      error_page 401 = @error401;
+      location @error401 {
+          set_escape_uri $request_uri_escape $request_uri;
+          return 303 /login?request_uri=$request_uri_escape;
+      }
+      location =/login {
+          default_type "text/html; charset=utf-8";
+          if ($request_method = GET) {
+              template /etc/nginx/html/login/login.html.ct2;
+              ctpp2 on;
+              set_secure_random_alphanum $csrf_random 32;
+              encrypted_session_expires 300;
+              set_encrypt_session $csrf_encrypt $csrf_random;
+              set_encode_base64 $csrf_encode $csrf_encrypt;
+              add_header Set-Cookie "CSRF=$csrf_encode; Max-Age=300";
+              return 200 "{\"csrf\":\"$csrf_random\"}";
+          }
+          set_form_input $csrf_form csrf;
+          set_unescape_uri $csrf_unescape $csrf_form;
+          set_decode_base64 $csrf_decode $cookie_csrf;
+          set_decrypt_session $csrf_decrypt $csrf_decode;
+          if ($csrf_decrypt != $csrf_unescape) {
+              #add_header X-debug-message "[ERROR] csrf, csrf_decrypt:$csrf_decrypt != csrf_unescape:$csrf_unescape, RETURN: $request_uri"; 
+              return 303 $request_uri;
+          }
+          set_form_input $captcha_form captcha;
+          set_unescape_uri $captcha_unescape $captcha_form;
+          #set_md5 $captcha_md5 "secret${captcha_unescape}${csrf_decrypt}";
+          set_md5 $captcha_md5 "{{ host['captcha_secret'] }}${captcha_unescape}${cookie_csrf}";
+          #add_header X-debug-message "s${captcha_unescape}${cookie_csrf}";
+          if ($captcha_md5 != $cookie_captcha) {
+              #add_header X-debug-message "[ERROR] captcha, captcha_md5:$captcha_md5 != cookie_captcha:$cookie_captcha, RETURN: $request_uri";
+              return 303 $request_uri;
+          }
+          set_form_input $username_form username;
+          set_form_input $password_form password;
+          set_unescape_uri $username_unescape $username_form;
+          set_unescape_uri $password_unescape $password_form;
+          encrypted_session_expires 2592000;
+          set $username_password "$username_unescape:$password_unescape";
+          set_encode_base64 $username_password_encode $username_password;
+          set_encrypt_session $auth_encrypt $username_password_encode;
+          set_encode_base64 $auth_encode $auth_encrypt;
+          add_header Set-Cookie "Auth=$auth_encode; Max-Age=2592000";
+          set $arg_request_uri_or_slash $arg_request_uri;
+          set_if_empty $arg_request_uri_or_slash "/";
+          set_unescape_uri $request_uri_unescape $arg_request_uri_or_slash;
+          #add_header X-debug-message "[INFO] last return: $request_uri_unescape";
+          return 303 $request_uri_unescape;
+      }
+      ### Custom captcha conf ###
+
       error_page 502 /index.html;
       location = /index.html {
+        auth_request off;
         root  /files/error;
         access_log /var/log/nginx/custom_error.log json;
       }
@@ -154,11 +253,13 @@ server {
     {% if '1'==ing['backend'] %}
 
       location ~* (^/.*(css|woff|otf|js|jpg|jpeg|gif|png|ico|cur|gz|svg|svgz|mp3|mp4|ogg|ogv)$|^/web/image.*) {
+          auth_request off;
           proxy_pass http://{{ host['name_upstream'] }};
       }
 
       
       location / {
+          auth_request off;
           proxy_redirect     off;
           proxy_set_header   Host $host;
           proxy_set_header X-Real-IP $remote_addr;
@@ -167,48 +268,49 @@ server {
       }
 
       location /longpolling/poll {
+          auth_request off;
           proxy_pass http://{{ host['name_upstream'] }}_longpolling;
       }
 
       location ~* .*/web/database/manager {
         proxy_set_header   Host $host;
-        auth_basic "Restricted Content";
-        auth_basic_user_file /etc/nginx/.htpasswd;
+        #auth_basic "Restricted Content";
+        #auth_basic_user_file /etc/nginx/.htpasswd;
         proxy_pass http://{{ host['name_upstream'] }};
       }
 
       location /web/database/backup {
         proxy_set_header   Host $host;
-        auth_basic "Restricted Content";
-        auth_basic_user_file /etc/nginx/.htpasswd;
+        #auth_basic "Restricted Content";
+        #auth_basic_user_file /etc/nginx/.htpasswd;
         proxy_pass http://{{ host['name_upstream'] }};
       }
 
       location /web/database/restore {
         proxy_set_header   Host $host;
-        auth_basic "Restricted Content";
-        auth_basic_user_file /etc/nginx/.htpasswd;
+        #auth_basic "Restricted Content";
+        #auth_basic_user_file /etc/nginx/.htpasswd;
         proxy_pass http://{{ host['name_upstream'] }};
       }
 
       location /web/database/create {
         proxy_set_header   Host $host;
-        auth_basic "Restricted Content";
-        auth_basic_user_file /etc/nginx/.htpasswd;
+        #auth_basic "Restricted Content";
+        #auth_basic_user_file /etc/nginx/.htpasswd;
         proxy_pass http://{{ host['name_upstream'] }};
       }
 
       location /web/database/drop {
         proxy_set_header   Host $host;
-        auth_basic "Restricted Content";
-        auth_basic_user_file /etc/nginx/.htpasswd;
+        #auth_basic "Restricted Content";
+        #auth_basic_user_file /etc/nginx/.htpasswd;
         proxy_pass http://{{ host['name_upstream'] }};
       }
 
       location /web/database/change_password {
         proxy_set_header   Host $host;
-        auth_basic "Restricted Content";
-        auth_basic_user_file /etc/nginx/.htpasswd;
+        #auth_basic "Restricted Content";
+        #auth_basic_user_file /etc/nginx/.htpasswd;
         proxy_pass http://{{ host['name_upstream'] }};
       }
 
@@ -216,6 +318,7 @@ server {
     # Simple backend https
 
       location / {
+          auth_request off;
           proxy_pass https://{{ host['name_upstream'] }};
         }
 
@@ -227,6 +330,7 @@ server {
 
 
       location / {
+        auth_request off;
         proxy_pass https://{{ host['name_upstream'] }};
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
@@ -241,6 +345,7 @@ server {
 
 
       location / {
+        auth_request off;
         proxy_pass https://{{ host['name_upstream'] }};
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
@@ -253,6 +358,7 @@ server {
     add_header 'Referrer-Policy' 'origin-when-cross-origin';
 
       location / {
+        auth_request off;
         proxy_pass https://{{ host['name_upstream'] }};
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
@@ -263,6 +369,7 @@ server {
     {% else %}
     # All
       location / {
+        auth_request off;
         proxy_pass https://{{ host['name_upstream'] }};
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;

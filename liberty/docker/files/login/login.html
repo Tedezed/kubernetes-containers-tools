@@ -1,0 +1,391 @@
+<html>
+    <head>
+        <title>Login</title>
+        <style>
+            @charset "utf-8";
+            /* CSS Document */
+
+            h1{
+                margin: 0 auto;
+                padding-top: 20%;
+                padding-left: 15%;
+                text-transform:uppercase;
+                font-size:30px;
+                color:white;
+            }
+
+
+            h2{
+                margin: 0 auto;
+                padding-left: 15%;
+                font-size:18px;
+                color:#fff;
+            }
+
+
+            body {
+                font-family: Helvetica;
+                margin:0 auto;
+                min-height:100%;
+                margin-top: -14%;
+                background: #fff url(http://ns223506.ovh.net/rozne/20c33772316997fa8805bbb75d57d83b/wallpaper-700251.jpg) no-repeat center center fixed;
+                -webkit-background-size: cover;
+                -moz-background-size: cover;
+                -o-background-size: cover;
+                background-size: cover;
+                }
+
+            .nav {
+                margin: 0 auto;
+                margin-top: 22%;
+                margin-left: auto;
+                width: 300px;
+                height: 330px;
+                background: #f8f9f9;
+                border-radius: 5px; 
+                text-align: center;
+                padding-top: 1px;
+                box-shadow: 0 0 10px rgba(0,0,0, .5);
+            }
+
+            .nav_captcha {
+                margin: 0 auto;
+                margin-top: 3%;
+                margin-left: auto;
+                width: 300px;
+                height: 240px;
+                background: #fff;
+                border-radius: 5px; 
+                text-align: center;
+                padding-top: 1px;
+                box-shadow: 0 0 10px rgba(0,0,0, .5);
+            }
+
+            .captcha {
+                border: 1px solid #dc8100;
+                width: 243px;
+                height: 43px;
+                border-radius: 3px;
+                margin-top: 7px;
+                padding-left: 9px;
+                color: #6c6c6c;
+                background: #fcfcfc;
+                outline: none;
+            }
+            .captcha:hover, .username:hover {
+                box-shadow: 0 0 10px rgba(240,146,12, 1); 
+                border: 1px #bd7c21  solid ;
+            }
+
+            @keyframes captcha_animation {
+                0%   {background-color:#dc8100; left:0px; top:0px;}
+                25%  {background-color:#ffdfb0; left:200px; top:0px;}
+                50%  {background-color:#f4b761; left:200px; top:200px;}
+                75%  {background-color:#ffdfb0; left:0px; top:200px;}
+                100% {background-color:#dc8100; left:0px; top:0px;}
+            }
+            .captcha_box {
+                width: 243px;
+                height: 50px;
+                border: 1px solid #dc8100;
+                border-radius: 3px;
+                color: #6c6c6c;
+                background: #fcfcfc;
+                outline: none;
+                margin-top: 7px;
+                margin-left: 28px;
+                /* animation */
+                opacity: 1;
+                background-color: #dc8100;
+                animation-name: captcha_animation;
+                animation-duration: 6s;
+                animation-iteration-count: infinite;
+            }
+            .captcha_image {
+                width: 241px;
+                height: 48px;
+                opacity: 0.4;
+            }
+            .captcha_image:hover {
+                opacity: 0.6;
+                box-shadow: 0 0 10px rgba(240,146,12, 1); 
+                border: 1px #bd7c21  solid ;
+            }
+
+            .username {
+                border: 1px solid #dc8100;
+                width: 243px;
+                height: 43px;
+                border-radius: 3px;
+                margin-top: 25px;
+                padding-left: 9px;
+                color: #6c6c6c;
+                background: #fcfcfc;
+                outline: none;
+            }
+
+            .password {
+                border: 1px solid #dc8100;
+                width: 243px;
+                height: 43px;
+                border-radius: 3px;
+                margin-top: 7px;
+                padding-left: 9px;
+                color: #6c6c6c;
+                background: #fcfcfc;
+                outline: none;
+            }
+
+            .password:hover, .username:hover {
+                box-shadow: 0 0 10px rgba(240,146,12, 1); 
+                border: 1px #bd7c21	 solid ;
+            }
+
+            .password:focus, .username:focus, .button:focus, .button:hover:focus{
+                box-shadow: 0 0 10px rgba(240,146,12, 1); 
+                border: 1px #bd7c21	 solid ;
+            }
+
+            .button {
+                color:#fff;
+                font-size:20px;
+                border: 1px solid #dc8100;
+                width: 243px;
+                height: 43px;
+                border-radius: 5px;
+                margin-top: 7px;
+                outline: none;
+                background: rgb(255,48,25); /* Old browsers */
+                background: -moz-linear-gradient(top,  rgb(255,48,25) 0%, rgb(207,4,4) 100%); /* FF3.6+ */
+                background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgb(255,48,25)), color-stop(100%,rgb(207,4,4))); /* Chrome,Safari4+ */
+                background: -webkit-linear-gradient(top,  rgb(255,48,25) 0%,rgb(207,4,4) 100%); /* Chrome10+,Safari5.1+ */
+                background: -o-linear-gradient(top,  rgb(255,48,25) 0%,rgb(207,4,4) 100%); /* Opera 11.10+ */
+                background: -ms-linear-gradient(top,  rgb(255,48,25) 0%,rgb(207,4,4) 100%); /* IE10+ */
+                background: linear-gradient(to bottom,  rgb(255,173,57) 0%,rgb(220,129,0) 100%); /* W3C */
+                filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ff3019', endColorstr='#cf0404',GradientType=0 ); /* IE6-9 */
+            }
+
+            
+            .button:hover{
+                background: rgb(204,0,0); /* Old browsers */
+                background: -moz-linear-gradient(top,  rgb(204,0,0) 0%, rgb(204,0,0) 100%); /* FF3.6+ */
+                background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgb(204,0,0)), color-stop(100%,rgb(204,0,0))); /* Chrome,Safari4+ */
+                background: -webkit-linear-gradient(top,  rgb(204,0,0) 0%,rgb(204,0,0) 100%); /* Chrome10+,Safari5.1+ */
+                background: -o-linear-gradient(top,  rgb(204,0,0) 0%,rgb(204,0,0) 100%); /* Opera 11.10+ */
+                background: -ms-linear-gradient(top,  rgb(204,0,0) 0%,rgb(204,0,0) 100%); /* IE10+ */
+                background: linear-gradient(to bottom,  rgb(220,129,0) 0%,rgb(220,129,0) 100%); /* W3C */
+                filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#cc0000', endColorstr='#cc0000',GradientType=0 ); /* IE6-9 */
+            }
+            
+            label {
+                position: relative;
+                top: 5px;
+                margin-right: 115px;
+            }
+                label span {
+                margin-left: 5px;
+                font-size:14px;
+            }
+        </style>
+    </head>
+    <body>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+        <script type="text/javascript">
+
+        var lines_en = ''
+
+        var lines_es = ''
+
+        var userLang = navigator.language || navigator.userLanguage;
+        // alert ("The language is: " + userLang);
+        if (userLang == "es-ES") {
+            document.write(lines_es);
+        } else {
+            document.write(lines_en);
+        }
+        </script>
+        <script type="text/javascript">
+        // Check code
+        function arraysEqual(a, b) {
+          if (a === b) return true;
+          if (a == null || b == null) return false;
+          if (a.length != b.length) return false;
+          for (var i = 0; i < a.length; ++i) {
+            if (a[i] !== b[i]) return false;
+          }
+          return true;
+        }
+
+        var limitCode = 10
+        var code = []
+        //var secret = [38,38]
+        var secret = [38,38,40,40,37,39,37,39,66,65]
+        var notActivate = true
+
+        $("body").keydown(function(e){
+          code.push(e.which)
+          if ( code.length > limitCode ) {
+            code.splice(0, 1)
+          }
+          //console.log(code)
+          //console.log(secret)
+          //console.log(code.length)
+          if ( arraysEqual(code, secret) && notActivate ) {
+            notActivate = false
+            console.log(notActivate)
+            document.body.innerHTML = '';
+            $("head").append('<style>body { text-align: center; padding: 20%; }</style>');
+            $("body").append('<div><button onmousedown="accelerate(-0.4)" onmouseup="accelerate(0.3)">UP</button></div>');
+            $("body").append('<div><button onmousedown="restart()" >RESTART</button></div>');
+            $("body").append('<iframe id="yt-frame" width="891" height="501" src="https://www.youtube.com/embed/C_pjpNQVg2Q?autoplay=1&mute=0&enablejsapi=1"> </iframe>');
+            startG()
+          }
+        });
+
+        // Secret
+        var myGPiece;
+        var myObstacles = [];
+        var myScore;
+
+        function restart() {
+            myGArea.stop();
+            myGArea.clear();
+            startG();
+        }
+
+        function startG() {
+            myGPiece = new component(30, 30, "red", 10, 120);
+            myGPiece.gravity = 0.4;
+            myScore = new component("30px", "Consolas", "black", 280, 40, "text");
+            myObstacles = [];
+            myGArea.start();
+        }
+
+        var myGArea = {
+            canvas : document.createElement("canvas"),
+            start : function() {
+                this.canvas.width = 480;
+                this.canvas.height = 270;
+                this.context = this.canvas.getContext("2d");
+                document.body.insertBefore(this.canvas, document.body.childNodes[0]);
+                this.frameNo = 0;
+                this.interval = setInterval(updateGArea, 20);
+                },
+            clear : function() {
+                this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
+            },
+            stop : function() {
+                clearInterval(this.interval);
+            }
+        }
+
+        function component(width, height, color, x, y, type) {
+            this.type = type;
+            this.score = 0;
+            this.width = width;
+            this.height = height;
+            this.speedX = 0;
+            this.speedY = 0;    
+            this.x = x;
+            this.y = y;
+            this.gravity = 0;
+            this.gravitySpeed = 0;
+            this.update = function() {
+                ctx = myGArea.context;
+                if (this.type == "text") {
+                    ctx.font = this.width + " " + this.height;
+                    ctx.fillStyle = color;
+                    ctx.fillText(this.text, this.x, this.y);
+                } else {
+                    ctx.fillStyle = color;
+                    ctx.fillRect(this.x, this.y, this.width, this.height);
+                }
+            }
+            this.newPos = function() {
+                this.gravitySpeed += this.gravity;
+                this.x += this.speedX;
+                this.y += this.speedY + this.gravitySpeed;
+                this.hitBottom();
+            }
+            this.hitBottom = function() {
+                var rockbottom = myGArea.canvas.height - this.height;
+                if (this.y > rockbottom) {
+                    this.y = rockbottom;
+                    this.gravitySpeed = 0;
+                }
+                if (this.y <= 0) {
+                    this.y = 0.1;
+                    this.gravitySpeed = 0;
+                }
+            }
+            this.crashWith = function(otherobj) {
+                var myleft = this.x;
+                var myright = this.x + (this.width);
+                var mytop = this.y;
+                var mybottom = this.y + (this.height);
+                var otherleft = otherobj.x;
+                var otherright = otherobj.x + (otherobj.width);
+                var othertop = otherobj.y;
+                var otherbottom = otherobj.y + (otherobj.height);
+                var crash = true;
+                if ((mybottom < othertop) || (mytop > otherbottom) || (myright < otherleft) || (myleft > otherright)) {
+                    crash = false;
+                }
+                return crash;
+            }
+        }
+
+        function updateGArea() {
+            var x, height, gap, minHeight, maxHeight, minGap, maxGap;
+            for (i = 0; i < myObstacles.length; i += 1) {
+                if (myGPiece.crashWith(myObstacles[i])) {
+                    return;
+                } 
+            }
+            myGArea.clear();
+            myGArea.frameNo += 1;
+            if (myGArea.frameNo == 1 || everyinterval(150)) {
+                x = myGArea.canvas.width;
+                minHeight = 20;
+                maxHeight = 200;
+                height = Math.floor(Math.random()*(maxHeight-minHeight+1)+minHeight);
+                minGap = 50;
+                maxGap = 200;
+                gap = Math.floor(Math.random()*(maxGap-minGap+1)+minGap);
+                myObstacles.push(new component(10, height, "green", x, 0));
+                myObstacles.push(new component(10, x - height - gap, "green", x, height + gap));
+            }
+            for (i = 0; i < myObstacles.length; i += 1) {
+                myObstacles[i].x += -1;
+                myObstacles[i].update();
+            }
+            myScore.text="SCORE: " + myGArea.frameNo;
+            myScore.update();
+            myGPiece.newPos();
+            myGPiece.update();
+        }
+
+        function everyinterval(n) {
+            if ((myGArea.frameNo / n) % 1 == 0) {return true;}
+            return false;
+        }
+
+        function accelerate(n) {
+            myGPiece.gravity = n;
+        }
+
+        </script>
+        <div class="nav">
+      	    <form method="post"> <br />
+            	<input type="hidden" name="csrf" value="<TMPL_var csrf>"/>
+            	<input type="text" class="username" name="username" placeholder="Username"/>
+            	<input type="password" class="password" name="password" placeholder="Password"/>
+            	<div class="captcha_box">
+                    <img class="captcha_image" src="/captcha"/>
+                </div>
+                <input type="text" class="captcha" name="captcha" autocomplete="off" placeholder="Captcha"/>
+    	        <input type="submit" value="Sign In" class="button" alt=""/>
+            </form>
+        </div>
+    </body>
+</html>

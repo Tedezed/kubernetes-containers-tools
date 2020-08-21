@@ -4,7 +4,7 @@
 # Mail: juanmanuel.torres@aventurabinaria.es
 
 build:
-	docker build -f Dockerfile -t tedezed/liberty-dynamic-ingress:${VERSION_IMAGE} .
+	docker build -f Dockerfile -t tedezed/liberty-dynamic-ingress:${VERSION_IMAGE} --build-arg NUMBITS=${NUMBITS} .
 	rm -rf files/liberty-ingress/certs/*
 	rm -rf files/liberty-ingress/default-cert/*
 
