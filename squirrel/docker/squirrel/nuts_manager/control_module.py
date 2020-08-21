@@ -14,6 +14,7 @@ class app_update_pass():
                 mode,
                 random_pass,
                 squirrel_nuts_manager,
+                squirrel_complete_secret,
                 debug):
 
         app_pass_version="v0.1"
@@ -31,6 +32,7 @@ class app_update_pass():
         self.host = "%s.%s.svc.cluster.local" % \
           (squirrel_service, squirrel_namespace)
         self.squirrel_nuts_manager = squirrel_nuts_manager
+        self.squirrel_complete_secret = squirrel_complete_secret
         self.debug_mode = debug
 
         # Get list of modules

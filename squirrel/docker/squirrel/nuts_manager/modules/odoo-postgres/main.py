@@ -1,6 +1,9 @@
 import psycopg2, base64, sys, os, ast, importlib, socket
 from passlib.hash import pbkdf2_sha512
 
+from kubernetes import client, config
+from kubernetes.client.rest import ApiException
+
 class squirrel_module():
 
     def __init__(self, squirrel):
@@ -13,6 +16,7 @@ class squirrel_module():
         self.secret_annotations = squirrel.secret_annotations
         self.random_pass = squirrel.random_pass
         self.host = squirrel.host
+        self.squirrel_complete_secret = squirrel.squirrel_complete_secret
         self.debug_mode = squirrel.debug_mode
 
     def postgres_execution(self,
@@ -28,12 +32,30 @@ class squirrel_module():
         #print("[INFO Postgres - IP: %s]" % (ip_host))
         dic_query = {}
         try:
-            connection = psycopg2.connect(user = name_username,
-                                          password = user_password,
-                                          host = postgres_host,
-                                          database = name_database,
-                                          port = postgres_port)
-            cursor = connection.cursor()
+            if self.debug_mode:
+                print("[DEBUG] User: %s, Password: %s " % (name_username, user_password))
+            try:
+                print("[INFO] Try PostgreSQL SSL mode OFF")
+                connection = psycopg2.connect(user = name_username,
+                                            password = user_password,
+                                            host = postgres_host,
+                                            database = name_database,
+                                            port = postgres_port)
+                cursor = connection.cursor()
+                cursor.execute("SELECT datname FROM pg_catalog.pg_database;")
+            except:
+                print("[INFO] Try PostgreSQL SSL mode using: /squirrel_certs/%s.crt" % (postgres_host))
+                self.get_crt_from_secret()
+                connection = psycopg2.connect(user = name_username,
+                            password = user_password,
+                            host = postgres_host,
+                            database = name_database,
+                            port = postgres_port,
+                            sslmode = 'require',
+                            sslcert = '/squirrel_certs/%s.crt' % (postgres_host),
+                            sslkey = '/squirrel_certs/%s.key' % (postgres_host))
+                cursor = connection.cursor()
+                cursor.execute("SELECT datname FROM pg_catalog.pg_database;")
             #record = cursor.fetchone()
             for query in list_querys:
                 cursor.execute(query)
@@ -114,7 +136,6 @@ class squirrel_module():
             return False
         return True
 
-
     def update_secret(self):
         try:
             print("(postgres_password_update)[INFO] Postgres update password for user %s" % self.squirrel_user)
@@ -131,4 +152,20 @@ class squirrel_module():
             print("(postgres_password_update)[ERROR] %s" % error)
             return False
         return True
+
+    def get_crt_from_secret(self):
+        if self.debug_mode:
+            print(self.squirrel_complete_secret)
+        for ext in [".crt", ".key"]:
+            data_name = self.host + ext
+            print("Secret %s data %s" % (self.squirrel_complete_secret.metadata.name, data_name))
+            try:
+                base64_decode = base64.b64decode(self.squirrel_complete_secret.data[data_name]) 
+                base64_result = open('/squirrel_certs/%s' % (data_name), 'wb')
+                base64_result.write(base64_decode)
+                base64_result.close()
+                os.chmod('/squirrel_certs/%s' % (data_name), 0o600)
+            except Exception as e:
+                print("(postgres_get_crt_from_secret)[ERROR] %s" % error)
+
 

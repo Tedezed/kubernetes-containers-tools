@@ -9,3 +9,7 @@ build:
 
 push:
 	docker push tedezed/squirrel:latest
+
+push-debug:
+	docker tag tedezed/squirrel:latest tedezed/squirrel:debug
+	docker push tedezed/squirrel:debug

@@ -207,6 +207,7 @@ class nuts_manager():
                                                                   "update_secret",
                                                                   new_pass_decode,
                                                                   self.squirrel.squirrel_nuts_manager,
+                                                                  s,
                                                                   self.squirrel.debug)
                                             aup.conditional_app()
                                         if not self.squirrel.debug:
@@ -257,6 +258,7 @@ class nuts_manager():
                                                       "check_app",
                                                       random_pass,
                                                       self.squirrel.squirrel_nuts_manager,
+                                                      s,
                                                       self.squirrel.debug)
                                 result_aup_conditional = aup.conditional_app()
 
@@ -356,6 +358,7 @@ class nuts_manager():
                                                               "update_app_password",
                                                               random_pass,
                                                               self.squirrel.squirrel_nuts_manager,
+                                                              s,
                                                               self.squirrel.debug)
                                         aup.conditional_app()
                                     else:
