@@ -35,7 +35,7 @@ ADD squirrel /squirrel
 # 		python-gnupg==0.3.9
 
 RUN mkdir -p /squirrel_certs \
-	&& pip3 install -r /squirrel/requirements.txt \
+	&& pip3 install -r /squirrel/requirements.txt && pip3 freeze \
 	&& chmod +x /squirrel/entrypoint.bash
 
 ENTRYPOINT ["/squirrel/entrypoint.bash"]

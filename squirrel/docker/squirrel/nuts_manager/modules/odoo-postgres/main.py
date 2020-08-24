@@ -51,7 +51,7 @@ class squirrel_module():
                             host = postgres_host,
                             database = name_database,
                             port = postgres_port,
-                            sslmode = 'require',
+                            sslmode = self.secret_annotations.get("custom_database_sslmode", "prefer"),
                             sslcert = '/squirrel_certs/%s.crt' % (postgres_host),
                             sslkey = '/squirrel_certs/%s.key' % (postgres_host))
                 cursor = connection.cursor()
