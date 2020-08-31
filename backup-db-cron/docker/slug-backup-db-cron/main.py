@@ -284,12 +284,18 @@ class kube_init:
             print '[START] Service: %s, Host: %s' % (db["name_svc"], host)
 
             if db["type"] == "postgres":
-                conn = psycopg2.connect(dbname='postgres', user=db["POSTGRES_USER"], \
-                                    host=host, password=str(db["POSTGRES_PASSWORD"].encode('utf-8')), port=db["port"])
+                db_user = db["POSTGRES_USER"]
+                db_user_pass = str(db["POSTGRES_PASSWORD"].encode('utf-8'))
+                db_port = db["port"]
+                conn = psycopg2.connect(dbname='postgres', user=db_user, \
+                                    host=host, password=db_user_pass, port=db_port)
                 key = True
             elif db["type"] == "mysql":
-                conn = mysql.connector.connect(database='', user=db["MYSQL_USER"], \
-                                    host=host, password=str(db["MYSQL_PASSWORD"].encode('utf-8')), port=db["port"])
+                db_user = db["MYSQL_USER"]
+                db_user_pass = str(db["MYSQL_PASSWORD"].encode('utf-8'))
+                db_port = db["port"]
+                conn = mysql.connector.connect(database='', user=db_user, \
+                                    host=host, password=db_user_pass, port=db_port)
                 key = True
             else:
                 error = '[Error] Not valid database type found'
@@ -301,6 +307,7 @@ class kube_init:
         except Exception as e:
             key = False
             error = '[ERROR] [%s] host %s not found ' % (now_datetime, db["name_svc"])
+            print "host: %s, user: %s, pass: %s, port: %s" % (host, db_user, db_user_pass, db_port)
             print error
             print e
             logging.error(error)
@@ -412,6 +419,9 @@ class kube_init:
 
     def fusion_list_dbs_v2(self, list_db1, list_db2):
         list_end = []
+        print "[INFO] Init fusion_list_dbs_v2"
+        print list_db1
+        print list_db2
         if list_db1:
 
             # Add only equal and list1
@@ -449,7 +459,8 @@ class kube_init:
         except Exception as e:
             print "[ERROR] %s" % e
             list_db_configmap = []
-        list_db = self.fusion_list_dbs_v2(list_db_configmap, list_db_secrets)
+        #list_db = self.fusion_list_dbs_v2(list_db_configmap, list_db_secrets)
+        list_db = self.fusion_list_dbs_v2(list_db_secrets, list_db_configmap)
         for db in list_db:
             #print db
             self.bakup_sql(db, now_datetime)
