@@ -151,12 +151,11 @@ server {
 
     # Backends modes #
     
-    {% if '1'==ing['backend'] %}
+    {% if ( ('1'==ing['backend']) or ('6'==ing['backend'])) %}
 
       location ~* (^/.*(css|woff|otf|js|jpg|jpeg|gif|png|ico|cur|gz|svg|svgz|mp3|mp4|ogg|ogv)$|^/web/image.*) {
           proxy_pass http://{{ host['name_upstream'] }};
       }
-
       
       location / {
           proxy_redirect     off;
@@ -211,7 +210,14 @@ server {
         auth_basic_user_file /etc/nginx/.htpasswd;
         proxy_pass http://{{ host['name_upstream'] }};
       }
+    
+      {% if '1'==ing['backend'] %}
+      location = /robots.txt {
+        add_header Content-Type text/plain;
+        return 200 "User-agent: *\nDisallow: /\n";
+      }
 
+      {% endif %}
     {% elif '2'==ing['backend'] %}
     # Simple backend https
 
@@ -258,7 +264,6 @@ server {
         proxy_set_header X-Real-IP $remote_addr;
         keepalive_timeout {{ host['timeout'] }};
       }
-
 
     {% else %}
     # All

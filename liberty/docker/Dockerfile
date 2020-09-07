@@ -113,13 +113,13 @@ RUN cd /usr/src/nginx-1.10.3 \
 
 # http://geolite.maxmind.com/download/geoip/database/GeoLiteCountry/GeoIP.dat.gz
 # http://geolite.maxmind.com/download/geoip/database/GeoLiteCity.dat.gz
-RUN mkdir /etc/nginx/geoip \
-    && cd /etc/nginx/geoip \
-    && wget https://geolite.maxmind.com/download/geoip/database/GeoLite2-Country.tar.gz \
-    && gunzip GeoLite2-Country.tar.gz \
-    && wget https://geolite.maxmind.com/download/geoip/database/GeoLite2-City.tar.gz \
-    && gunzip GeoLite2-City.tar.gz \
-    && chown www-data -R /etc/nginx/geoip
+# RUN mkdir /etc/nginx/geoip \
+#     && cd /etc/nginx/geoip \
+#     && wget https://geolite.maxmind.com/download/geoip/database/GeoLite2-Country.tar.gz \
+#     && gunzip GeoLite2-Country.tar.gz \
+#     && wget https://geolite.maxmind.com/download/geoip/database/GeoLite2-City.tar.gz \
+#     && gunzip GeoLite2-City.tar.gz \
+#     && chown www-data -R /etc/nginx/geoip
 
 RUN pip install kubernetes deepdiff elasticsearch \
     && rm -rf /etc/nginx/conf.d/default.conf \
