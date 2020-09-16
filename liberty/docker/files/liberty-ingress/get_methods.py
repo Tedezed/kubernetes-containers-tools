@@ -206,7 +206,10 @@ class get_methods:
             found_tls_acme = False
             list_ing = []
             try:
-                ing = self.extv1beta1.list_ingress_for_all_namespaces(watch=False)
+                try:
+                    ing = self.extv1beta1.list_ingress_for_all_namespaces(watch=False)
+                except:
+                    ing = self.appsv1.list_ingress_for_all_namespaces(watch=False)
                 secrets = self.v1.list_secret_for_all_namespaces(watch=False)
                 pods = self.v1.list_pod_for_all_namespaces(watch=False)
                 services = self.v1.list_service_for_all_namespaces(watch=False)
