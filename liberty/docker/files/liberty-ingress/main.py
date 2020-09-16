@@ -62,6 +62,7 @@ class kube_init(nginx_brainslug, get_methods, elk_brainslug):
 
         # Define API
         self.v1 = client.CoreV1Api()
+        self.appsv1 = client.AppsV1Api()
         self.extv1beta1 = client.ExtensionsV1beta1Api()
 
     def level_print(self, level="None", text="Empty"):

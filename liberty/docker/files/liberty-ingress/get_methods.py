@@ -210,7 +210,10 @@ class get_methods:
                 secrets = self.v1.list_secret_for_all_namespaces(watch=False)
                 pods = self.v1.list_pod_for_all_namespaces(watch=False)
                 services = self.v1.list_service_for_all_namespaces(watch=False)
-                replica_sets = self.extv1beta1.list_replica_set_for_all_namespaces(watch=False)
+                try:
+                    replica_sets = self.extv1beta1.list_replica_set_for_all_namespaces(watch=False)
+                except:
+                    replica_sets = self.appsv1.list_replica_set_for_all_namespaces(watch=False)
                 for i in ing.items:
                     if i.metadata.annotations:
                         if i.metadata.annotations.get('kubernetes.io/ingress.class', False) == environ['NAME_LIBERTY']:
