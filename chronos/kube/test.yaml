@@ -1,0 +1,35 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: chronos
+  namespace: kube-system
+---
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  name: chronos
+  namespace: kube-system
+  labels:
+    app: chronos
+spec:
+  replicas: 1
+  selector:
+    name: chronos
+  template:
+    metadata:
+      labels:
+        name: chronos
+    spec:
+      serviceAccountName: chronos
+      containers:
+      - name: chronos
+        image: tedezed/chronos:latest
+        env:
+        - name: DAYS_TO_DROP
+          value: "30"
+        - name: DAYS_TO_DROP_SNAPSHOT
+          value: "10"
+        - name: TIME
+          value: "10 12 * * *"
+        - name: MODE
+          value: "1"

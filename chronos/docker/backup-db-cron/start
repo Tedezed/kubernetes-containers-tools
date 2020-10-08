@@ -1,0 +1,19 @@
+#!/bin/bash
+
+source /root/project_env
+
+printenv > /backup-db-cron/backups/cronenv
+
+echo "Mode: $MODE"
+if [ $MODE = "1" ] || [ $MODE = "3" ] || [ $MODE = "5" ]; then
+	echo "Submode: backup"
+    /usr/bin/python3 /backup-db-cron/main.py mode=backup conf_mode=$CONF_MODE subtract_days=$DAYS_TO_DROP
+fi
+if [ $MODE = "2" ] || [ $MODE = "3" ]; then
+	echo "Submode: snapshot"
+    /usr/bin/python3 /backup-db-cron/main.py mode=snapshot conf_mode=$CONF_MODE project=$PROJECT zone=$ZONE subtract_days=$DAYS_TO_DROP_SNAPSHOT
+fi
+if [ $MODE = "4" ] || [ $MODE = "5" ]; then
+	echo "Submode: snapshot_label"
+    /usr/bin/python3 /backup-db-cron/main.py mode=snapshot_label conf_mode=$CONF_MODE project=$PROJECT zone=$ZONE subtract_days=$DAYS_TO_DROP_SNAPSHOT
+fi
