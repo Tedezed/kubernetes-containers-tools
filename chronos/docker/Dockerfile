@@ -90,8 +90,8 @@ RUN apt-get update \
 ENV DAYS_TO_DROP=15 \
     DAYS_TO_DROP_SNAPSHOT=3 \
     TIME="10 0 * * *" \
-    MODE="1" \
-    CONF_MODE="secret" \
+    MODE="all" \
+    CONF_MODE="api" \
     PROJECT="project-name-test" \
     ZONE="europe-west1-b" \
     EMAIL_MODE="OFF" \

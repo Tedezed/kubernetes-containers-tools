@@ -33,6 +33,15 @@ Other backup:
 
 Other functionalities:
 - [ ] Encryption of backups on disk
+- [ ] Rrestore and test every dump
 
 kubectl cp $HOME/git/kubernetes-containers-tools/chronos/docker/backup-db-cron kube-system/$(kgpod chronos):/
 -->
+
+Working Modes:
+- databases
+- disks
+
+Conf modes:
+- api
+- configmap

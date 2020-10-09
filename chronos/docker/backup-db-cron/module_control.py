@@ -62,27 +62,6 @@ class main_module():
         importmod = importlib.import_module(mod_to_load)
         return importmod.main.chronos_module(self)
 
-    def conditional_module_old(self):
-        result = {}
-        for mod in self.modules:
-            # Load Manifest
-            manifestmod = self.load_manifest(mod)
-            if manifestmod:
-                if manifestmod["executable"]:
-                    print("[INFO] Module '%s' is executable" % manifestmod["name"])
-                    for job in self.conf_list:
-                        if job["type"] == manifestmod["type"]:
-                            print("[INFO] Execute module '%s' for " % (manifestmod["name"]))
-                            # Load Module
-                            self.input_job = job
-                            sm = self.load_module(mod)
-                            if sm:
-                                sm.chronos_job()
-                            else:
-                                print("[ERROR] Impossible to load the module: %s" % manifestmod["name"])
-            manifestmod = False
-        return result
-
     def conditional_module(self):
         for job in self.conf_list:
             module_for_job = False
@@ -118,7 +97,7 @@ class main_module():
                                 send_mail("[ERROR BACKUP] %s" % (job["name_svc"]), error, self.debug_mode)
             manifestmod = False
             if not module_for_job:
-                error = '[Error] Not module for job'
+                error = '[WARNING] Not module for job %s, type: %s' % (job["name_svc"], job["type"])
                 print(error)
                 self.chronos_logging.error(error)
                 send_mail("[ERROR BACKUP] %s %s" % (job["name_svc"], job["host"]), error, self.debug_mode)

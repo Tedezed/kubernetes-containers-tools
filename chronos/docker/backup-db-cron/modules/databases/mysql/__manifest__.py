@@ -10,5 +10,5 @@
 "author": "Juan Manuel Torres (Tedezed)",
 "version": "1.0",
 "type": "mysql",
-"executable": True,
+"executable": False,
 }

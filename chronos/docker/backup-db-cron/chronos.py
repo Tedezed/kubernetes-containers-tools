@@ -27,8 +27,6 @@ class chronos:
     ruta_exec=path.dirname(path.realpath(__file__))
     directory_backups="backups"
     path_conf="/secrets"
-    name_configmap_backup="backup-conf"
-    name_configmap_snapshot="snapshot-conf"
     v1=None
     extv1beta1=None
     bash_bold='\033[1m'
@@ -50,6 +48,11 @@ class chronos:
                 raise NameError('[ERROR] Invalid Arguments [python example.py var="text"]')
             list_argv.append(var_input)
         self.dic_argv = argument_to_dic(list_argv)
+
+        if self.dic_argv["mode"] == "databases":
+            self.name_configmap="databases-conf"
+        else:
+            self.name_configmap="disks-conf"
 
         try:
             self.dic_argv["subtract_days"]
@@ -135,11 +138,11 @@ class chronos:
 
     def get_configmap(self, name_conf, conf_mode):
         ret = self.v1.list_config_map_for_all_namespaces(watch=False)
-        if conf_mode == "conf-map":
+        if conf_mode == "configmap":
             for i in ret.items:
                 if i.metadata.name == name_conf:
                     data = i.data
-        elif conf_mode == "secret":
+        elif conf_mode == "api":
             patch_conf = "%s/%s/%s.yaml" % (self.path_conf, self.dic_argv["mode"], name_conf)
             print("[INFO] Read conf from %s" % conf_mode)
             stream = open(patch_conf, "r")
@@ -199,7 +202,6 @@ class chronos:
 
     def get_selector_from_service(self, name, namespace = ""):
         services = self.v1.list_service_for_all_namespaces(watch=False)
-        list_svc = []
         for s in services.items:
             if s.metadata.name == name and s.metadata.namespace == namespace:
                 try:
@@ -260,12 +262,12 @@ class chronos:
         return list_db
             
 
-    def backup(self, list_db, now_datetime):
+    def start_modules(self, list_db, now_datetime):
         try:
             module = main_module(self, "databases", list_db, now_datetime, self.chronos_logging, self.debug)
             module.conditional_module()
         except Exception as e:
-            error = '[ERROR] [%s] backup_conditional_module' % (now_datetime)
+            error = '[ERROR] [%s] (start_modules)' % (now_datetime)
             print(error, e)
             self.chronos_logging.error(error, e)
             send_mail(error, error, self.debug)
@@ -312,23 +314,22 @@ class chronos:
         else:
             print("[INFO] Not found snapshot that are on or out the erase date: %s" % drop_datetime)
 
-    def start_kube_backup(self):
-        list_db_secrets = self.sqin.get_secrets()
+    def start_chronos(self):
         now_datetime = datetime.now()
-
-        try:
-            list_db_configmap = self.get_configmap(self.name_configmap_backup, self.dic_argv["conf_mode"])
-        except Exception as e:
-            print("[ERROR] %s" % e)
-            list_db_configmap = []
-
-        if self.dic_argv["conf_mode"] == "secret":
-            list_db = list_db_secrets
+        
+        print("[INFO] Conf mode %s" % self.dic_argv["conf_mode"])
+        if self.dic_argv["conf_mode"] == "api":
+            list_db = self.sqin.get_secrets()
         else:
-            list_db = list_db_configmap
+            try:
+                list_db = self.get_configmap(self.name_configmap, self.dic_argv["conf_mode"])
+            except Exception as e:
+                print("[ERROR] (read local configmap) %s" % e)
+                list_db = []
 
-        list_db = self.enrich_list_databases(list_db)
-        self.backup(list_db, now_datetime)
+        if self.dic_argv["conf_mode"]
+            input_list = self.enrich_list_databases(list_db)
+        self.start_modules(input_list, now_datetime)
 
     def snapshot_op(self, list_disk):
         now_datetime = datetime.now()

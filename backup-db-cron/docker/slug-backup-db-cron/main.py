@@ -457,7 +457,7 @@ class kube_init:
         try:
             list_db_configmap = self.get_configmap(self.name_configmap_backup, self.dic_argv["conf_mode"])
         except Exception as e:
-            print "[ERROR] %s" % e
+            print "[ERROR] (start_backup) %s" % e
             list_db_configmap = []
         #list_db = self.fusion_list_dbs_v2(list_db_configmap, list_db_secrets)
         list_db = self.fusion_list_dbs_v2(list_db_secrets, list_db_configmap)

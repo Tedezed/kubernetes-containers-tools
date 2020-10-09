@@ -10,10 +10,10 @@ from os import path, getlogin, system, listdir, getuid, environ
 
 class chronos_module():
 
-    def __init__(self, chronos):
-        self.chronos = chronos
-        self.loggin = self.chronos.chronos_logging
-        self.job = self.chronos.input_job
+    def __init__(self, module_control):
+        self.module_control = module_control
+        self.loggin = self.module_control.chronos_logging
+        self.job = self.module_control.input_job
         self.svc = self.job["name_svc"]
         self.host = self.job["host"]
         self.port = self.job["port"]
@@ -22,14 +22,14 @@ class chronos_module():
 
     def chronos_job(self):
         print(self.job)
-        conn = mysql.connect(dbname='postgres', \
+        conn = mysql.connector.connect(database='', \
                                   user=self.user, \
                                   host=self.host, \
                                   password=self.passwd, \
                                   port=self.port\
                                 )
         self.loggin.info('[INFO] [%s] Connect to %s ' \
-          % (self.chronos.now_datetime, self.job["name_svc"]))
+          % (self.module_control.now_datetime, self.job["name_svc"]))
         
         cur = conn.cursor()
         cur.execute("""SHOW DATABASES""")
@@ -42,13 +42,16 @@ class chronos_module():
                             "mysql", \
                             "performance_schema"]:
 
-                path_service = self.chronos.path_service(self.job["name_svc"])
-                path_backup = self.chronos.path_backup(path_service, str(r[0]))
+                path_service = self.module_control.chronos.path_service(self.job["name_svc"])
+                path_backup = self.module_control.chronos.path_backup(path_service, str(r[0]))
 
-                dump_command = 'mysqldump -u %s -p%s -h %s -P %s --databases %s > %s/%s___%s___%s.dump' % \
-                                (self.job["database_username"], str(self.job["database_password"].encode('utf-8')), \
+                dump_command = "mysqldump -u %s -p'%s' -h %s -P %s --databases %s > %s/%s___%s___%s.dump" % \
+                                (self.job["database_username"], str(self.job["database_password"]), \
                                  self.host, self.job["port"], str(r[0]), \
-                                path_backup, str(r[0]), self.chronos.now_datetime.strftime("%Y-%m-%d"), self.chronos.id_generator())
+                                path_backup, str(r[0]), self.module_control.now_datetime.strftime("%Y-%m-%d"), \
+                                self.module_control.chronos.id_generator())
+                if self.module_control.chronos.debug:
+                  print(dump_command)
 
-                self.chronos.execute_command(dump_command)
+                self.module_control.chronos.execute_command(dump_command)
         return path_backup

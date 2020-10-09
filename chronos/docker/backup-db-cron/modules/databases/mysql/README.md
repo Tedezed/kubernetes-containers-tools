@@ -7,7 +7,6 @@
 from . import main
 ```
 
-
 2. `__manifest__.py`
 ```
 {
@@ -51,4 +50,10 @@ class squirrel_module():
 
     def update_secret(self):
         print("update secret")
+```
+
+Example grant for dump:
+
+```
+GRANT process ON *.* TO user_xxx@'%';
 ```
