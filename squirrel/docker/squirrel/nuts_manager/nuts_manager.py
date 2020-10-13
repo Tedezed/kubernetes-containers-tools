@@ -295,6 +295,11 @@ class nuts_manager():
                                             md5_unique_name = hashlib.new('md5')
                                             string_md5 = '%s-%s-%s-%s-%s' % (squirrel_service, squirrel_name, squirrel_namespace, nut_email, nut_nutcracker)
                                             md5_unique_name.update(string_md5.encode())
+
+                                            old_md5_unique_name = hashlib.new('md5')
+                                            old_string_md5 = '%s-%s-%s-%s' % (squirrel_service, squirrel_name, squirrel_namespace, nut_email)
+                                            old_md5_unique_name.update(old_string_md5.encode())
+
                                             metadata = {'name': md5_unique_name.hexdigest(), 'namespace': squirrel_namespace}
                                             #metadata = {'name': nut_nutcracker, 'namespace': squirrel_namespace}
 
@@ -315,7 +320,9 @@ class nuts_manager():
                                             if self.check_pods(s.metadata.annotations["squirrel_delete_pods"], s.metadata.namespace):
                                                 check_pod_fail = False
                                                 if not self.squirrel.debug:
+
                                                     try:
+                                                        # New md5 name
                                                         api_response = crds.delete_namespaced_custom_object(\
                                                             self.squirrel.domain_api, \
                                                             self.squirrel.api_version, \
@@ -326,6 +333,18 @@ class nuts_manager():
                                                         #print(api_response)
                                                     except ApiException as e:
                                                         print("(rotation)Exception when calling CustomObjectsApi->delete_namespaced_custom_object: %s\n" % e)
+                                                    
+                                                    try:
+                                                        # Old md5 name
+                                                        crds.delete_namespaced_custom_object(\
+                                                            self.squirrel.domain_api, \
+                                                            self.squirrel.api_version, \
+                                                            squirrel_namespace, \
+                                                            'nuts', \
+                                                            old_md5_unique_name.hexdigest(),
+                                                            client.V1DeleteOptions())
+                                                    except ApiException as e:
+                                                        print("(rotation) Try delete old nuts: %s\n" % e)
 
                                                     try:
                                                         api_response = crds.create_namespaced_custom_object(\
@@ -338,6 +357,7 @@ class nuts_manager():
                                                     except ApiException as e:
                                                         print("Exception when calling CustomObjectsApi->create_namespaced_custom_object: %s\n" % e)
                                                     permissions_fail = False
+
                                                 else:
                                                    permissions_fail = False 
                                             else:
