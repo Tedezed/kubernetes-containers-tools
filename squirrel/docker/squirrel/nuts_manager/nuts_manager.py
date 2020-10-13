@@ -284,7 +284,8 @@ class nuts_manager():
                                           (permissions[0] == '*' and permissions[1] == '*') or \
                                           (permissions[0] == squirrel_namespace and permissions[1] == '*'):
                                             nut_email = nc["data"]["email"]
-                                            print("(rotation)[INFO] Create nut for %s" % nut_email)
+                                            nut_nutcracker = nc["metadata"]["name"]
+                                            print("(rotation)[INFO] Create nut for %s, nutcracker: %s" % (nut_email, nut_nutcracker))
 
                                             nut_keypub = nc["data"]["keypub"]
                                             #nc["permissions"]
@@ -292,23 +293,25 @@ class nuts_manager():
                                             secret_text = self.encryptText(nut_email, random_pass)
 
                                             md5_unique_name = hashlib.new('md5')
-                                            string_md5 = '%s-%s-%s-%s' % (squirrel_service, squirrel_name, squirrel_namespace, nut_email)
+                                            string_md5 = '%s-%s-%s-%s-%s' % (squirrel_service, squirrel_name, squirrel_namespace, nut_email, nut_nutcracker)
                                             md5_unique_name.update(string_md5.encode())
                                             metadata = {'name': md5_unique_name.hexdigest(), 'namespace': squirrel_namespace}
-                                            #metadata = {'name': nc["metadata"]["name"], 'namespace': squirrel_namespace}
+                                            #metadata = {'name': nut_nutcracker, 'namespace': squirrel_namespace}
 
+                                            new_nut = {}
                                             new_nut = dict(self.squirrel.squirrel_body)
                                             new_nut["metadata"] = metadata
                                             new_nut["kind"] = "Nuts"
                                             new_nut["data"]["nut"] = base64.b64encode(secret_text.encode()).decode()
                                             new_nut["data"]["email"] = nut_email
                                             new_nut["data"]["pcmac"] = nc["data"].get("pcmac", "<none>")
+                                            new_nut["data"]["nutcracker"] = nut_nutcracker
                                             new_nut["data"]["squirrel_name"] = squirrel_name
                                             new_nut["data"]["squirrel_service"] = squirrel_service
                                             new_nut["data"]["id_rotation"] = id_rotation
 
                                             #import pdb; pdb.set_trace()
-                                            #print(nc["metadata"]["name"])
+                                            #print(nut_nutcracker)
                                             if self.check_pods(s.metadata.annotations["squirrel_delete_pods"], s.metadata.namespace):
                                                 check_pod_fail = False
                                                 if not self.squirrel.debug:
@@ -331,7 +334,7 @@ class nuts_manager():
                                                             squirrel_namespace, \
                                                             'nuts', \
                                                             new_nut)
-                                                        print("(rotation)Nut %s for %s" % (secret_text, nut_email))
+                                                        print("(rotation) Nut %s: %s for %s" % (new_nut["metadata"]["name"], secret_text, nut_email))
                                                     except ApiException as e:
                                                         print("Exception when calling CustomObjectsApi->create_namespaced_custom_object: %s\n" % e)
                                                     permissions_fail = False
