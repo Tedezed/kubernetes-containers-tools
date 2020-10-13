@@ -1,8 +1,17 @@
 #/bin/bash
 
+function check_pcmac {
+	if [ "$(cat $SQUIRREL_USER_DIR/config | jq '.pcmac' | tr -d '"')" == "null" ]; then
+		echo '<none>'
+	else
+		echo "$(python3 -c 'from uuid import getnode as get_mac; print(get_mac());')"
+	fi
+}
+
 SQUIRREL_USER_DIR="$HOME/.squirrel"
 LOCAL_KEY="local"
 EMAIL=$(cat $SQUIRREL_USER_DIR/config | jq ".email" | tr -d '"')
+PCMAC=$(check_pcmac)
 
 #COMPLETION_SQUIRREL="DEBUG"
 
@@ -50,7 +59,7 @@ then
 	  		&& echo squirrel/ >> .git/info/sparse-checkout \
 	  		&& git read-tree -mu HEAD"
 		read -r -p 'Email: ' USER_EMAIL
-		echo "{"\""email"\"": "\""$USER_EMAIL"\"", "\""local_key"\"": "\""$LOCAL_KEY"\""}" > $SQUIRREL_USER_DIR/config
+		echo "{"\""email"\"": "\""$USER_EMAIL"\"", "\""local_key"\"": "\""$LOCAL_KEY"\"", "\""pcmac"\"": "\""$PCMAC"\""}" > $SQUIRREL_USER_DIR/config
 		OLD_DIR=$(pwd)
 		cd $SQUIRREL_USER_DIR \
 		&& python3 $SQUIRREL_USER_DIR/squirrel/docker/squirrel/main.py \
@@ -69,10 +78,10 @@ elif [[ "$1" == "nuts" ]]
 then
 	if [ -z "$2" ]
 	then
-		kubectl get nt --all-namespaces -o custom-columns=NAMESPACE:metadata.namespace,NAME:metadata.name,EMAIL:.data.email,SERVICE:.data.squirrel_service,CREATION:.metadata.creationTimestamp | grep "NAME\|$EMAIL"
+		kubectl get nt --all-namespaces -o custom-columns=NAMESPACE:metadata.namespace,NAME:metadata.name,EMAIL:.data.email,PCMAC:.data.pcmac,SERVICE:.data.squirrel_service,CREATION:.metadata.creationTimestamp | grep "NAME\|$EMAIL" | grep "NAME\|$PCMAC"
 	else
 		NAMESPACE=$2
-		kubectl get nt -n $NAMESPACE -o custom-columns=NAME:metadata.name,EMAIL:.data.email,SERVICE:.data.squirrel_service,CREATION:.metadata.creationTimestamp | grep "NAME\|$EMAIL"
+		kubectl get nt -n $NAMESPACE -o custom-columns=NAME:metadata.name,EMAIL:.data.email,PCMAC:.data.pcmac,SERVICE:.data.squirrel_service,CREATION:.metadata.creationTimestamp | grep "NAME\|$EMAIL" | grep "NAME\|$PCMAC"
 	fi
 elif [[ "$1" == "decrypt" ]]
 then

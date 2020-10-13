@@ -302,6 +302,7 @@ class nuts_manager():
                                             new_nut["kind"] = "Nuts"
                                             new_nut["data"]["nut"] = base64.b64encode(secret_text.encode()).decode()
                                             new_nut["data"]["email"] = nut_email
+                                            new_nut["data"]["pcmac"] = nc["data"].get("pcmac", "<none>")
                                             new_nut["data"]["squirrel_name"] = squirrel_name
                                             new_nut["data"]["squirrel_service"] = squirrel_service
                                             new_nut["data"]["id_rotation"] = id_rotation
