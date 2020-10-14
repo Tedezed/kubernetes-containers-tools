@@ -148,11 +148,22 @@ class nuts_manager():
         else:
             return False
 
-    def clean_nuts(self, valid_id_rotation):
+    def clean_nuts(self, valid_id_rotation, mode):
         crds = client.CustomObjectsApi()
         nuts = crds.list_cluster_custom_object(self.squirrel.domain_api, self.squirrel.api_version, 'nuts')["items"]
+        nutcrackers = crds.list_cluster_custom_object(self.squirrel.domain_api, self.squirrel.api_version, 'nutcrackers')["items"]
         for n in nuts:
-            if n["data"].get("id_rotation", 10000000000) != valid_id_rotation:
+
+            # Nuts from nutcrackers that do not exist
+            nut_nutcracker = n["data"].get("nutcracker", False)
+            nut_nutcracker_found = False
+            if mode == "old_nutcracker_clean":
+                for nc in nutcrackers:
+                    if nc["metadata"]["name"] == nut_nutcracker:
+                        nut_nutcracker_found = True
+            
+            if (n["data"].get("id_rotation", 10000000000) != valid_id_rotation and mode == "id_clean") \
+              or (not nut_nutcracker_found and mode == "old_nutcracker_clean"):
                 try:
                     api_response = crds.delete_namespaced_custom_object(\
                         self.squirrel.domain_api, \
@@ -222,8 +233,9 @@ class nuts_manager():
         nutcrackers = crds.list_cluster_custom_object(self.squirrel.domain_api, self.squirrel.api_version, 'nutcrackers')["items"]
         secrets = self.squirrel.v1.list_secret_for_all_namespaces(watch=False)
         id_rotation = self.randomStringDigits(8)
-        #if not self.squirrel.debug:
-        #    self.clean_nuts(id_rotation)
+        if not self.squirrel.debug:
+            #self.clean_nuts(id_rotation, "id_clean")
+            self.clean_nuts(id_rotation, "old_nutcracker_clean")
         for s in secrets.items:
             if s.metadata.annotations:
                 for a in s.metadata.annotations:

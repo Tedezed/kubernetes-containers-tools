@@ -6,9 +6,10 @@
 # Mail: juanmanuel.torres@aventurabinaria.es
 
 {
-"name": "Chronos PostgreSQL",
+"name": "Chronos MySQL",
 "author": "Juan Manuel Torres (Tedezed)",
 "version": "1.0",
-"type": "postgres",
+"mode": "databases",
+"type": "mysql",
 "executable": False,
 }

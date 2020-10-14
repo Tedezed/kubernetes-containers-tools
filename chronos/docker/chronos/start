@@ -1,0 +1,18 @@
+#!/bin/bash
+
+source /root/project_env
+
+printenv > /chronos/backups/cronenv
+
+echo "Mode: $MODE"
+
+if [ $MODE = "databases" ] || [ $MODE = "all" ]; then
+	echo "Submode: Backup databases"
+    /usr/bin/python3 /chronos/main.py mode=backup conf_mode=$CONF_MODE subtract_days=$DAYS_TO_DROP
+fi
+
+if [ $MODE = "disks" ] || [ $MODE = "all" ]; then
+	echo "Submode: Snapshot disks"
+    /usr/bin/python3 /chronos/main.py mode=disks conf_mode=$CONF_MODE project=$PROJECT zone=$ZONE \
+      subtract_days=$DAYS_TO_DROP_SNAPSHOT
+fi

@@ -99,10 +99,10 @@ ENV DAYS_TO_DROP=15 \
     GCLOUD_DEFAULT_CREDENTIALS="True" \
     GCLOUD_SA_FILE="/secrets/sa/sa-gcloud.json"
 
-ADD backup-db-cron/ /backup-db-cron
+ADD chronos/ /chronos
 ADD files/docker-entrypoint.sh /usr/local/bin/
 
-RUN chmod +rx /usr/local/bin/docker-entrypoint.sh /backup-db-cron/main.py /backup-db-cron/start
+RUN chmod +rx /usr/local/bin/docker-entrypoint.sh /chronos/main.py /chronos/start
 
 USER root
 ENTRYPOINT ["docker-entrypoint.sh"]

@@ -31,8 +31,8 @@ class main_module():
         self.manifestname = '__manifest__.py'
         self.current_path = os.path.dirname(os.path.abspath(__file__))
         self.name_dir_modules = "modules"
-        self.path_modules = "%s/%s/%s" % (self.current_path, self.name_dir_modules, self.mode)
-        self.relative_path_modules = "%s/%s" % (self.name_dir_modules, self.mode)
+        self.path_modules = "%s/%s" % (self.current_path, self.name_dir_modules)
+        self.relative_path_modules = "%s/" % (self.name_dir_modules)
 
         if os.path.isdir(self.path_modules):
             self.modules = []
@@ -62,17 +62,41 @@ class main_module():
         importmod = importlib.import_module(mod_to_load)
         return importmod.main.chronos_module(self)
 
-    def conditional_module(self):
+    def module_custom_list_job(self):
+        for mod in self.modules:
+            manifestmod = self.load_manifest(mod)
+            if manifestmod:
+                if manifestmod["executable"] and manifestmod["mode"] == self.mode:
+                    print("[INFO] Check module '%s' is executable" % manifestmod["name"])
+                    try:
+                        sm = self.load_module(mod)
+                        if sm:
+                            path_backup = sm.chronos_job()
+
+                            if self.mode == "databases":
+                                self.chronos.drop_dir_datetime(self.now_datetime, path_backup)
+                        else:
+                            print("[ERROR] Impossible to load the module: %s" % manifestmod["name"])
+                    except Exception as e:
+                        error = '[ERROR] (module_custom_list_job) mode: %s' % self.mode
+                        print(error, e)
+                        self.chronos_logging.error(error, e)
+                        send_mail("[ERROR BACKUP] %s" % ("(module_custom_list_job)"), error, self.debug_mode)
+
+    def module_exec_list_job(self):
         for job in self.conf_list:
             module_for_job = False
             for mod in self.modules:
+
                 manifestmod = self.load_manifest(mod)
                 if manifestmod:
-                    if manifestmod["executable"]:
+                    if manifestmod["executable"] and manifestmod["mode"] == self.mode:
                         print("[INFO] Check module '%s' is executable" % manifestmod["name"])
+
                         if job["type"] == manifestmod["type"]:
                             print(job)
                             print("[INFO] Execute module '%s' for %s" % (manifestmod["name"], job["name_svc"]))
+
                             # Load Module
                             self.input_job = job
                             try:
@@ -80,21 +104,26 @@ class main_module():
                                 if sm:
                                     path_backup = sm.chronos_job()
                                     module_for_job = True
+
                                     if self.mode == "databases":
                                         self.chronos.drop_dir_datetime(self.now_datetime, path_backup)
                                 else:
                                     print("[ERROR] Impossible to load the module: %s" % manifestmod["name"])
+
                             except Exception as e:
                                 error = '[ERROR] [%s] host %s not found ' % (self.now_datetime , job["name_svc"])
+
                                 if self.debug_mode:
                                     print("host: %s, user: %s, pass: %s, port: %s" \
                                       % (job["host"], \
                                          job["database_username"], \
                                          job["database_password"], \
                                          job["port"]))
+
                                 print(error, e)
                                 self.chronos_logging.error(error, e)
                                 send_mail("[ERROR BACKUP] %s" % (job["name_svc"]), error, self.debug_mode)
+
             manifestmod = False
             if not module_for_job:
                 error = '[WARNING] Not module for job %s, type: %s' % (job["name_svc"], job["type"])

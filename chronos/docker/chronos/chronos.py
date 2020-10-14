@@ -32,7 +32,9 @@ class chronos:
     bash_bold='\033[1m'
     bash_none='\033[00m'
 
-    def __init__(self, input_debug):
+    def __init__(self, input_dic_argv, input_debug):
+
+        self.dic_argv = input_dic_argv
 
         def argument_to_dic(list):
             dic = {}
@@ -262,10 +264,10 @@ class chronos:
         return list_db
             
 
-    def start_modules(self, list_db, now_datetime):
+    def start_modules(self, input_list, now_datetime):
         try:
-            module = main_module(self, "databases", list_db, now_datetime, self.chronos_logging, self.debug)
-            module.conditional_module()
+            module = main_module(self, "databases", input_list, now_datetime, self.chronos_logging, self.debug)
+            module.module_exec_list_job()
         except Exception as e:
             error = '[ERROR] [%s] (start_modules)' % (now_datetime)
             print(error, e)
@@ -291,77 +293,21 @@ class chronos:
                 print("[INFO] [%s] Drop file %s" % (now_datetime, file))
                 system("rm -f %s/%s" % (ruta_backup, file))
 
-    def date_drop_snapshot(self, now_datetime):
-        drop_datetime = now_datetime - timedelta(days=int(self.dic_argv["subtract_days"]))
-        print("[INFO] Checking snapshot that are on or out the erase date: %s" % drop_datetime)
-        list_snapshot = self.gtools.list_snapshot(self.dic_argv["project"])
-        if list_snapshot != None:
-            for s in list_snapshot:
-                file_date = ""
-                try:
-                    if "---" in s["name"]:
-                        name_split = s["name"].split("---")
-                        name_date = name_split[1]
-                        if datetime.strptime(name_date, "%Y-%m-%d").strftime("%Y-%m-%d") \
-                          <= drop_datetime.strftime("%Y-%m-%d"):
-                            logging.warning("[INFO] [%s] Drop snapshot %s" % (now_datetime, s["name"]))
-                            print("[INFO] [%s] Drop snapshot %s" % (now_datetime, s["name"]))
-                            self.gtools.delete_snapshot(self.dic_argv["project"],s["name"])
-                except Exception as e:
-                    key = False
-                    print(e)
-                    logging.error(e)
-        else:
-            print("[INFO] Not found snapshot that are on or out the erase date: %s" % drop_datetime)
-
     def start_chronos(self):
         now_datetime = datetime.now()
         
         print("[INFO] Conf mode %s" % self.dic_argv["conf_mode"])
         if self.dic_argv["conf_mode"] == "api":
+            # Mode API
             list_db = self.sqin.get_secrets()
+            input_list = self.enrich_list_databases(list_db)
         else:
+            # Mode Configmap
             try:
-                list_db = self.get_configmap(self.name_configmap, self.dic_argv["conf_mode"])
+                input_list = self.get_configmap(self.name_configmap, self.dic_argv["conf_mode"])
             except Exception as e:
                 print("[ERROR] (read local configmap) %s" % e)
-                list_db = []
+                input_list = []
 
-        if self.dic_argv["conf_mode"]
-            input_list = self.enrich_list_databases(list_db)
         self.start_modules(input_list, now_datetime)
 
-    def snapshot_op(self, list_disk):
-        now_datetime = datetime.now()
-        for disk in list_disk:
-            if len(disk["name_disk"]) > 45:
-                name_snapshot = disk["name_disk"][0:45] + "---" + now_datetime.strftime("%Y-%m-%d")
-            else:
-                name_snapshot = disk["name_disk"] + "---" + now_datetime.strftime("%Y-%m-%d")
-
-            logging.warning("[INFO] [%s] Create snapshot %s" % (now_datetime, name_snapshot))
-            print("[INFO] [%s] Create snapshot %s" % (now_datetime, name_snapshot))
-            try:
-                self.gtools.disk_to_snapshot(self.dic_argv["project"], disk["zone"], disk["name_disk"], name_snapshot)
-            except Exception as e:
-                print(e)
-                logging.error(e)
-        self.date_drop_snapshot(now_datetime)
-
-    def snapshot_filter_label(self):
-        self.gtools = gcloud_tools()
-        list_disk_gcp = self.gtools.list_disks(self.dic_argv["project"], self.dic_argv["zone"])
-
-        list_disk = []
-        for disk in list_disk_gcp:
-            disk_labels = disk.get("labels", [])
-            disk_label_backup = "false"
-            for l in disk_labels:
-                if l == "backup":
-                    disk_label_backup = disk_labels[l]
-            if disk["status"] == "READY" and disk_label_backup.lower() ==  "true":
-                dict_disk = {"name_disk": disk["name"], "zone": self.dic_argv["zone"]}
-                list_disk.append(dict_disk)
-
-        if list_disk:
-            self.snapshot_op(list_disk)

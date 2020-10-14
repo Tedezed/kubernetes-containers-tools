@@ -53,7 +53,7 @@ cat <<EOF | kubectl create -f -
 apiVersion: "tree.squirrel.local/v1"
 kind: Nutcrackers
 metadata:
-  name: admin
+  name: user
 type: Opaque
 data:
   email: "user@example.com"
@@ -75,6 +75,26 @@ subjects:
 - apiGroup: rbac.authorization.k8s.io
   kind: User
   name: user@example.com
+EOF
+```
+
+Example User diferent hosts:
+```
+kubectl delete nutcrackers user
+cat <<EOF | kubectl create -f -
+apiVersion: "tree.squirrel.local/v1"
+kind: Nutcrackers
+metadata:
+  name: user-$(python3 -c 'from uuid import getnode as get_mac; print(get_mac());')
+type: Opaque
+data:
+  email: "user@example.com"
+  keypub: $(cat $HOME/.squirrel/local.pub | base64 -w0)
+  pcmac: $(python3 -c 'from uuid import getnode as get_mac; print(get_mac());')
+permissions:
+  # - "namespace/service"
+  - "demo1/app-demo1"
+  - "demo2/app-demo2"
 EOF
 ```
 
