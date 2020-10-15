@@ -14,7 +14,7 @@ class chronos_module():
         self.module_control = module_control
         self.loggin = self.module_control.chronos_logging
         self.job = self.module_control.input_job
-        self.svc = self.job["name_svc"]
+        self.svc = self.job["job_name"]
         self.host = self.job["host"]
         self.port = self.job["port"]
         self.user = self.job["database_username"]
@@ -29,7 +29,7 @@ class chronos_module():
                                   port=self.port\
                                 )
         self.loggin.info('[INFO] [%s] Connect to %s ' \
-          % (self.module_control.now_datetime, self.job["name_svc"]))
+          % (self.module_control.now_datetime, self.job["job_name"]))
         
         cur = conn.cursor()
         cur.execute("""SHOW DATABASES""")
@@ -42,7 +42,7 @@ class chronos_module():
                             "mysql", \
                             "performance_schema"]:
 
-                path_service = self.module_control.chronos.path_service(self.job["name_svc"])
+                path_service = self.module_control.chronos.path_service(self.job["job_name"])
                 path_backup = self.module_control.chronos.path_backup(path_service, str(r[0]))
 
                 dump_command = "mysqldump -u %s -p'%s' -h %s -P %s --databases %s > %s/%s___%s___%s.dump" % \

@@ -307,7 +307,6 @@ class kube_init:
         except Exception as e:
             key = False
             error = '[ERROR] [%s] host %s not found ' % (now_datetime, db["name_svc"])
-            print "host: %s, user: %s, pass: %s, port: %s" % (host, db_user, db_user_pass, db_port)
             print error
             print e
             logging.error(error)

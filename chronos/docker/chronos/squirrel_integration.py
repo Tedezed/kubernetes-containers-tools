@@ -24,9 +24,9 @@ class squirrel_integration():
                             dic_db = {}
                             dic_db["namespace"] = s.metadata.namespace
                             
-                            dic_db["name_svc"] = s.metadata.annotations.get("squirrel_service", False)
+                            dic_db["job_name"] = s.metadata.annotations.get("squirrel_service", False)
                             squirrel_type_backend = s.metadata.annotations.get("squirrel_type_backend", False)
-                            dic_db["type"] = squirrel_type_backend
+                            dic_db["job_type"] = squirrel_type_backend
 
                             squirrel_user_key = s.metadata.annotations.get("squirrel_username_key", False)
                             squirrel_pass_key = s.metadata.annotations.get("squirrel_password_key", False)

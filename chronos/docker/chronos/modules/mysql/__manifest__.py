@@ -10,6 +10,6 @@
 "author": "Juan Manuel Torres (Tedezed)",
 "version": "1.0",
 "mode": "databases",
-"type": "mysql",
+"job_type": "mysql",
 "executable": False,
 }

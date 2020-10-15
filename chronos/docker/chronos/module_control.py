@@ -15,14 +15,12 @@ class main_module():
     def __init__(self,
                 chronos,
                 input_mode,
-                input_conf,
                 input_now_datetime,
                 input_chronos_logging,
                 input_debug=False):
 
         self.chronos = chronos
         self.mode = input_mode
-        self.conf_list = input_conf
         self.now_datetime = input_now_datetime
         self.chronos_logging = input_chronos_logging
         self.debug_mode = input_debug
@@ -58,11 +56,14 @@ class main_module():
             return False
                 
     def load_module(self, mod):
-        mod_to_load = '%s.%s' % (self.relative_path_modules.replace("/", "."), mod)
+        #mod_to_load = '%s.%s' % (self.relative_path_modules.replace("/", "."), mod)
+        mod_to_load = '%s%s' % (self.relative_path_modules.replace("/", "."), mod)
+        print("[INFO] Mod to load: %s" % mod_to_load)
         importmod = importlib.import_module(mod_to_load)
         return importmod.main.chronos_module(self)
 
-    def module_custom_list_job(self):
+    def module_custom_job_list(self):
+        list_job = []
         for mod in self.modules:
             manifestmod = self.load_manifest(mod)
             if manifestmod:
@@ -71,10 +72,7 @@ class main_module():
                     try:
                         sm = self.load_module(mod)
                         if sm:
-                            path_backup = sm.chronos_job()
-
-                            if self.mode == "databases":
-                                self.chronos.drop_dir_datetime(self.now_datetime, path_backup)
+                            list_job += sm.chronos_create_job_list()
                         else:
                             print("[ERROR] Impossible to load the module: %s" % manifestmod["name"])
                     except Exception as e:
@@ -82,9 +80,10 @@ class main_module():
                         print(error, e)
                         self.chronos_logging.error(error, e)
                         send_mail("[ERROR BACKUP] %s" % ("(module_custom_list_job)"), error, self.debug_mode)
+        return list_job
 
-    def module_exec_list_job(self):
-        for job in self.conf_list:
+    def module_exec_list_job(self, conf_list):
+        for job in conf_list:
             module_for_job = False
             for mod in self.modules:
 
@@ -92,10 +91,10 @@ class main_module():
                 if manifestmod:
                     if manifestmod["executable"] and manifestmod["mode"] == self.mode:
                         print("[INFO] Check module '%s' is executable" % manifestmod["name"])
-
-                        if job["type"] == manifestmod["type"]:
+                        print(job)
+                        if job["job_type"] == manifestmod["job_type"]:
                             print(job)
-                            print("[INFO] Execute module '%s' for %s" % (manifestmod["name"], job["name_svc"]))
+                            print("[INFO] Execute module '%s' for %s" % (manifestmod["name"], job["job_name"]))
 
                             # Load Module
                             self.input_job = job
@@ -111,7 +110,7 @@ class main_module():
                                     print("[ERROR] Impossible to load the module: %s" % manifestmod["name"])
 
                             except Exception as e:
-                                error = '[ERROR] [%s] host %s not found ' % (self.now_datetime , job["name_svc"])
+                                error = '[ERROR] [%s] host %s not found ' % (self.now_datetime , job["job_name"])
 
                                 if self.debug_mode:
                                     print("host: %s, user: %s, pass: %s, port: %s" \
@@ -122,11 +121,11 @@ class main_module():
 
                                 print(error, e)
                                 self.chronos_logging.error(error, e)
-                                send_mail("[ERROR BACKUP] %s" % (job["name_svc"]), error, self.debug_mode)
+                                send_mail("[ERROR BACKUP] %s" % (job["job_name"]), error, self.debug_mode)
 
             manifestmod = False
             if not module_for_job:
-                error = '[WARNING] Not module for job %s, type: %s' % (job["name_svc"], job["type"])
+                error = '[WARNING] Not module for job %s, type: %s' % (job["job_name"], job["job_type"])
                 print(error)
                 self.chronos_logging.error(error)
-                send_mail("[ERROR BACKUP] %s %s" % (job["name_svc"], job["host"]), error, self.debug_mode)
+                send_mail("[ERROR BACKUP] %s " % error, error, self.debug_mode)

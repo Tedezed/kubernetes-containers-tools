@@ -69,6 +69,8 @@ then
 			bits="4096"
 		cd $OLD_DIR
 		ls $SQUIRREL_USER_DIR
+	else
+		echo "[INFO] Can't create new nutcracker, exist one with email: $(cat $SQUIRREL_USER_DIR/config | jq '.email')"
 	fi
 elif [[ "$1" == "version" ]]
 then

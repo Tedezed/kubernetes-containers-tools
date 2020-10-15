@@ -35,6 +35,7 @@ class chronos:
     def __init__(self, input_dic_argv, input_debug):
 
         self.dic_argv = input_dic_argv
+        self.backup_label = "backup"
 
         def argument_to_dic(list):
             dic = {}
@@ -162,7 +163,7 @@ class chronos:
             for d in data:
                 dic_data = {}
                 name = str(d)
-                dic_data["name_svc"] = name
+                dic_data["job_name"] = name
                 data_n = data[name].split("\n")
                 list_data = []
                 for n in data_n:
@@ -242,12 +243,12 @@ class chronos:
         docker_env = path.exists('/.dockerenv')
         for idx, db in enumerate(list_db):
             if not docker_env:
-                host = db["name_svc"]
+                host = db["job_name"]
             else:
                 try:
                     # Try IP from Pod
                     ip_error = "169.254.1.10"
-                    svc_labels = self.get_selector_from_service(db["name_svc"], db["namespace"])
+                    svc_labels = self.get_selector_from_service(db["job_name"], db["namespace"])
                     svc_ip_list = self.get_ip_from_pod(svc_labels, db["namespace"])
                     #host = safe_list_get(svc_ip_list,0,ip_error)
                     host = svc_ip_list[0]
@@ -257,22 +258,11 @@ class chronos:
                     logging.error(error)
 
                     # Try IP from SVC
-                    host = self.get_svc_ip(db["name_svc"], db["namespace"])
+                    host = self.get_svc_ip(db["job_name"], db["namespace"])
             
             list_db[idx]["host"] = host
 
         return list_db
-            
-
-    def start_modules(self, input_list, now_datetime):
-        try:
-            module = main_module(self, "databases", input_list, now_datetime, self.chronos_logging, self.debug)
-            module.module_exec_list_job()
-        except Exception as e:
-            error = '[ERROR] [%s] (start_modules)' % (now_datetime)
-            print(error, e)
-            self.chronos_logging.error(error, e)
-            send_mail(error, error, self.debug)
 
     def drop_dir_datetime(self, now_datetime, ruta_backup):
         drop_datetime = now_datetime - timedelta(days=int(self.dic_argv["subtract_days"]))
@@ -296,11 +286,17 @@ class chronos:
     def start_chronos(self):
         now_datetime = datetime.now()
         
+        module = main_module(self, self.dic_argv["mode"], now_datetime, self.chronos_logging, \
+                                    self.debug)
+
         print("[INFO] Conf mode %s" % self.dic_argv["conf_mode"])
         if self.dic_argv["conf_mode"] == "api":
             # Mode API
             list_db = self.sqin.get_secrets()
-            input_list = self.enrich_list_databases(list_db)
+            if self.dic_argv["mode"] == "databases":
+                input_list = self.enrich_list_databases(list_db)
+            else:
+                input_list = module.module_custom_job_list()
         else:
             # Mode Configmap
             try:
@@ -309,5 +305,11 @@ class chronos:
                 print("[ERROR] (read local configmap) %s" % e)
                 input_list = []
 
-        self.start_modules(input_list, now_datetime)
+        try:
+            module.module_exec_list_job(input_list)
+        except Exception as e:
+            error = '[ERROR] [%s] (start_modules)' % (now_datetime)
+            print(error, e)
+            self.chronos_logging.error(error, e)
+            send_mail(error, error, self.debug)
 

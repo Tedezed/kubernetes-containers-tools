@@ -36,7 +36,7 @@ class squirrel_integration():
                                 dic_db["POSTGRES_USER"] = squirrel_user
                                 dic_db["POSTGRES_PASSWORD"] = squirrel_pass
                             elif squirrel_type_backend == "mysql":
-                                custom_database_port = s.metadata.annotations.get("custom_database_port", "3306")
+                                dic_db["port"] = s.metadata.annotations.get("custom_database_port", "3306")
                                 dic_db["MYSQL_USER"] = squirrel_user
                                 dic_db["MYSQL_PASSWORD"] = squirrel_pass
                             else:

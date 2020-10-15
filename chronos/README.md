@@ -21,7 +21,7 @@ Database modules:
 - [ ] Firebase
 - [ ] YugabyteDB
 
-Disk support:
+Cloud disk support:
 - [x] GCP compute disk
 - [ ] AWS
 - [ ] Azure
@@ -29,13 +29,14 @@ Disk support:
 - [ ] Kubevirt disk
 
 Other backup:
-- [ ] Kubernetes json conf of cluster
+- [ ] Application backup path
+- [ ] Kubernetes, API conf IN json of cluster
 
 Other functionalities:
 - [ ] Encryption of backups on disk
 - [ ] Rrestore and test every dump
 
-kubectl cp $HOME/git/kubernetes-containers-tools/chronos/docker/backup-db-cron kube-system/$(kgpod chronos):/
+kubectl cp $HOME/git/kubernetes-containers-tools/chronos/docker/chronos kube-system/$(kgpod chronos):/
 -->
 
 Working Modes:
