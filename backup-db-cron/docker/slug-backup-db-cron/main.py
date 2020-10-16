@@ -335,11 +335,11 @@ class kube_init:
 
                     print "[INFO] Dump %s" % r
                     if db["type"] == "postgres":
-                        dump_command = 'pg_dump -Fc --dbname=postgresql://%s:%s@%s:%s/%s > %s/%s___%s___%s.dump' % \
+                        dump_command = "pg_dump -Fc --dbname=postgresql://%s:'%s'@%s:%s/%s > %s/%s___%s___%s.dump" % \
                                        (db["POSTGRES_USER"], str(db["POSTGRES_PASSWORD"].encode('utf-8')), host, db["port"], str(r[0]), \
                                         ruta_backup, str(r[0]), now_datetime.strftime("%Y-%m-%d"), self.id_generator())
                     elif db["type"] == "mysql":
-                        dump_command = 'mysqldump -u %s -p%s -h %s -P %s --databases %s > %s/%s___%s___%s.dump' % \
+                        dump_command = "mysqldump -u %s -p'%s' -h %s -P %s --databases %s > %s/%s___%s___%s.dump" % \
                                        (db["MYSQL_USER"], str(db["MYSQL_PASSWORD"].encode('utf-8')), host, db["port"], str(r[0]), \
                                         ruta_backup, str(r[0]), now_datetime.strftime("%Y-%m-%d"), self.id_generator())
 

@@ -45,7 +45,7 @@ class chronos_module():
                 path_service = self.module_control.chronos.path_service(self.job["job_name"])
                 path_backup = self.module_control.chronos.path_backup(path_service, str(r[0]))
 
-                dump_command = 'pg_dump -Fc --dbname=postgresql://%s:%s@%s:%s/%s > %s/%s___%s___%s.dump' % \
+                dump_command = "pg_dump -Fc --dbname=postgresql://%s:'%s'@%s:%s/%s > %s/%s___%s___%s.dump" % \
                                 (self.job["database_username"], str(self.job["database_password"]), \
                                 self.host, self.job["port"], str(r[0]), \
                                 path_backup, str(r[0]), self.module_control.now_datetime.strftime("%Y-%m-%d"), \

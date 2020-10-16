@@ -9,7 +9,7 @@
 "name": "Chronos Google Cloud Platform",
 "author": "Juan Manuel Torres (Tedezed)",
 "version": "1.0",
-"mode": "disks",
+"mode": "bare_modules",
 "job_type": "gcp",
 "executable": True,
 }

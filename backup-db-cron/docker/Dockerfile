@@ -5,11 +5,14 @@ MAINTAINER Juan Manuel Torres <juanmanuel.torres@aventurabinaria.es>
 
 ENV MYSQLXPB_PROTOC=/usr/bin/protoc \
  MYSQLXPB_PROTOBUF_INCLUDE_DIR=/usr/include/google/protobuf \
- MYSQLXPB_PROTOBUF_LIB_DIR=/usr/lib/x86_64-linux-gnu
+ MYSQLXPB_PROTOBUF_LIB_DIR=/usr/lib/x86_64-linux-gnu \
+ DEBIAN_FRONTEND=noninteractive
 
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
+        ca-certificates \
         cron \
+        wget \
         curl \
         git \
         tree \
@@ -17,7 +20,11 @@ RUN apt-get update \
         procps \
     	rsyslog \
     	apt-transport-https \
-        postgresql-client-common postgresql-client
+        gnupg
+
+RUN wget -q https://www.postgresql.org/media/keys/ACCC4CF8.asc -O - | apt-key add - \
+    && echo "deb http://apt.postgresql.org/pub/repos/apt/ buster-pgdg main" >> /etc/apt/sources.list \
+    && apt-get update && apt-get install postgresql-client-12 -y --force-yes --no-install-recommends
 
 RUN apt-get install -y --no-install-recommends \
     python2.7 \

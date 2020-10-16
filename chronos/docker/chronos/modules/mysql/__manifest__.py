@@ -9,7 +9,7 @@
 "name": "Chronos MySQL",
 "author": "Juan Manuel Torres (Tedezed)",
 "version": "1.0",
-"mode": "databases",
+"mode": "methodical_modules",
 "job_type": "mysql",
 "executable": False,
 }

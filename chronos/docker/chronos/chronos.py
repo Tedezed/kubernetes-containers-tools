@@ -52,7 +52,7 @@ class chronos:
             list_argv.append(var_input)
         self.dic_argv = argument_to_dic(list_argv)
 
-        if self.dic_argv["mode"] == "databases":
+        if self.dic_argv["mode"] == "methodical_modules":
             self.name_configmap="databases-conf"
         else:
             self.name_configmap="disks-conf"
@@ -239,7 +239,7 @@ class chronos:
                     list_ip_pod.append(p.status.pod_ip)
         return list_ip_pod
 
-    def enrich_list_databases(self, list_db):
+    def enrich_list_job(self, list_db):
         docker_env = path.exists('/.dockerenv')
         for idx, db in enumerate(list_db):
             if not docker_env:
@@ -293,10 +293,10 @@ class chronos:
         if self.dic_argv["conf_mode"] == "api":
             # Mode API
             list_db = self.sqin.get_secrets()
-            if self.dic_argv["mode"] == "databases":
-                input_list = self.enrich_list_databases(list_db)
+            if self.dic_argv["mode"] == "methodical_modules":
+                input_list = self.enrich_list_job(list_db)
             else:
-                input_list = module.module_custom_job_list()
+                input_list = []
         else:
             # Mode Configmap
             try:
@@ -306,7 +306,10 @@ class chronos:
                 input_list = []
 
         try:
-            module.module_exec_list_job(input_list)
+            if self.dic_argv["mode"] == "methodical_modules":
+                module.exec_methodical_modules(input_list)
+            else:
+                module.exec_bare_modules(input_list)
         except Exception as e:
             error = '[ERROR] [%s] (start_modules)' % (now_datetime)
             print(error, e)

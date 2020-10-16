@@ -62,8 +62,15 @@ class main_module():
         importmod = importlib.import_module(mod_to_load)
         return importmod.main.chronos_module(self)
 
-    def module_custom_job_list(self):
-        list_job = []
+    """
+    Bare Modules
+        This type of module will be invoked only by "chronos_complex_job" with a list containing all the jobs if 
+        conf_mode=="configmap" is used or nothing in the case of using conf_mode: "API", in the latter case it will
+        have to be able to make requests to obtain the list of jobs.
+        Designed for maximum customization which makes them more complex.
+    """
+    def exec_bare_modules(self, conf_list):
+        print("[INFO] (exec_bare_modules)")
         for mod in self.modules:
             manifestmod = self.load_manifest(mod)
             if manifestmod:
@@ -72,7 +79,7 @@ class main_module():
                     try:
                         sm = self.load_module(mod)
                         if sm:
-                            list_job += sm.chronos_create_job_list()
+                            sm.chronos_complex_job(conf_list)
                         else:
                             print("[ERROR] Impossible to load the module: %s" % manifestmod["name"])
                     except Exception as e:
@@ -80,9 +87,14 @@ class main_module():
                         print(error, e)
                         self.chronos_logging.error(error, e)
                         send_mail("[ERROR BACKUP] %s" % ("(module_custom_list_job)"), error, self.debug_mode)
-        return list_job
 
-    def module_exec_list_job(self, conf_list):
+    """
+    Methodical Modules
+        This type of module will be called for each job with "chronos_job".
+        It allows to create modules in a simple and fast way.
+    """
+    def exec_methodical_modules(self, conf_list):
+        print("[INFO] (exec_methodical_modules)")
         for job in conf_list:
             module_for_job = False
             for mod in self.modules:
@@ -101,24 +113,15 @@ class main_module():
                             try:
                                 sm = self.load_module(mod)
                                 if sm:
-                                    path_backup = sm.chronos_job()
+                                    output_job = sm.chronos_job()
                                     module_for_job = True
-
-                                    if self.mode == "databases":
-                                        self.chronos.drop_dir_datetime(self.now_datetime, path_backup)
+                                    if self.mode == "methodical_modules":
+                                        self.chronos.drop_dir_datetime(self.now_datetime, output_job)
                                 else:
                                     print("[ERROR] Impossible to load the module: %s" % manifestmod["name"])
 
                             except Exception as e:
                                 error = '[ERROR] [%s] host %s not found ' % (self.now_datetime , job["job_name"])
-
-                                if self.debug_mode:
-                                    print("host: %s, user: %s, pass: %s, port: %s" \
-                                      % (job["host"], \
-                                         job["database_username"], \
-                                         job["database_password"], \
-                                         job["port"]))
-
                                 print(error, e)
                                 self.chronos_logging.error(error, e)
                                 send_mail("[ERROR BACKUP] %s" % (job["job_name"]), error, self.debug_mode)
