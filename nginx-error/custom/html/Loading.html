@@ -1,0 +1,173 @@
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta content="loading">
+    <!-- By: https://github.com/Tedezed -->
+    <title>Loading</title>
+    <style>
+      body { text-align: center; padding: 5%; }
+      h1 { font-size: 50px; }
+      body { font: 20px Helvetica, sans-serif; color: #333; }
+      article { display: block; text-align: center; width: 50%; margin: 0 auto; }
+      a { color: #dc8100; text-decoration: none; }
+      a:hover { color: #333; text-decoration: none; }
+
+      .loader {
+          border: 9px solid #f3f3f3; /* Light grey */
+          border-top: 9px solid #dc8100; /* Color */
+          /* border-bottom: 9px solid #dc8100; /* Color */
+          border-radius: 50%;
+          width: 40px;
+          height: 40px;
+          animation: spin 2s linear infinite;
+          /* Center */
+          position: relative;
+          margin-left:calc(50% - 25px);
+        }
+
+        @keyframes spin {
+          0% { transform: rotate(0deg); }
+          100% { transform: rotate(360deg); }
+        }
+    </style>
+  </head>
+  <body>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+    <script type="text/javascript">
+
+    var dict_en = {
+      "lines": '<article id="article_loading">\
+        <h1>Loading system</h1>\
+        <div>\
+            <p id=msg_loading>The charging process may take a little</p>\
+            <div class="loader"></div>\
+        </div>\
+    </article>',
+      "error_loading": '<h1>Loading Error</h1>\
+        <div>\
+            <p>&#10006; The process takes too long but the system may be loading and is available in a few moments otherwise you can contact the support service. Sorry for the inconvenience.</p>\
+            <input type="button"  onclick="window.location.reload()" value="Reload">\
+        </div>',
+      "check_server": "Check state of server...",
+      "check_server_not": "The server is loading, please be patient.",
+      "time_average": "The charging process may take a little, please be patient.",
+      "ok_server": "&#10004; The server is ready, reloading...",
+    }
+
+    var dict_es = {
+      "lines": '<article id="article_loading">\
+        <h1>Cargando sistema</h1>\
+        <div>\
+            <p id=msg_loading>El proceso de carga puede tardar un poco</p>\
+            <div class="loader"></div>\
+        </div>\
+    </article>',
+      "error_loading": '<h1>Error al cargar</h1>\
+        <div>\
+            <p>&#10006; El proceso tardo demasiado pero puede que el sistema se encuentre cargando y este disponible en unos instantes de lo contrario puede ponerse en contacto con el servcicio de soporte. Disculpe las molestias.</p>\
+            <input type="button"  onclick="window.location.reload()" value="Recargar">\
+        </div>',
+      "check_server": "Verificando estado del servidor...",
+      "check_server_not": "El servidor se encuentra cargando, sea paciente por favor.",
+      "time_average": "El proceso de carga puede tardar un poco, sea paciente por favor.",
+      "ok_server": "&#10004; El servidor se encuentra listo, recargando...",
+    }
+
+    var userLang = navigator.language || navigator.userLanguage;
+    // alert ("The language is: " + userLang);
+    if (userLang == "es-ES") {
+        document.write(dict_es["lines"]);
+    } else {
+        document.write(dict_en["lines"]);
+    }
+    </script>
+    <script type="text/javascript">
+      var sleep_time = 9
+      function replace_with_id(msg, id, element) {
+        //document.getElementById(id).remove();
+        //let e = document.createElement(element);
+        //e.innerHTML = msg;
+        //document.body.append(e);
+        document.getElementById(id).innerHTML = msg;
+      }
+
+      function replace_with_id_lang(msg, id, element) {
+        if (userLang == "es-ES") {
+            replace_with_id(dict_es[msg], id, element);
+        } else {
+            replace_with_id(dict_en[msg], id, element);
+        }
+      }
+
+      function loading(n) {
+        // Call myself
+        var random_boolean = Math.random() >= 0.5;
+        if (random_boolean) {
+          replace_with_id_lang("check_server_not", "msg_loading", "p");
+        } else {
+          replace_with_id_lang("time_average", "msg_loading", "p");
+        }
+        setTimeout(function(){reload_loading()},sleep_time * 1000);
+        setTimeout(function(){replace_with_id_lang("check_server", "msg_loading", "p")},(sleep_time - 2) * 1000);
+
+        // Cont for error
+        if (window.n>=47) {
+          // No error Loading
+          //setTimeout(function(){window.location.reload()},1000);
+          //
+          // Error Loading
+          replace_with_id("", "msg_loading", "p");
+          replace_with_id_lang("error_loading", "article_loading", "article")
+        }
+        window.n++;
+      }
+
+      function loading_ok() {
+        // Reload
+        console.log("Else content=loading is 0"); 
+        replace_with_id_lang("ok_server", "msg_loading", "p");
+        document.getElementsByClassName("loader")[0].style.animation = "spin 0.5s linear infinite";
+        setTimeout(function(){window.location.reload()},sleep_time * 1000);
+      }
+
+      function reload_loading(n,e) {
+          jQuery.ajax({
+            url: window.location.href,
+            cache: false,
+            success: function(data) {
+                var parser = new DOMParser();
+                var server_html = parser.parseFromString(data, 'text/html');
+                console.log($('meta[content=loading]', server_html));  
+                if ($('meta[content=loading]', server_html).length==1) {
+                  loading(n);
+                } else {
+                  loading_ok();
+                }
+              },
+              error: function(XMLHttpRequest, textStatus, errorThrown) {
+                  if (XMLHttpRequest.status != 502) {
+                    if (window.e>=3) {
+                      loading_ok();
+                    } else {
+                      console.log(XMLHttpRequest.status,textStatus,errorThrown);
+                      window.e++;
+                      setTimeout(function(){reload_loading()},sleep_time * 1000);
+                    }
+                  } else {
+                    console.log(XMLHttpRequest.status,textStatus,errorThrown);
+                    loading(n);
+                  }
+
+            }
+          })
+      }
+      n=0;
+      e=0;
+      jQuery( document ).ready(function() {
+        reload_loading(n,e);
+      })
+    </script>
+  </body>
+</html>
+
+

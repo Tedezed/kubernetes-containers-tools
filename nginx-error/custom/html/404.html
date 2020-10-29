@@ -1,0 +1,44 @@
+<html>
+    <head>
+        <meta charset="utf-8">
+        <!-- By: https://github.com/Tedezed -->
+        <title>Error 404</title>
+        <style>
+          body { text-align: center; padding: 5%; }
+          h1 { font-size: 50px; }
+          body { font: 20px Helvetica, sans-serif; color: #333; }
+          article { display: block; text-align: left; width: 60%; margin: 0 auto; }
+          a { color: #dc8100; text-decoration: none; }
+          a:hover { color: #333; text-decoration: none; }
+        </style>
+    </head>
+    <body>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+        <script type="text/javascript">
+
+        var lines_en = '<article>\
+            <h1>404 - Page not found!</h1>\
+            <div>\
+                <p>It may be due to one of the following causes: The url entered may be wrong or does not exist, the content could be deleted or moved, the domain or subdomain no longer points to any IP address. If you need to you can always <a href="mailto:SUPPORT_EMAIL">contact us</a>, we will respond as quickly as possible!</p>\
+                <p>&mdash; {TEAM_NAME</p>\
+            </div>\
+        </article>'
+
+        var lines_es = '<article>\
+            <h1>404 - &#161;Página no encontrada!</h1>\
+            <div>\
+                <p>Es posible que deba a una de las siguientes causas: La url introducida puede que sea errónea o no exista, el contenido pudo ser eliminado o movido, el dominio o subdominio ya no apunta a ninguna dirección IP. Si lo necesita, siempre puede <a href="mailto:SUPPORT_EMAIL">contactarnos</a>, le responderemos lo mas rápido posible!</p>\
+                <p>&mdash; TEAM_NAME</p>\
+            </div>\
+        </article>'
+
+        var userLang = navigator.language || navigator.userLanguage;
+        // alert ("The language is: " + userLang);
+        if (userLang == "es-ES") {
+            document.write(lines_es);
+        } else {
+            document.write(lines_en);
+        }
+        </script>
+    </body>
+</html>
