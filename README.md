@@ -9,6 +9,7 @@ Containers of the project:
 * [liberty-dynamic-ingress](https://github.com/Tedezed/kubernetes-containers-tools/tree/master/liberty) - Ingres with Nginx thought-out for Odoo, Wordperss and PrestaShop. Solves problems with session affinity of Kubernetes using sticky session.
 * [pgpool-centos](https://github.com/Tedezed/kubernetes-containers-tools/tree/master/pgpool) - Container pgpool.
 * [pgbouncer](https://github.com/Tedezed/kubernetes-containers-tools/tree/master/pgbouncer) - Container pgbouncer.
+* [secure-emailing](https://github.com/Tedezed/kubernetes-containers-tools/tree/master/secure_emailing) - Gateway filter with control of permissions for SMTP relay.
 * [emailing](https://github.com/Tedezed/kubernetes-containers-tools/tree/master/emailing) - Emailing Gateway for cluster of Kubernetes in Google Cloud.
 * [slug-phpbb](https://github.com/Tedezed/kubernetes-containers-tools/tree/master/phpbb) - Container phpbb.
 * [slug-dynamic-loadbalancer](https://github.com/Tedezed/kubernetes-containers-tools/tree/master/dynamic_loadbalancer) - Loadbalancer in test for statefulset.
