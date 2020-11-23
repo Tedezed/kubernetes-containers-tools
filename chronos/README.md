@@ -14,6 +14,7 @@ Database modules:
 - [ ] Oracle
 - [ ] SQLite
 - [ ] Microsoft SQL Server
+- [ ] OpenLDAP
 - [ ] MongoDB
 - [ ] Cassandra
 - [ ] Redis

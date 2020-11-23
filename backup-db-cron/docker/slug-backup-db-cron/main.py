@@ -391,6 +391,8 @@ class kube_init:
                             logging.warning("[INFO] [%s] Drop snapshot %s" % (now_datetime, s["name"]))
                             print "[INFO] [%s] Drop snapshot %s" % (now_datetime, s["name"])
                             self.gtools.delete_snapshot(self.dic_argv["project"],s["name"])
+                        else:
+                            print "[INFO] [%s] Not drop snapshot %s" % (now_datetime, s["name"])
                 except Exception as e:
                     key = False
                     print e
@@ -533,6 +535,7 @@ def main():
     if dic_argv.get("mode", False) == "backup":
         if kluster.check(kluster.name_configmap_backup, dic_argv["conf_mode"]):
             kluster.start_kube_backup()
+
     elif dic_argv.get("mode", False) == "snapshot":
         if kluster.check(kluster.name_configmap_snapshot, dic_argv["conf_mode"]):
             try:
@@ -549,6 +552,11 @@ def main():
             print "[ERROR] snapshot_label %s" % str(error)
             logging.error(error)
             kluster.send_mail("[ERROR SLUG-BACKUP] Mode %s" % ("snapshot_label"), str(error).replace("<","").replace(">",""))
+
+    elif dic_argv.get("mode", False) == "snapshot_clean":
+        now_datetime = datetime.now()
+        gtools = gcloud_tools()
+        kluster.date_drop_snapshot(now_datetime)
 
     else:
         print "[ERROR] Mode not found"

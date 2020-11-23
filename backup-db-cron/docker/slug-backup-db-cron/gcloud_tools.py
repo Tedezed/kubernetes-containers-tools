@@ -26,7 +26,7 @@ class gcloud_tools:
         return result.get('items', None)
 
     def list_snapshot(self, project):
-        result = self.compute.snapshots().list(project=project).execute()
+        result = self.compute.snapshots().list(project=project, maxResults=99999).execute()
         return result.get('items', None)
 
     def disk_to_snapshot(self, project, zone, disk_name, snapshot_name):

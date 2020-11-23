@@ -93,39 +93,45 @@ class elk_brainslug():
                         }
             }
 
-        deploy = self.kluster.extv1beta1.list_namespaced_deployment(namespace, watch=False)
-        for d in deploy.items:
-            start_stop=True
-            if ((start_mode and int(d.spec.replicas) == 0) or not start_mode):
-                if d.metadata.annotations:
-                    if d.metadata.annotations.get('ingress-liberty/start-stop', "true") == "false" \
-                      or d.metadata.annotations.get('ingress-liberty/last-start-stop', "1983.06.22") == today.strftime('%Y.%m.%d'):
-                        start_stop=False
-                if start_stop:
-                    system('echo "[INFO] Scale to %s deploy: %s"' % (replicas, d.metadata.name))
-                    self.kluster.extv1beta1.patch_namespaced_deployment(d.metadata.name, namespace, body)
+        try:
+            deploy = self.kluster.extv1beta1.list_namespaced_deployment(namespace, watch=False)
+            for d in deploy.items:
+                start_stop=True
+                if ((start_mode and int(d.spec.replicas) == 0) or not start_mode):
+                    if d.metadata.annotations:
+                        if d.metadata.annotations.get('ingress-liberty/start-stop', "true") == "false" \
+                        or d.metadata.annotations.get('ingress-liberty/last-start-stop', "1983.06.22") == today.strftime('%Y.%m.%d'):
+                            start_stop=False
+                    if start_stop:
+                        system('echo "[INFO] Scale to %s deploy: %s"' % (replicas, d.metadata.name))
+                        self.kluster.extv1beta1.patch_namespaced_deployment(d.metadata.name, namespace, body)
+                    else:
+                        system('echo "[INFO - %s] start_stop FALSE"' % today)
                 else:
-                    system('echo "[INFO - %s] start_stop FALSE"' % today)
-            else:
-                system('echo "[INFO] Deploy in %s without changes"' % namespace)
+                    system('echo "[INFO] Deploy in %s without changes"' % namespace)
+        except Exception as error:
+            system('echo "[ERROR] (replicas_all_namespace) [deploy] %s"' % (error))
 
-        rc = self.kluster.v1.list_namespaced_replication_controller(namespace, watch=False)
-        for r in rc.items:
-            start_stop=True
-            if ((start_mode and int(r.spec.replicas) == 0) or not start_mode):
-                if r.metadata.annotations:
-                    # Ford Orion date: 1983.06.22
-                    if r.metadata.annotations.get('ingress-liberty/start-stop', "true") == "false" \
-                      or r.metadata.annotations.get('ingress-liberty/last-start-stop', "1983.06.22") == str(today.strftime('%Y.%m.%d')):
-                        start_stop=False
-                if start_stop:
-                    system('echo "[INFO] Scale to %s rc: %s"' % (replicas, r.metadata.name))
-                    self.kluster.v1.patch_namespaced_replication_controller(r.metadata.name, namespace, body)
+        try:
+            rc = self.kluster.v1.list_namespaced_replication_controller(namespace, watch=False)
+            for r in rc.items:
+                start_stop=True
+                if ((start_mode and int(r.spec.replicas) == 0) or not start_mode):
+                    if r.metadata.annotations:
+                        # Ford Orion date: 1983.06.22
+                        if r.metadata.annotations.get('ingress-liberty/start-stop', "true") == "false" \
+                        or r.metadata.annotations.get('ingress-liberty/last-start-stop', "1983.06.22") == str(today.strftime('%Y.%m.%d')):
+                            start_stop=False
+                    if start_stop:
+                        system('echo "[INFO] Scale to %s rc: %s"' % (replicas, r.metadata.name))
+                        self.kluster.v1.patch_namespaced_replication_controller(r.metadata.name, namespace, body)
+                    else:
+                        system('echo "[INFO] start_stop FALSE %s"' % today.strftime('%Y.%m.%d'))
                 else:
-                    system('echo "[INFO] start_stop FALSE %s"' % today.strftime('%Y.%m.%d'))
-            else:
-                system('echo "[INFO] RC in %s without changes"' % namespace)
-
+                    system('echo "[INFO] RC in %s without changes"' % namespace)
+        except Exception as error:
+            system('echo "[ERROR] (replicas_all_namespace) [rc] %s"' % (error))
+ 
     def stop_ingress(self):
         system('echo "[INFO] ELK Liberty Mode stop"')
 

@@ -17,3 +17,5 @@ if [ $MODE = "4" ] || [ $MODE = "5" ]; then
 	echo "Submode: snapshot_label"
     /usr/bin/python /slug-backup-db-cron/main.py mode=snapshot_label conf_mode=$CONF_MODE project=$PROJECT zone=$ZONE subtract_days=$DAYS_TO_DROP_SNAPSHOT
 fi
+
+#/usr/bin/python /slug-backup-db-cron/main.py mode=snapshot_clean conf_mode=$CONF_MODE project=$PROJECT zone=$ZONE subtract_days=$DAYS_TO_DROP_SNAPSHOT
