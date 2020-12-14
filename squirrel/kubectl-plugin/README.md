@@ -7,6 +7,37 @@ sudo apt-get install sudo jq python3-gnupg xclip
 pip3 install --user kubernetes pyperclip psycopg2
 ```
 
+## Versions
+
+Current
+```
+$ gpg --version
+gpg (GnuPG) 1.4.20
+
+$ pip3 freeze | grep gnupg
+python-gnupg==0.3.8
+```
+
+Install ggp from: https://gnupg.org/ftp/gcrypt/gnupg/gnupg-1.4.20.tar.bz2
+```
+cd gnupg-1.4.20
+./configure --prefix=/usr --libexecdir=/usr/lib
+make
+sudo make install
+```
+
+Install gnupg python version:
+```
+sudo apt purge python3-gnupg
+pip3 install python-gnupg==0.3.8
+```
+
+Reset local key
+```
+squirrel drop-all
+squirrel init 
+```
+
 ## Install
 
 ```
