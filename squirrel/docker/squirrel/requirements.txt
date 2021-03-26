@@ -13,7 +13,7 @@ pyasn1-modules==0.2.6
 pyperclip==1.7.0
 python-dateutil==2.8.0
 python-gnupg==0.4.4
-PyYAML==5.1.2
+PyYAML==5.4
 requests==2.22.0
 requests-oauthlib==1.2.0
 rsa==4.0
