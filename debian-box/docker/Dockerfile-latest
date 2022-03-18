@@ -37,6 +37,7 @@ RUN apt-get update \
 		python3-pip \
 		lsb-release \
 		gnupg \
+		tcpdump \
 	&& rm -rf /var/lib/apt/lists/*
 
 # GCP

@@ -31,6 +31,7 @@ OS Packages:
 - dnsutils
 - mariadb-client
 - postgresql-client
+- tcpdump
 - telnet
 - nmap
 - make
