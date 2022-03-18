@@ -2,7 +2,8 @@ FROM debian:10
 LABEL maintainer="juanmanuel.torres@aventurabinaria.es"
 
 ENV KUSTOMIZE_VER="2.0.3" \
-	KUBECTL_VER="1.18.18"
+	KUBECTL_VER="1.18.18" \
+	GITHUB_CLIENT_VER="2.2.0"
 
 RUN apt-get update \
 	&& apt-get install -y --no-install-recommends \
@@ -22,6 +23,7 @@ RUN apt-get update \
 		g++ \
 		python-dev \
 		libtool \
+		git \
 		pkg-config \
 		locales \
 		nano \
@@ -32,24 +34,54 @@ RUN apt-get update \
 		telnet \
 		netcat \
 		python3 \
+		python3-pip \
 		lsb-release \
-		gnupg
+		gnupg \
+	&& rm -rf /var/lib/apt/lists/*
 
+# GCP
 RUN export GCSFUSE_REPO=gcsfuse-jessie \
     && echo "deb http://packages.cloud.google.com/apt $GCSFUSE_REPO main" | sudo tee /etc/apt/sources.list.d/gcsfuse.list \
     && curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add - \
     && apt-get update \
     && apt-get install gcsfuse -y \
-    && export CLOUD_SDK_REPO="cloud-sdk-$(lsb_release -c -s)" && \
-    echo "deb http://packages.cloud.google.com/apt $CLOUD_SDK_REPO main" | tee -a /etc/apt/sources.list.d/google-cloud-sdk.list && \
-    curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add - && \
-    apt-get update -y && apt-get install google-cloud-sdk -y
+    && export CLOUD_SDK_REPO="cloud-sdk-$(lsb_release -c -s)" \
+    && echo "deb http://packages.cloud.google.com/apt $CLOUD_SDK_REPO main" | tee -a /etc/apt/sources.list.d/google-cloud-sdk.list \
+    && curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add - \
+    && apt-get update -y && apt-get install google-cloud-sdk -y \
+	&& rm -rf /var/lib/apt/lists/*
 
+# Azure
+RUN curl -sL https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor | tee /etc/apt/trusted.gpg.d/microsoft.gpg > /dev/null \
+	&& export AZ_REPO=$(lsb_release -cs) \
+	&& echo "deb [arch=amd64] https://packages.microsoft.com/repos/azure-cli/ $AZ_REPO main" | tee /etc/apt/sources.list.d/azure-cli.list \
+	&& apt-get update \
+	&& apt-get install -y azure-cli \
+	&& rm -rf /var/lib/apt/lists/*
+
+# AWS
+RUN pip3 install awscli
+
+# Kubectl
 RUN curl -o  /usr/bin/kubectl \
 		-SL https://storage.googleapis.com/kubernetes-release/release/v${KUBECTL_VER}/bin/linux/amd64/kubectl \
     && chmod +x  /usr/bin/kubectl
 
+# Kustomize
 RUN curl -o /usr/bin/kustomize \
 		-SL https://github.com/kubernetes-sigs/kustomize/releases/download/v${KUSTOMIZE_VER}/kustomize_${KUSTOMIZE_VER}_linux_amd64 \
     && chmod +x /usr/bin/kustomize
 
+# Docker
+RUN curl -fsSL https://download.docker.com/linux/debian/gpg | sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg \
+	&& echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/debian \
+	$(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null \
+	&& apt-get update \
+	&& apt-get install -y docker-ce docker-ce-cli containerd.io \
+	&& rm -rf /var/lib/apt/lists/*
+
+# GH
+RUN curl -o /tmp/gh_linux_amd64.deb \
+		-SL https://github.com/cli/cli/releases/download/v${GITHUB_CLIENT_VER}/gh_${GITHUB_CLIENT_VER}_linux_amd64.deb \
+	&& dpkg -i /tmp/gh_linux_amd64.deb \
+	&& rm -f /tmp/gh_linux_amd64.deb
