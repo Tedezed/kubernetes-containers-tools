@@ -5,6 +5,14 @@ RUN set -e \
     && curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl" \
     && chmod +x kubectl \
     && mv ./kubectl /bin/kubectl \
-    && curl -sSL https://sdk.cloud.google.com | sh
+    && curl -sSL https://sdk.cloud.google.com | sh \
+    && ln -s /root/google-cloud-sdk/.install/.backup/bin/gcloud /bin/gcloud \
+    && ln -s /root/google-cloud-sdk/.install/.backup/bin/gke-gcloud-auth-plugin /bin/gke-gcloud-auth-plugin \
+    && gcloud components install gke-gcloud-auth-plugin
 
-RUN ln -s /root/google-cloud-sdk/.install/.backup/bin/gcloud /bin/gcloud
+RUN set -x \
+    && gcloud version \
+    && gke-gcloud-auth-plugin --version \
+    && kubectl version --client=true --output=yaml
+
+ENV USE_GKE_GCLOUD_AUTH_PLUGIN=True
