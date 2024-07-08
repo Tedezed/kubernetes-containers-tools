@@ -1,4 +1,4 @@
-FROM debian:stretch-slim
+FROM debian:stable-slim
 
 ENV DEBIAN_FRONTEND="noninteractive" \
 	PGP_TYPE=1 \
@@ -19,11 +19,14 @@ ENV DEBIAN_FRONTEND="noninteractive" \
 	DENY_EXTENSIONS="config|conf"
 
 RUN apt-get update \
-	&& apt-get install -y gnupg rng-tools nginx reprepro dpkg-sig curl nano \
+	&& apt-get install -y software-properties-common \
+	# dpkg-sig
+	&& apt-get install -y gnupg rng-tools nginx reprepro curl nano dpkg-dev \
 	&& echo 'HRNGDEVICE=/dev/urandom' >> /etc/default/rng-tools
 
 ADD custom /mnt/custom
-RUN chmod +x /mnt/custom/executable/bash/entrypoint.sh
+RUN chmod +x /mnt/custom/executable/bash/entrypoint.sh \
+	&& cp /etc/nginx/nginx.conf /etc/nginx/nginx.conf_original
 
 EXPOSE 80 443
 VOLUME ["/root/.gnupg", "/usr/src/pagespeed", "/var/packages"]

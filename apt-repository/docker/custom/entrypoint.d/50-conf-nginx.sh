@@ -1,6 +1,11 @@
 #!/bin/bash
 set -e
 
+# Restore nginx.conf
+ls /etc/nginx/
+cp /etc/nginx/nginx.conf_original /etc/nginx/nginx.conf
+
+# Modify nginx.conf
 sed -i "s/access_log/#access_log/g" /etc/nginx/nginx.conf
 sed -i "s/error_log/#error_log/g" /etc/nginx/nginx.conf
 echo "daemon off;" >> /etc/nginx/nginx.conf
@@ -8,6 +13,7 @@ echo "error_log /dev/stdout info;" >> /etc/nginx/nginx.conf
 sed -e ':a' -e 'N' -e '$!ba' -e 's#http {#http {\naccess_log /dev/stdout;#g' \
   /etc/nginx/nginx.conf > /etc/nginx/nginx.conf_tmp
 mv /etc/nginx/nginx.conf_tmp /etc/nginx/nginx.conf
+
 
 echo "
 server {
