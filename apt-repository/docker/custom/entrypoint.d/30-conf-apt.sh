@@ -11,14 +11,14 @@ Description: $APT_DESCRIPTION
 SignWith: $(gpg --list-secret-keys --with-colons --fingerprint | grep ssb | cut -d ":" -f 5)
 DebOverride: $APT_DEBOVERRIDE
 DscOverride: $APT_DSCOVERRIDE
-" > /var/packages/debian/conf/distributions
+" > /var/packages/${APT_REPOSITORY}/conf/distributions
 
-touch /var/packages/debian/conf/$APT_DEBOVERRIDE
+touch /var/packages/${APT_REPOSITORY}/conf/$APT_DEBOVERRIDE
 
 echo "verbose
 ask-passphrase
-basedir /var/packages/debian
-" > /var/packages/debian/conf/options
+basedir /var/packages/${APT_REPOSITORY}
+" > /var/packages/${APT_REPOSITORY}/conf/options
 
 #curl -SL http://ftp.us.debian.org/debian/pool/main/p/python3.7/python3.7_3.7.3-2+deb10u1_amd64.deb -o /usr/src/pagespeed/python3.7_3.7.3-2+deb10u1_amd64.deb
 #export GPG_TTY=$(tty)
