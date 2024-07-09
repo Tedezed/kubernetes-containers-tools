@@ -1,8 +1,7 @@
 #!/bin/bash
-set -e
+set -xe
 
 # Restore nginx.conf
-ls /etc/nginx/
 cp /etc/nginx/nginx.conf_original /etc/nginx/nginx.conf
 
 # Modify nginx.conf

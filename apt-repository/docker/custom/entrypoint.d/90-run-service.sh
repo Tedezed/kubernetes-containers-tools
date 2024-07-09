@@ -1,5 +1,5 @@
 #!/bin/bash
-set -e
+set -xe
 
 echo "[INFO] Start Nginx"
 nginx -c /etc/nginx/nginx.conf 

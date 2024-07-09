@@ -1,0 +1,24 @@
+version: '2.0'
+services:
+  apt:
+    # Stable for Ubuntu 18 and latest for Ubuntu 24
+    image: tedezed/apt-repository:stable
+    container_name: apt
+    restart: always
+    ports:
+      - "8080:80"
+    environment:
+      - APT_DOMAIN=apt.example.com
+      - PGP_EMAIL=user@example.com
+      - PGP_PASSWD=xxxxxxxxxxxxxx
+      - APT_DESCRIPTION=APT Repository for Ubuntu 18.04
+      - APT_REPOSITORY=bionic
+    volumes:
+      - ./volumes/packages:/var/packages
+      - ./volumes/pagespeed:/usr/src/pagespeed
+      - ./volumes/gnupg:/root/.gnupg
+  ubuntu:
+    image: ubuntu:18.04
+    container_name: ubuntu
+    command: >
+      bash -c 'apt-get update && apt-get install wget gnupg curl nano -y && sleep 999999999'
